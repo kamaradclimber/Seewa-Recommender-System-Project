@@ -6,7 +6,7 @@ public class DispatcherEcrivains {
 	
 	private List<Ecrivain> ecrivains;
 	
-	public void transmettreMessage(String Message) {
+	public void transmettreMessage(Data message) {
 		
 	}
 }

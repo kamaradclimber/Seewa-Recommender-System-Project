@@ -5,7 +5,7 @@ public class DispatcherAlgoMAJ {
 
 	private List<AlgoLourd> algos;
 	
-	public void transmettreMessage(String Message) {
+	public void transmettreMessage(Data message) {
 		
 	}
 	
