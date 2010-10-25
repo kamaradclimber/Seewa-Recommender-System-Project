@@ -1,16 +1,14 @@
 
-public abstract class Data {
+public interface Data {
 //le format que je mets chaque fois quón fait transiter des données
 // mais on peut tout a fait mettre des types différents...
 	
-	static Interprete interprete;
 	
-	abstract public void write();
-	abstract public void initialize(Request r);
 	
-
-	static public void setInterprete(Interprete inter) {
-		interprete = inter;
-	}
+	public void write();
+	public void initialize(Request r);
+	
+//TODO faire en sorte qu'on puisse accéder à l'interprete
+	
 }
 
