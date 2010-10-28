@@ -1,10 +1,26 @@
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Set;
 
 
 public class FlatClusterization extends AlgoLourd {
 
-	ArrayList<Cluster> clusters= new ArrayList<Cluster>();
+	ArrayList<Cluster> clusters;
+	
+	public FlatClusterization(int nbclusters, ArrayList<DataVector> vecteurs) throws Exception{
+		clusters = new ArrayList<Cluster>();
+		for (int i=0; i<nbclusters; i++){
+			if (vecteurs.isEmpty()) throw new Exception("WTF ?!");
+			Cluster cluster = new Cluster();
+			cluster.add(vecteurs.get(0));
+			clusters.add(cluster);
+			cluster.updateCentroid();
+			vecteurs.remove(0);
+		}
+		clusters.get(0).addAll(vecteurs);
+	}
 	
 	@Override
 	public void maj() throws Exception {
@@ -14,11 +30,13 @@ public class FlatClusterization extends AlgoLourd {
 		ArrayList<DataVector> vectors = new ArrayList<DataVector>();
 		double lastError= Double.MAX_VALUE;
 		double currentError = Double.MAX_VALUE /2 ; 
+		for (Cluster c : clusters) {
+			vectors.addAll(c);
+		}
 		while ((  lastError - currentError) / lastError > 0.1 ) { //tant que ca bouge on continue la manoeuvre
 			lastError = currentError;
 			currentError = 0;
 			for (Cluster c : clusters) {
-				vectors.addAll(c);
 				c.clear(); // on vide le cluster pour pouvoir y ajouter ensuite ses nouveaux membres
 			}
 			for (DataVector vect : vectors) {
@@ -41,7 +59,6 @@ public class FlatClusterization extends AlgoLourd {
 		}
 	}
 
-
 	
 	@Override
 	Data input() {
@@ -62,7 +79,8 @@ public class FlatClusterization extends AlgoLourd {
 	
 	
 	private double squaredDistance(DataVector v1, DataVector v2) {
-		Set<String> union = v1.keySet();
+		HashSet<String> union = new HashSet<String>();
+		union.addAll(v1.keySet());
 		union.addAll(v2.keySet());// on a calculé l'union des clés sur lesquelles on calcule la distance
 		double dist=0;
 		for (String key : union){

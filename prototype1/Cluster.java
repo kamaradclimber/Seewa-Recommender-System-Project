@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Cluster extends ArrayList<DataVector> implements Data  {
 
-	DataVector centroid;
+	DataVector centroid = new DataVector();
 	Interprete interprete;
 	
 	
@@ -16,14 +16,14 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 
 	
 	public void write() {
-		interprete.write("clusters","centroid", center);
+	//	interprete.write("clusters","centroid", centroid);
 	}
 
 	
 	
 	public void initialize(Request r) {
 		List<String> t =interprete.read(r);
-		this.center =t.get(0);
+		//this.centroid =t.get(0);
 		
 	}
 	

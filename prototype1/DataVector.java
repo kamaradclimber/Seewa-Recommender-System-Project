@@ -6,6 +6,9 @@ import java.util.Hashtable;
 @SuppressWarnings("serial")
 public class DataVector extends Hashtable<String, Float> implements Data  {
 
+	
+
+	
 	@Override
 	public void write() {
 		// TODO Auto-generated method stub
