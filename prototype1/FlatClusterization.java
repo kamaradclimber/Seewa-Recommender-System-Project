@@ -33,7 +33,7 @@ public class FlatClusterization extends AlgoLourd {
 		for (Cluster c : clusters) {
 			vectors.addAll(c);
 		}
-		while ((  lastError - currentError) / lastError > 0.1 ) { //tant que ca bouge on continue la manoeuvre
+		while ((  lastError - currentError) / lastError > 0.01 ) { //tant que ca bouge on continue la manoeuvre
 			lastError = currentError;
 			currentError = 0;
 			for (Cluster c : clusters) {
@@ -78,7 +78,7 @@ public class FlatClusterization extends AlgoLourd {
 	}
 	
 	
-	private double squaredDistance(DataVector v1, DataVector v2) {
+	static private double squaredDistance(DataVector v1, DataVector v2) {
 		HashSet<String> union = new HashSet<String>();
 		union.addAll(v1.keySet());
 		union.addAll(v2.keySet());// on a calculé l'union des clés sur lesquelles on calcule la distance
@@ -89,8 +89,8 @@ public class FlatClusterization extends AlgoLourd {
 		return dist;
 	}
 	
-	private double distance(DataVector v1, DataVector v2) {
-		return Math.sqrt(this.squaredDistance(v1, v2));
+	static public double distance(DataVector v1, DataVector v2) {
+		return Math.sqrt(squaredDistance(v1, v2));
 	}
 	
 	private double distance2(DataVector v1, DataVector v2) { //on utilise un coefficient jaccard pour pondérer la distance habituelle
