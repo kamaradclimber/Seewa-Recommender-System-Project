@@ -48,8 +48,10 @@ public class Visualizer {
 			}
 		
 		//boucle pour "équilibrer les forces" d'attraction entre les points
-		Double errorTotTot = new Double(1);
-		while (errorTotTot > 0.1) {
+		Double errorTotTot = Double.MAX_VALUE /2;
+		Double lastErrorTotTot = Double.MAX_VALUE;
+		while (errorTotTot > 0.1 && lastErrorTotTot > errorTotTot) {
+			lastErrorTotTot = errorTotTot;
 			errorTotTot = new Double(0);
 			for (DataVector v1 : c ) {
 				Position errorVector = new Position(new Double(0), new Double(0)); //on va (hérésie !) assimiler point et vecteur
@@ -70,6 +72,7 @@ public class Visualizer {
 			}
 		}
 		System.out.println("erreur totaltotal : " +errorTotTot);
+		System.out.println("lastError : "+ lastErrorTotTot);
 		for (DataVector v : c) {
 			System.out.println(positions.get(v).x +" "+positions.get(v).y);
 		}
