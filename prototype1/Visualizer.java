@@ -50,7 +50,10 @@ public class Visualizer {
 		//boucle pour "équilibrer les forces" d'attraction entre les points
 		Double errorTotTot = Double.MAX_VALUE /2;
 		Double lastErrorTotTot = Double.MAX_VALUE;
-		while (errorTotTot > 0.1 && lastErrorTotTot > errorTotTot) {
+		while (errorTotTot > 0.1 && (lastErrorTotTot - errorTotTot)/ errorTotTot > -0.0001 ) {
+			System.out.println("lasterreur totaltotal : " +lastErrorTotTot);
+			System.out.println("erreur totaltotal : " +errorTotTot);
+			System.out.println((lastErrorTotTot - errorTotTot)/ errorTotTot);
 			lastErrorTotTot = errorTotTot;
 			errorTotTot = new Double(0);
 			for (DataVector v1 : c ) {
@@ -68,8 +71,7 @@ public class Visualizer {
 				}
 				positions.put(v1, new Position(p1.x+ (errorVector.x * 0.01),p1.y+(errorVector.y* 0.01)));
 				errorTotTot += errorTot;
-//				System.out.println("erreur totaltotal : " +errorTotTot);
-			}
+}
 		}
 		System.out.println("erreur totaltotal : " +errorTotTot);
 		System.out.println("lastError : "+ lastErrorTotTot);
