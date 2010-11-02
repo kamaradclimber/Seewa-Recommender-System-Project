@@ -10,24 +10,30 @@ public class Visualizer {
 		public Double y;
 		
 		public Position(Double x, Double y) {
-			this.x=x;
+			this.x = x;
 			this.y = y;
 		}
 		public Position() {
-			this.x = generator.nextDouble();
-			this.y = generator.nextDouble();
+			this.x = 10* generator.nextDouble();
+			this.y = 10* generator.nextDouble();
 		}
+		
+		
 		
 	}
 	
-	//static Double distance(DataVector v1, DataVector v2);
+	static public Double distance(Position p1, Position p2) { //renvoie la distance euclidienne (on l'utilise car cest celle du plan, sur lequel on projette nos clusters)
+		return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y-p2.y, 2));
+	}
 	
-	public void visualizerCluster(Cluster c) {
+
+	public Hashtable<DataVector, Position> visualizerCluster(Cluster c) throws Exception {
 		//travaille sur un cluster et determine une representation possible
 		Hashtable<DataVector, Position> positions = new Hashtable<DataVector, Visualizer.Position>();
 		for(DataVector v : c) {
 			positions.put(v, new Position());
 		}
+		//initialisation de la matrice de distance
 		Hashtable<DataVector, Hashtable<DataVector, Double>> distances = new Hashtable<DataVector, Hashtable<DataVector,Double>>();
 		for(DataVector v1 :c) {
 			for(DataVector v2 : c) {
@@ -35,10 +41,44 @@ public class Visualizer {
 				boolean bv2 = distances.containsKey(v2);
 				if (!bv1) distances.put(v1, new Hashtable<DataVector, Double>());
 				if (!bv2) distances.put(v2, new Hashtable<DataVector, Double>());
-				//Double d= distance(v1,v2)
-				//if (!bv1) distances.get(v2).put(v1, value)
+				Double d= FlatClusterization.distance(v1,v2);
+				distances.get(v2).put(v1, d);
+				distances.get(v1).put(v2, d);
 				}
 			}
+		
+		//boucle pour "équilibrer les forces" d'attraction entre les points
+		Double errorTotTot = Double.MAX_VALUE /2;
+		Double lastErrorTotTot = Double.MAX_VALUE;
+		while (errorTotTot > 0.1 && (lastErrorTotTot - errorTotTot)/ errorTotTot > -0.0001 ) {
+			System.out.println("lasterreur totaltotal : " +lastErrorTotTot);
+			System.out.println("erreur totaltotal : " +errorTotTot);
+			System.out.println((lastErrorTotTot - errorTotTot)/ errorTotTot);
+			lastErrorTotTot = errorTotTot;
+			errorTotTot = new Double(0);
+			for (DataVector v1 : c ) {
+				Position errorVector = new Position(new Double(0), new Double(0)); //on va (hérésie !) assimiler point et vecteur
+				Double error = new Double(0); Double errorTot =new Double(0);
+				Position p1 = positions.get(v1);  
+				for (DataVector v2 : c) {
+					if (v1==v2) continue;
+					if (distances.get(v1).get(v2)<0.0001) continue;
+					Position p2 = positions.get(v2);
+					error = (Visualizer.distance(p1, p2) - distances.get(v1).get(v2)) / distances.get(v1).get(v2);
+					errorTot += Math.abs(error);
+					Position vector = new Position(p2.x - p1.x , p2.y - p1.y);
+					errorVector = new Position(errorVector.x + (error * vector.x), errorVector.y + (error * vector.y));
+				}
+				positions.put(v1, new Position(p1.x+ (errorVector.x * 0.01),p1.y+(errorVector.y* 0.01)));
+				errorTotTot += errorTot;
+}
+		}
+		System.out.println("erreur totaltotal : " +errorTotTot);
+		System.out.println("lastError : "+ lastErrorTotTot);
+		for (DataVector v : c) {
+			System.out.println(positions.get(v).x +" "+positions.get(v).y);
+		}
+		return positions;
 		}
 	
 	
