@@ -17,6 +17,7 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 	
 	public void write() {
 	//	interprete.write("clusters","centroid", centroid);
+	// interprete.write la liste de tous les memebres du cluster
 	}
 
 	
