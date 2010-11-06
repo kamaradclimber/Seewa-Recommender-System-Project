@@ -5,6 +5,7 @@ import java.util.List;
 public class DispatcherAlgoLeger {
 private List<AlgoLeger> algos; //il faudrait initialiser cette liste lors de la crátion pour utiliser les algos disponibles dans le "dossier" qui les contient
 	
+	@SuppressWarnings("unused")
 	public List<Recommendation> dispatches(Request req) {
 		//analyse de la requete
 		//....[code]

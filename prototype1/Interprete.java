@@ -12,4 +12,14 @@ public class Interprete {
 		//SELECT ....
 		return new ArrayList<String>();
 	}
+
+	public ArrayList<Cluster> readclusters(Request request) {
+		// TODO aller cherche la liste des clusters
+		return null;
+	}
+
+	public DataVector readUcr(String username) {
+		// TODO aller chercher l'UCR d'un utilisateur
+		return null;
+	}
 }
