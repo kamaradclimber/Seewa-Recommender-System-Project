@@ -1,8 +1,16 @@
 
 public class Recommendation {
 
+	String description;
+	
 	public Recommendation(String name) {
-		// TODO Auto-generated constructor stub
+		description = name;
+		
+	}
+	
+	public String toString()
+	{
+		return description;
 	}
 
 	public Recommendation() {

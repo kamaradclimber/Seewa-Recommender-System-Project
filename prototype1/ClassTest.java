@@ -47,7 +47,6 @@ public class ClassTest {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-<<<<<<< HEAD
 			
 			Site site= new Site();
 			Request req= new Request("RECO USER FOR GREG");
@@ -56,15 +55,11 @@ public class ClassTest {
 //			Visualizer v= new Visualizer();
 //			v.visualizerCluster(algo.clusters.get(0));
 			
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		
-=======
->>>>>>> 3cb1ac7da2ab62e6c9c6f27a5049602f24d84637
 
 
 		}
 		}
 
-}
+
