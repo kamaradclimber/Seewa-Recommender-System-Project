@@ -8,12 +8,33 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 
 	DataVector centroid = new DataVector();
 	Interprete interprete;
+	private int id = 0;
 	
+	public int getId() {
+		return this.id;
+	}
+	
+	public Cluster() {
+		super();
+	}
+	
+	public Cluster(int id) {
+		super();
+		this.id = id;
+	}
 	
 	public DataVector getCentroid() {
 		return centroid;
 	}
 
+	public boolean equals(Object o) {
+		try {
+			Cluster c = (Cluster)o;
+			return this.centroid.equals(c.centroid);
+		} catch (ClassCastException ex) {
+			return false;
+		}
+	}
 	
 	public void write() {
 	//	interprete.write("clusters","centroid", centroid);

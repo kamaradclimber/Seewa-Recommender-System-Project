@@ -14,13 +14,13 @@ private Hashtable<AlgoLeger, Request> algos_to_do; // permet de stocker la liste
 //}
 
 	
-	public List<Recommendation> dispatches(Request req) {
+	public List<Recommendation> dispatches(Request req) throws Exception {
 		//analyse de la requete
 		//....[code]
 
 		if (req.getTypeOfRequest()=="USER") {
 			Request reqBis = new Request(req.get().substring(5));
-			algos_to_do.put(new AlgoLegerUserCluster(), reqBis);
+//			algos_to_do.put(new AlgoLegerUserCluster(), reqBis);
 		}
 		
 		//on execute tous les algos avec la requete qui convient et on rassemble les recommendations 
