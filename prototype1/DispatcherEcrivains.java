@@ -4,6 +4,7 @@ import java.util.List;
 public class DispatcherEcrivains {
 
 	
+	@SuppressWarnings("unused")
 	private List<Ecrivain> ecrivains;
 	
 	public void transmettreMessage(Data message) {

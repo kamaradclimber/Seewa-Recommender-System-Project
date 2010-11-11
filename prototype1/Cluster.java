@@ -17,6 +17,7 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 	
 	public void write() {
 	//	interprete.write("clusters","centroid", centroid);
+	// interprete.write la liste de tous les memebres du cluster
 	}
 
 	
@@ -28,6 +29,16 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 	}
 	
 	//TODO ajouter une fonction de maj de la centroid si on ajoute/supprime un seul point pour eviter de tout recalculer
+	
+	public DataVector getRandomElement() {
+		//TODO : get an element contained in the cluster
+		return new DataVector();
+	}
+	
+	public static DataUser getUser(DataVector vect) {
+		//TODO : avec l'interpete reccupérer leuser correspodnant à l'UCR pasé en argument
+		return new DataUser();
+	}
 	
 	public void updateCentroid() {
 		this.centroid.clear();

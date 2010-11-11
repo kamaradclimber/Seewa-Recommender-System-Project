@@ -41,7 +41,7 @@ public class Visualizer {
 				boolean bv2 = distances.containsKey(v2);
 				if (!bv1) distances.put(v1, new Hashtable<DataVector, Double>());
 				if (!bv2) distances.put(v2, new Hashtable<DataVector, Double>());
-				Double d= FlatClusterization.distance(v1,v2);
+				Double d= AlgoLourdFlatClusterization.distance(v1,v2);
 				distances.get(v2).put(v1, d);
 				distances.get(v1).put(v2, d);
 				}

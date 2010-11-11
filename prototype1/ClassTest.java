@@ -19,26 +19,35 @@ public class ClassTest {
 			}
 			vecteurs.add(vecteur);
 		}
-		try {
-			FlatClusterization algo = new FlatClusterization(1, vecteurs);
-//			for (Cluster cluster : algo.clusters) {
-//				System.out.println("---");
-//				for (DataVector vecteur : cluster) {
-//					System.out.println(vecteur);
-//				}
-//				System.out.println("centroid : "+cluster.centroid);
-//			}
-			long start = System.currentTimeMillis();
-			algo.maj();
-			long end = System.currentTimeMillis();
-			System.out.println((end-start)/1000);
-			for (Cluster cluster : algo.clusters) {
-				System.out.println("---");
-				for (DataVector vecteur : cluster) {
-					System.out.println(vecteur);
+		if (false) {
+			try {
+				AlgoLourdFlatClusterization algo = new AlgoLourdFlatClusterization(1, vecteurs);
+				//			for (Cluster cluster : algo.clusters) {
+				//				System.out.println("---");
+				//				for (DataVector vecteur : cluster) {
+				//					System.out.println(vecteur);
+				//				}
+				//				System.out.println("centroid : "+cluster.centroid);
+				//			}
+				long start = System.currentTimeMillis();
+				algo.maj();
+				long end = System.currentTimeMillis();
+				System.out.println((end-start)/1000);
+				for (Cluster cluster : algo.clusters) {
+					System.out.println("---");
+					for (DataVector vecteur : cluster) {
+						System.out.println(vecteur);
+					}
+					System.out.println("centroid : "+cluster.centroid);
 				}
-				System.out.println("centroid : "+cluster.centroid);
+
+				Visualizer v= new Visualizer();
+				v.visualizerCluster(algo.clusters.get(0));
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+<<<<<<< HEAD
 			
 			Site site= new Site();
 			Request req= new Request("RECO USER FOR GREG");
@@ -51,7 +60,11 @@ public class ClassTest {
 			e.printStackTrace();
 		}
 		
+=======
+>>>>>>> 3cb1ac7da2ab62e6c9c6f27a5049602f24d84637
 
+
+		}
 		}
 
 }

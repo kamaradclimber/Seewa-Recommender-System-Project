@@ -1,15 +1,13 @@
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class FlatClusterization extends AlgoLourd {
+public class AlgoLourdFlatClusterization extends AlgoLourd {
 
 	ArrayList<Cluster> clusters;
 	
-	public FlatClusterization(int nbclusters, ArrayList<DataVector> vecteurs) throws Exception{
+	public AlgoLourdFlatClusterization(int nbclusters, ArrayList<DataVector> vecteurs) throws Exception{
 		clusters = new ArrayList<Cluster>();
 		for (int i=0; i<nbclusters; i++){
 			if (vecteurs.isEmpty()) throw new Exception("WTF ?!");
