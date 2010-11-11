@@ -60,7 +60,20 @@ public class ClassTest {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-			}			
+			}
+			
+			Site site= new Site();
+			Request req= new Request("RECO USER FOR GREG");
+			site.requestReco(req);
+			
+//			Visualizer v= new Visualizer();
+//			v.visualizerCluster(algo.clusters.get(0));
+			
 		}
-	}
-}
+		
+
+
+		}
+		}
+
+

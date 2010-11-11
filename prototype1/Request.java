@@ -1,6 +1,7 @@
 
 public class Request {
 
+
 	private String request="";
 	
 	public Request(String req) {
@@ -20,4 +21,6 @@ public class Request {
 			throw new Exception("Tu demandes une requete de type inconnu");
 		}
 	}
+	
+	
 }

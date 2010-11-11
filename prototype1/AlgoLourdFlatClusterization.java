@@ -7,6 +7,12 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 
 	ArrayList<Cluster> clusters;
 	
+	public AlgoLourdFlatClusterization(ArrayList<Cluster> clusters)
+	{
+		this.clusters=clusters;
+		Interprete.writeClusters(clusters);
+	}
+	
 	public AlgoLourdFlatClusterization(int nbclusters, ArrayList<DataVector> vecteurs) throws Exception{
 		clusters = new ArrayList<Cluster>();
 		for (int i=0; i<nbclusters; i++){
@@ -18,6 +24,7 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 			vecteurs.remove(0);
 		}
 		clusters.get(0).addAll(vecteurs);
+		Interprete.writeClusters(clusters);
 	}
 	
 	@Override
@@ -55,6 +62,7 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 			}
 			
 		}
+		Interprete.writeClusters(clusters);
 	}
 
 	
@@ -76,7 +84,7 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 	}
 	
 	
-	static private double squaredDistance(DataVector v1, DataVector v2) {
+	static public double squaredDistance(DataVector v1, DataVector v2) {
 		HashSet<String> union = new HashSet<String>();
 		union.addAll(v1.keySet());
 		union.addAll(v2.keySet());// on a calculé l'union des clés sur lesquelles on calcule la distance
@@ -91,7 +99,7 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 		return Math.sqrt(squaredDistance(v1, v2));
 	}
 	
-	private double distance2(DataVector v1, DataVector v2) { //on utilise un coefficient jaccard pour pondérer la distance habituelle
+	public static double distance2(DataVector v1, DataVector v2) { //on utilise un coefficient jaccard pour pondérer la distance habituelle
 		//on calcule les unions/intersections
 		Set<String> union = v1.keySet();
 		Set<String> intersection = v1.keySet();
