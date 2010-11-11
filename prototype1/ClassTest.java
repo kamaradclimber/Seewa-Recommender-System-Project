@@ -40,8 +40,12 @@ public class ClassTest {
 				System.out.println("centroid : "+cluster.centroid);
 			}
 			
-			Visualizer v= new Visualizer();
-			v.visualizerCluster(algo.clusters.get(0));
+			Site site= new Site();
+			Request req= new Request("RECO USER FOR GREG");
+			site.requestReco(req);
+			
+//			Visualizer v= new Visualizer();
+//			v.visualizerCluster(algo.clusters.get(0));
 			
 		} catch (Exception e) {
 			e.printStackTrace();

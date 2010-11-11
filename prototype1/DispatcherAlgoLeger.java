@@ -1,23 +1,27 @@
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 
 
 public class DispatcherAlgoLeger {
 private List<AlgoLeger> algos; //il faudrait initialiser cette liste lors de la crátion pour utiliser les algos disponibles dans le "dossier" qui les contient
-	
+private Hashtable<AlgoLeger, Request> algos_to_do; // permet de stocker la liste des algos dans lesquels on vq dispatcher des requetes
+
 	public List<Recommendation> dispatches(Request req) {
 		//analyse de la requete
 		//....[code]
 		
-		String algo = ""; //on a donc une nouvelle requete et on sait où (dans quel algo) elle doit aller
-		Request reqbis = req ;//pour le moment c'est une copie mais il faudrait épurer la requete initiale pour qu'elle ne contienne que ce qu'il faut
+		if (req.getTypeOfRequest()=="USER") {
+			Request reqBis = new Request(req.get().substring(5));
+			algos_to_do.put(new AlgoLegerUserCluster(), reqBis);
+		}
 		
-		//pseudo code de ce quil faut ecrire :
-//		parcourir la liste des algos disponibles 
-//		des quon trouve celui qui correspond a la bonne requete
-//		on lutiliser pour faire l'appel
+		//on execute tous les algos avec la requete qui convient et on rassemble les recommendations 
 		List<Recommendation> recos = new ArrayList<Recommendation>();
-		recos.add(algos.get(0).answers(req));
+		for(AlgoLeger algo : algos_to_do.keySet()) {
+			recos.add(algo.answers(algos_to_do.get(algo)));
+		}
 		return recos;
 	}
 }
