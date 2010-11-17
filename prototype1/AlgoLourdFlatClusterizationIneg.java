@@ -56,6 +56,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 			for(Cluster c : clusters) {
 				lowerBound.get(x).put(c.getId(), new Double(0));
 				Double candidateDistance = distance(x,c.getCentroid());
+				lowerBound.get(x).put(c.getId(), candidateDistance);
 				if(candidateDistance < minDistance) {
 					minDistance = candidateDistance;
 				}
@@ -100,12 +101,14 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 						Double dxcx = new Double(0);
 						if(r.get(vect)) {
 							dxcx = distance(vect,clusters.get(whosMyCluster.get(vect)).getCentroid());
+							lowerBound.get(vect).put(clusters.get(whosMyCluster.get(vect)).getId(), dxcx);
 							r.put(vect,false);
 						} else {
 							dxcx = upperBound.get(vect);
 						}
 						if(dxcx > lowerBound.get(vect).get(candidate.getId()) || dxcx > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getId()]) {
 							Double dxc = distance(vect, candidate.getCentroid());
+							lowerBound.get(vect).put(candidate.getId(), dxc);
 							if(dxc < dxcx) {
 								bestCandidate = candidate;
 							}
