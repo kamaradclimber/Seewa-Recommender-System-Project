@@ -8,7 +8,7 @@ public class DispatcherAlgoLeger {
 
 private List<AlgoLeger> algos; //il faudrait initialiser cette liste lors de la crátion pour utiliser les algos disponibles dans le "dossier" qui les contient
 private Hashtable<AlgoLeger, Request> algos_to_do; // permet de stocker la liste des algos dans lesquels on vq dispatcher des requetes
-
+// TODO cette data structure ne nous permet pas d'utiliser deux fois le meme algo pour une requete
 
 	
 public DispatcherAlgoLeger() { // TODO : pour le moment je mets la liste des algos utilisés en dur mais il faudrait initialiser cette liste lors de la crátion pour utiliser les algos disponibles dans le "dossier" qui les contient
@@ -29,6 +29,7 @@ public DispatcherAlgoLeger() { // TODO : pour le moment je mets la liste des alg
 				Request reqBis = new Request(req.get().substring(5));
 				algos_to_do.put(algos.get(0), reqBis);
 			}
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,7 +37,7 @@ public DispatcherAlgoLeger() { // TODO : pour le moment je mets la liste des alg
 		
 		//on execute tous les algos avec la requete qui convient et on rassemble les recommendations 
 		List<Recommendation> recos = new ArrayList<Recommendation>();
-		for(AlgoLeger algo : algos) {
+		for(AlgoLeger algo : algos_to_do.keySet()) {
 			recos.add(algo.answers(algos_to_do.get(algo)));
 
 		//pseudo code de ce quil faut ecrire :

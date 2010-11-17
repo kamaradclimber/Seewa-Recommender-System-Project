@@ -61,12 +61,13 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		
 		DataUser choice= Interprete.getUser(hisCluster.getRandomElement());
 		if (!hisCluster.contains(user)) hisCluster.add(user);//on ajoute aprËs avoir coisit un ÈlÈment pour Èviter qu'on ne le recommande ‡ lui-mÍme
+		//TODO dire a l'interprète d'écrire cette nlle info dans la bdd
 		return choice;
 	}
 	
 	public Recommendation answers(Request req)
 	{
-		String username = req.get(); //req.username
+		String username = req.get(); //req.username TODO regexp pour retrouver le nom de l'utilisateur dans la string de requete
 		
 		DataVector user = Interprete.readUcr(username); //get the UCR of the user asking for recommendation
 		DataUser newBestBuddy = findCloseUser(user);

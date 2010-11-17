@@ -56,7 +56,7 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 		
 		int random = (int) Math.floor( Math.random() * this.size()) ; //entre 0 et size()-1
 		
-		return get(random);
+		return this.get(random);
 	}
 	
 
