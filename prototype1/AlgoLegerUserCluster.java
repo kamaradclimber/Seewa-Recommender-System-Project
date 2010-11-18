@@ -46,7 +46,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 			System.out.println("DEBUG : la liste des clusters est vide, le chargement à du échouer");
 			System.out.println("DEBUG : je met donc un cluster factice pour que le chargement continue mais bon cest vraiment une rustine");
 			DataCluster rustine = new DataCluster();
-			DataVector t = new DataVector();
+			DataVector t = new DataVector(false);
 			t.put("theme_factice", new Float(0.1));
 			rustine.add(t);
 			rustine.updateCentroid();
@@ -86,7 +86,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		DataVector user = Interprete.readUcr(username); //get the UCR of the user asking for recommendation
 		if (user==null) {
 			System.out.println("DEBUG : on a pas reccupéré un user valide (il est même null !), j'en met un factice pour que ca tourne, mais bon....FIXME !");
-			user = new DataVector();
+			user = new DataVector(false);
 			user.put("theme_factice", new Float(0.5));
 		}
 		DataUser newBestBuddy = findCloseUser(user);
