@@ -41,7 +41,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		//d'apres le papier d'Elkan
 		Double[][] distanceInterCentroid = new Double[nbClusters][nbClusters];
 		Double[] upperBound= new Double[nb_vectors]; // remplace la hashtable qui associait DataVector et upperbound
-		Hashtable<DataVector, Hashtable<Integer, Double>> lowerBound = new Hashtable<DataVector, Hashtable<Integer, Double>>();
+		Double[][] lowerBound = new Double[nb_vectors][nbClusters];
 		Hashtable<Integer, Double> s = new Hashtable<Integer, Double>();
 		Hashtable<DataVector, Boolean> r= new Hashtable<DataVector, Boolean>();
 		
@@ -56,11 +56,11 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		for(DataVector x : vectors) {
 			r.put(x, false);
 			Double minDistance = Double.MAX_VALUE;
-			lowerBound.put(x,new Hashtable<Integer, Double>());
+
 			for(DataCluster c : clusters) {
-				lowerBound.get(x).put(c.getId(), new Double(0));
+				lowerBound[x.getId()][c.getId()] = new Double(0);
 				Double candidateDistance = distance(x,c.getCentroid());
-				lowerBound.get(x).put(c.getId(), candidateDistance);
+				lowerBound[x.getId()][c.getId()] = candidateDistance;
 				if(candidateDistance < minDistance) {
 					minDistance = candidateDistance;
 				}
@@ -101,18 +101,18 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 					if(candidate == clusters.get(whosMyCluster.get(vect))) {
 						continue;
 					}
-					if (upperBound[vect.getId()] > lowerBound.get(vect).get(candidate.getId()) && upperBound[vect.getId()] > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getId()]) {
+					if (upperBound[vect.getId()] > lowerBound[vect.getId()][candidate.getId()] && upperBound[vect.getId()] > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getId()]) {
 						Double dxcx = new Double(0);
 						if(r.get(vect)) {
 							dxcx = distance(vect,clusters.get(whosMyCluster.get(vect)).getCentroid());
-							lowerBound.get(vect).put(clusters.get(whosMyCluster.get(vect)).getId(), dxcx);
+							lowerBound[vect.getId()][clusters.get(whosMyCluster.get(vect)).getId()] =  dxcx;
 							r.put(vect,false);
 						} else {
 							dxcx = upperBound[vect.getId()];
 						}
-						if(dxcx > lowerBound.get(vect).get(candidate.getId()) || dxcx > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getId()]) {
+						if(dxcx > lowerBound[vect.getId()][candidate.getId()] || dxcx > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getId()]) {
 							Double dxc = distance(vect, candidate.getCentroid());
-							lowerBound.get(vect).put(candidate.getId(), dxc);
+							lowerBound[vect.getId()][candidate.getId()] =  dxc;
 							if(dxc < dxcx) {
 								bestCandidate = candidate;
 							}
@@ -132,8 +132,8 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 			for(DataVector x : vectors) {
 				for (DataCluster c : clusters) {
 					Double deplacement = distance(lastCentroid.get(c.getId()),c.getCentroid() );
-					lowerBound.get(x).put(c.getId(),Math.max(0,lowerBound.get(x).get(c.getId()) - deplacement ));
-					lowerBound.get(x).put(c.getId(),0.0);
+					lowerBound[x.getId()][c.getId()] = Math.max(0,lowerBound[x.getId()][c.getId()] - deplacement );
+					lowerBound[x.getId()][c.getId()] = 0.0;
 					if(c.getId() == whosMyCluster.get(x)) {
 						upperBound[x.getId()] =  upperBound[x.getId()] + deplacement ;
 						r.put(x, true);
