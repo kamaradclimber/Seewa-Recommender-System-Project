@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Interprete {
 
-	static ArrayList<Cluster> clusters=null;
+	static ArrayList<DataCluster> clusters=null;
 	static Hashtable<String, DataVector> usersByNames= new Hashtable<String, DataVector>();
 	static Hashtable<DataVector, String> usersByUCR = new Hashtable<DataVector, String>();
 	
@@ -18,12 +18,12 @@ public class Interprete {
 		return new ArrayList<String>();
 	}
 
-	static public ArrayList<Cluster> readClusters(Request request) {
+	static public ArrayList<DataCluster> readClusters(Request request) {
 		
 		return clusters;
 	}
 	
-	static public boolean writeClusters(ArrayList<Cluster> clusters) {
+	static public boolean writeClusters(ArrayList<DataCluster> clusters) {
 		Interprete.clusters=clusters;
 		return false;
 	}

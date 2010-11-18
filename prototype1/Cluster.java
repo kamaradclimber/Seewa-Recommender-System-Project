@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class Cluster extends ArrayList<DataVector> implements Data  {
+public class DataCluster extends ArrayList<DataVector> implements Data  {
 
 	DataVector centroid = new DataVector();
 	Interprete interprete;
@@ -14,11 +14,11 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 		return this.id;
 	}
 	
-	public Cluster() {
+	public DataCluster() {
 		super();
 	}
 	
-	public Cluster(int id) {
+	public DataCluster(int id) {
 		super();
 		this.id = id;
 	}
@@ -29,7 +29,7 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 
 	public boolean equals(Object o) {
 		try {
-			Cluster c = (Cluster)o;
+			DataCluster c = (DataCluster)o;
 			return this.centroid.equals(c.centroid);
 		} catch (ClassCastException ex) {
 			return false;

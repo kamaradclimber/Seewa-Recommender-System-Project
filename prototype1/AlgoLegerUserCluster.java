@@ -5,19 +5,19 @@ import java.util.regex.Pattern;
 
 public class AlgoLegerUserCluster extends AlgoLeger {
 
-	ArrayList<Cluster> clusters= new ArrayList<Cluster>();
+	ArrayList<DataCluster> clusters= new ArrayList<DataCluster>();
 	
 	public AlgoLegerUserCluster()
 	{
 		clusters = Interprete.readClusters(new Request("user_clusters")); // on reccupère la liste des clusters
 		if (clusters==null) {
 			System.out.println("Le chargement des clusters depuis la base de données a échoué, je met une liste de cluster vide à la place");
-			clusters = new ArrayList<Cluster>();
+			clusters = new ArrayList<DataCluster>();
 		}
 	
 	}
 		
-	public AlgoLegerUserCluster(ArrayList<Cluster> clusters)
+	public AlgoLegerUserCluster(ArrayList<DataCluster> clusters)
 	{
 		this.clusters=clusters;
 	}
@@ -36,16 +36,16 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	
 	
 	
-	private Cluster findCluster(DataVector user)
+	private DataCluster findCluster(DataVector user)
 	{	
 		
-		Cluster bestCandidate= null;
+		DataCluster bestCandidate= null;
 		double bestDistance = Double.MAX_VALUE;
 		
 		if (clusters==null || clusters.size()==0) {
 			System.out.println("DEBUG : la liste des clusters est vide, le chargement à du échouer");
 			System.out.println("DEBUG : je met donc un cluster factice pour que le chargement continue mais bon cest vraiment une rustine");
-			Cluster rustine = new Cluster();
+			DataCluster rustine = new DataCluster();
 			DataVector t = new DataVector();
 			t.put("theme_factice", new Float(0.1));
 			rustine.add(t);
@@ -54,7 +54,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 			
 		}
 		
-		for (Cluster candidate : clusters) { //on cherche la centroid la plus proche
+		for (DataCluster candidate : clusters) { //on cherche la centroid la plus proche
 			double dist = AlgoLourdFlatClusterization.squaredDistance(candidate.getCentroid(), user);
 			if (dist< bestDistance) { //si on a trouvé une centroid plus proche on maj
 				bestCandidate = candidate;
@@ -70,7 +70,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	
 	public DataUser findCloseUser(DataVector user) 
 	{
-		Cluster hisCluster = findCluster(user);
+		DataCluster hisCluster = findCluster(user);
 		
 		DataUser choice= Interprete.getUser(hisCluster.getRandomElement());
 		if (!hisCluster.contains(user)) hisCluster.add(user);//on ajoute après avoir choisit un élément pour éviter qu'on ne le recommande à lui-même

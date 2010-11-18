@@ -6,22 +6,22 @@ import java.util.Set;
 
 public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 
-	ArrayList<Cluster> clusters;
+	ArrayList<DataCluster> clusters;
 	public int nbClusters;
 	private Hashtable<DataVector, Integer> whosMyCluster = new Hashtable<DataVector, Integer>();
 	public AlgoLourdFlatClusterizationIneg(int nbClusters, ArrayList<DataVector> vecteurs) throws Exception{
-		clusters = new ArrayList<Cluster>();
+		clusters = new ArrayList<DataCluster>();
 		this.nbClusters = nbClusters;
 		for (int i=0; i<nbClusters; i++){
 			if (vecteurs.isEmpty()) throw new Exception("WTF ?!");
-			Cluster cluster = new Cluster(i);
+			DataCluster cluster = new DataCluster(i);
 			cluster.add(vecteurs.get(0));
 			clusters.add(cluster);
 			cluster.updateCentroid();
 			vecteurs.remove(0);
 		}
 		clusters.get(0).addAll(vecteurs);
-		for(Cluster c : clusters) { // pour savoir où sont les vecteurs
+		for(DataCluster c : clusters) { // pour savoir où sont les vecteurs
 			for(DataVector vect :c) {
 				whosMyCluster.put(vect, c.getId());
 			}
@@ -44,7 +44,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		ArrayList<DataVector> vectors = new ArrayList<DataVector>();
 		double lastError= Double.MAX_VALUE;
 		double currentError = Double.MAX_VALUE /2 ; 
-		for (Cluster c : clusters) {
+		for (DataCluster c : clusters) {
 			vectors.addAll(c);
 		}
 		
@@ -53,7 +53,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 			r.put(x, false);
 			Double minDistance = Double.MAX_VALUE;
 			lowerBound.put(x,new Hashtable<Integer, Double>());
-			for(Cluster c : clusters) {
+			for(DataCluster c : clusters) {
 				lowerBound.get(x).put(c.getId(), new Double(0));
 				Double candidateDistance = distance(x,c.getCentroid());
 				lowerBound.get(x).put(c.getId(), candidateDistance);
@@ -85,15 +85,15 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 			
 			lastError = currentError;
 			currentError = 0;
-			for (Cluster c : clusters) {
+			for (DataCluster c : clusters) {
 				c.clear(); // on vide le cluster pour pouvoir y ajouter ensuite ses nouveaux membres
 			}
 			for (DataVector vect : vectors) {
 				if (upperBound.get(vect) <= s.get(whosMyCluster.get(vect))) {
 					continue;
 				}
-				Cluster bestCandidate = clusters.get(whosMyCluster.get(vect));
-				for(Cluster candidate : clusters) {
+				DataCluster bestCandidate = clusters.get(whosMyCluster.get(vect));
+				for(DataCluster candidate : clusters) {
 					if(candidate == clusters.get(whosMyCluster.get(vect))) {
 						continue;
 					}
@@ -119,14 +119,14 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 				whosMyCluster.put(vect, bestCandidate.getId());
 			}
 			Hashtable<Integer, DataVector> lastCentroid= new Hashtable<Integer, DataVector>();
-			for (Cluster c : clusters) {
+			for (DataCluster c : clusters) {
 				lastCentroid.put(c.getId(),(DataVector) c.getCentroid().clone());
 				
 				c.updateCentroid();
 			}
 			//maj des lowerBound et upperBound
 			for(DataVector x : vectors) {
-				for (Cluster c : clusters) {
+				for (DataCluster c : clusters) {
 					Double deplacement = distance(lastCentroid.get(c.getId()),c.getCentroid() );
 					lowerBound.get(x).put(c.getId(),Math.max(0,lowerBound.get(x).get(c.getId()) - deplacement ));
 					lowerBound.get(x).put(c.getId(),0.0);
@@ -154,7 +154,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 
 	}
 
-	private DataVector centroid(Cluster c) {
+	private DataVector centroid(DataCluster c) {
 		c.updateCentroid();
 		return  c.getCentroid();
 	}

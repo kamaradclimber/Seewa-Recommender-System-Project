@@ -5,19 +5,19 @@ import java.util.Set;
 
 public class AlgoLourdFlatClusterization extends AlgoLourd {
 
-	ArrayList<Cluster> clusters;
+	ArrayList<DataCluster> clusters;
 	
-	public AlgoLourdFlatClusterization(ArrayList<Cluster> clusters)
+	public AlgoLourdFlatClusterization(ArrayList<DataCluster> clusters)
 	{
 		this.clusters=clusters;
 		Interprete.writeClusters(clusters);
 	}
 	
 	public AlgoLourdFlatClusterization(int nbclusters, ArrayList<DataVector> vecteurs) throws Exception{
-		clusters = new ArrayList<Cluster>();
+		clusters = new ArrayList<DataCluster>();
 		for (int i=0; i<nbclusters; i++){
 			if (vecteurs.isEmpty()) throw new Exception("WTF ?!");
-			Cluster cluster = new Cluster();
+			DataCluster cluster = new DataCluster();
 			cluster.add(vecteurs.get(0));
 			clusters.add(cluster);
 			cluster.updateCentroid();
@@ -35,19 +35,19 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 		ArrayList<DataVector> vectors = new ArrayList<DataVector>();
 		double lastError= Double.MAX_VALUE;
 		double currentError = Double.MAX_VALUE /2 ; 
-		for (Cluster c : clusters) {
+		for (DataCluster c : clusters) {
 			vectors.addAll(c);
 		}
 		while ((  lastError - currentError) / lastError > 0.01 ) { //tant que ca bouge on continue la manoeuvre
 			lastError = currentError;
 			currentError = 0;
-			for (Cluster c : clusters) {
+			for (DataCluster c : clusters) {
 				c.clear(); // on vide le cluster pour pouvoir y ajouter ensuite ses nouveaux membres
 			}
 			for (DataVector vect : vectors) {
-				Cluster bestCandidate= null;
+				DataCluster bestCandidate= null;
 				double bestDistance = Double.MAX_VALUE;
-				for (Cluster candidate : clusters) { //on cherche la centroid la plus proche
+				for (DataCluster candidate : clusters) { //on cherche la centroid la plus proche
 					double dist = squaredDistance(candidate.getCentroid(), vect);
 					if (dist< bestDistance) { //si on a trouvé une centroid plus proche on maj
 						bestCandidate = candidate;
@@ -57,7 +57,7 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 				bestCandidate.add(vect); //on ajoute le vecteur dans son nouveau cluster
 				currentError += bestDistance; //attention si on utilise plus la methode squaredDistance pour calculer cette valeur il faut faire un pow !!
 			}
-			for (Cluster c : clusters) {
+			for (DataCluster c : clusters) {
 				c.updateCentroid();
 			}
 			
@@ -78,7 +78,7 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 
 	}
 
-	private DataVector centroid(Cluster c) {
+	private DataVector centroid(DataCluster c) {
 		c.updateCentroid();
 		return  c.getCentroid();
 	}

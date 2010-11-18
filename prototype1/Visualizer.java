@@ -27,7 +27,7 @@ public class Visualizer {
 	}
 	
 
-	public Hashtable<DataVector, Position> visualizerCluster(Cluster c) throws Exception {
+	public Hashtable<DataVector, Position> visualizerCluster(DataCluster c) throws Exception {
 		//travaille sur un cluster et determine une representation possible
 		Hashtable<DataVector, Position> positions = new Hashtable<DataVector, Visualizer.Position>();
 		for(DataVector v : c) {
@@ -83,7 +83,7 @@ public class Visualizer {
 	
 	
 	
-	public void visualizer(ArrayList<Cluster> clusters) {
+	public void visualizer(ArrayList<DataCluster> clusters) {
 		//travaille sur un esemble de clsuter et permet de les placer par rapport aux autres
 		//en pratique : determine une visualisation pour chacun des clusters, trouve la place prose par cette visu
 		//puis positionne les clusters les uns par rapport aux autres et affiche le tout
