@@ -3,7 +3,7 @@ import java.util.Random;
 
 
 public class ClassTest {
-
+ 
 	/**
 	 * @param args
 	 */
@@ -23,7 +23,8 @@ public class ClassTest {
 
 		Site site= new Site();
 		Request req= new Request("RECO USER FOR GREG");
-		site.requestReco(req);
+		Recommendation reco = site.requestReco(req);
+		System.out.println("FIN DU TEST la reco est : "+reco.toString());
 
 		//			Visualizer v= new Visualizer();
 		//			v.visualizerCluster(algo.clusters.get(0));
@@ -32,7 +33,6 @@ public class ClassTest {
 
 
 
-}
 }
 
 
