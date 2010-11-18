@@ -14,6 +14,11 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		return this.id;
 	}
 	
+	public int hashCode() {
+		//test pour essayer d'accélerer les requtees dans les hastables
+		return this.id;
+	}
+	
 	public DataCluster() {
 		super();
 	}

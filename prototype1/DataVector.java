@@ -5,7 +5,23 @@ import java.util.Hashtable;
 
 @SuppressWarnings("serial")
 public class DataVector extends Hashtable<String, Float> implements Data  {
-
+	
+	private int id = 0;
+	
+	public DataVector() {
+		super();
+		//constructeur vide
+	}
+	
+	public DataVector(int id) {
+		super();
+		this.id = id;
+	}
+	
+	public int getId() {
+		return this.id;
+	}
+	
 	public boolean equals(Object o) {
 		try {
 			DataVector v = (DataVector) o;
