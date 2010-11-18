@@ -2,7 +2,7 @@ import java.util.List;
 
 
 public class Recommendeur {
-
+ 
 	public Recommendation recommendMeSomeThing(Request req) throws ExceptionRecoNotValid {
 		DispatcherAlgoLeger dispatch = new DispatcherAlgoLeger();
 		Aggregateur aggreg           = new Aggregateur();
@@ -20,6 +20,7 @@ public class Recommendeur {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new ExceptionRecoNotValid();
 		} //on fait du pull des données
 		
 	}

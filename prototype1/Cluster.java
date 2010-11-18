@@ -37,6 +37,7 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 	}
 	
 	public void write() {
+		//TODO faut-il une methode decriture les clusters, THINK : quelle stratégie d'enregistrement des données 
 	//	interprete.write("clusters","centroid", centroid);
 	// interprete.write la liste de tous les memebres du cluster
 	}
@@ -49,7 +50,29 @@ public class Cluster extends ArrayList<DataVector> implements Data  {
 		
 	}
 	
-	//TODO ajouter une fonction de maj de la centroid si on ajoute/supprime un seul point pour eviter de tout recalculer
+	public void singleUpdateCentroid(DataVector vect, Boolean removed) {
+		// this function updates the centroid in case of single add or removed point
+		// the bool removed is true if we have just removed the vector, false if have just added it
+		//TODO : use this method where it could be useful :-) delete it otherwise
+		int nbOfPointsBeforeAction = this.size();
+		if (removed) {
+			nbOfPointsBeforeAction--;
+		} else {
+			nbOfPointsBeforeAction++;
+		}
+		DataVector newCentroid = new DataVector();
+		if (removed) {
+			for(String theme : this.centroid.keySet()) {
+				newCentroid.put(theme, (this.centroid.get(theme)* nbOfPointsBeforeAction - vect.get(theme))/(nbOfPointsBeforeAction -1));
+			}
+		} else {
+			for(String theme : this.centroid.keySet()) {
+				newCentroid.put(theme, (this.centroid.get(theme)* nbOfPointsBeforeAction + vect.get(theme))/(nbOfPointsBeforeAction +1));
+			}
+		}
+		this.centroid = newCentroid;
+	}
+	
 	
 	public DataVector getRandomElement() {
 		//get an element contained in the cluster

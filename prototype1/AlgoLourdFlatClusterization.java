@@ -68,13 +68,13 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 	
 	@Override
 	Data input() {
-		// TODO Auto-generated method stub
+		Interprete.readClusters(null); // TODO : quelle requete faut il mettre pour reccupérer les bons clusters ? fautil une requete ?
 		return null;
 	}
 
 	@Override
 	void output(Data d) {
-		// TODO Auto-generated method stub
+		Interprete.writeClusters(clusters);
 
 	}
 

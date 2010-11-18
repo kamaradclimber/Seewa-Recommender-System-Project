@@ -26,9 +26,6 @@ public class ClassTest {
 		Recommendation reco = site.requestReco(req);
 		System.out.println("FIN DU TEST la reco est : "+reco.toString());
 
-		//			Visualizer v= new Visualizer();
-		//			v.visualizerCluster(algo.clusters.get(0));
-
 	}
 
 

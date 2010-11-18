@@ -1,13 +1,19 @@
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class AlgoLegerUserCluster extends AlgoLeger {
 
-	ArrayList<Cluster> clusters;
+	ArrayList<Cluster> clusters= new ArrayList<Cluster>();
 	
 	public AlgoLegerUserCluster()
 	{
-		clusters = Interprete.readClusters(new Request("user_clusters")); // on reccupËre la liste des clusters
+		clusters = Interprete.readClusters(new Request("user_clusters")); // on reccup√®re la liste des clusters
+		if (clusters==null) {
+			System.out.println("Le chargement des clusters depuis la base de donn√©es a √©chou√©, je met une liste de cluster vide √† la place");
+			clusters = new ArrayList<Cluster>();
+		}
 	
 	}
 		
@@ -35,41 +41,54 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		
 		Cluster bestCandidate= null;
 		double bestDistance = Double.MAX_VALUE;
+		
+		if (clusters==null || clusters.size()==0) {
+			System.out.println("DEBUG : la liste des clusters est vide, le chargement √† du √©chouer");
+			System.out.println("DEBUG : je met donc un cluster factice pour que le chargement continue mais bon cest vraiment une rustine");
+			Cluster rustine = new Cluster();
+			DataVector t = new DataVector();
+			t.put("theme_factice", new Float(0.1));
+			rustine.add(t);
+			rustine.updateCentroid();
+			clusters.add(rustine);
+			
+		}
+		
 		for (Cluster candidate : clusters) { //on cherche la centroid la plus proche
 			double dist = AlgoLourdFlatClusterization.squaredDistance(candidate.getCentroid(), user);
-			if (dist< bestDistance) { //si on a trouvÈ une centroid plus proche on maj
+			if (dist< bestDistance) { //si on a trouv√© une centroid plus proche on maj
 				bestCandidate = candidate;
 				bestDistance = dist;
 			}
 		}
+		if (bestCandidate==null) {
+			System.out.println("DEBUG : le meilleur candidat n'a pas √©t√© trouv√©");
+		}
 		return bestCandidate;
 	}
 	
-	public DataVector findCloseVector(DataVector user) //DataUser
-	{
-		Cluster hisCluster = findCluster(user);
-		
-		
-		DataVector choice = hisCluster.getRandomElement();
-		if (!hisCluster.contains(user)) hisCluster.add(user);//on ajoute aprËs avoir coisit un ÈlÈment pour Èviter qu'on ne le recommande ‡ lui-mÍme
-		return choice;
-	}
 	
 	public DataUser findCloseUser(DataVector user) 
 	{
 		Cluster hisCluster = findCluster(user);
 		
 		DataUser choice= Interprete.getUser(hisCluster.getRandomElement());
-		if (!hisCluster.contains(user)) hisCluster.add(user);//on ajoute aprËs avoir coisit un ÈlÈment pour Èviter qu'on ne le recommande ‡ lui-mÍme
-		//TODO dire a l'interprète d'écrire cette nlle info dans la bdd
+		if (!hisCluster.contains(user)) hisCluster.add(user);//on ajoute apr√®s avoir choisit un √©l√©ment pour √©viter qu'on ne le recommande √† lui-m√™me
+		Interprete.writeClusters(clusters); // THINK : maybe this is not optimal to write clusters in eqch reco process (le gqin est fqible en terme dinfo)
 		return choice;
 	}
 	
 	public Recommendation answers(Request req)
 	{
+
 		String username = req.get(); //req.username TODO regexp pour retrouver le nom de l'utilisateur dans la string de requete
 		
 		DataVector user = Interprete.readUcr(username); //get the UCR of the user asking for recommendation
+		if (user==null) {
+			System.out.println("DEBUG : on a pas reccup√©r√© un user valide (il est m√™me null !), j'en met un factice pour que ca tourne, mais bon....FIXME !");
+			user = new DataVector();
+			user.put("theme_factice", new Float(0.5));
+		}
 		DataUser newBestBuddy = findCloseUser(user);
 		return new Recommendation(newBestBuddy.name);
 		

@@ -6,8 +6,8 @@ import java.util.List;
 public class Interprete {
 
 	static ArrayList<Cluster> clusters=null;
-	static Hashtable<String, DataVector> usersByNames;
-	static Hashtable<DataVector, String> usersByUCR;
+	static Hashtable<String, DataVector> usersByNames= new Hashtable<String, DataVector>();
+	static Hashtable<DataVector, String> usersByUCR = new Hashtable<DataVector, String>();
 	
 	public void write(String table, String column, String data) {
 		//UPDATE table SET value=data WHERE name=column

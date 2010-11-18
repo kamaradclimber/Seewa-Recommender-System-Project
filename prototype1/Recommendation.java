@@ -1,7 +1,7 @@
 
 public class Recommendation {
 
-	String description;
+	String description="";
 	
 	public Recommendation(String name) {
 		description = name;
@@ -14,7 +14,7 @@ public class Recommendation {
 	}
 
 	public Recommendation() {
-		// TODO Auto-generated constructor stub
+		//do nothing
 	}
 
 }
