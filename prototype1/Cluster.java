@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class DataCluster extends ArrayList<DataVector> implements Data  {
 
-	DataVector centroid = new DataVector();
+	DataVector centroid = new DataVector(false);
 	Interprete interprete;
 	private int id = 0;
 	

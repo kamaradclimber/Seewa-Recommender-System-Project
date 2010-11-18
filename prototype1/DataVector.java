@@ -8,14 +8,21 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 	
 	private int id = 0;
 	
-	public DataVector() {
-		super();
-		//constructeur vide
-	}
+//	public DataVector() {
+//		super();
+//		//constructeur vide
+//	}
 	
 	public DataVector(int id) {
 		super();
 		this.id = id;
+	}
+	
+	public DataVector(boolean vectorThatMatters) {
+		//this constructor is means to build vectors that doesnt represent anything (not a user for instance) : a centroid is a good example 
+		super();
+		if (vectorThatMatters) System.out.println("bon faut appeler avec les bons arguments quand meme : on appelle ce constructeur que si le vecteur créé ne represente rien cf definition du constructeur");
+		this.id = 0;
 	}
 	
 	public int getId() {
