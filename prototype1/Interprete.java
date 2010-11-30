@@ -1,6 +1,15 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class Interprete {
@@ -40,9 +49,86 @@ public class Interprete {
 		usersByUCR.put(ucr, username);
 	}
 	
-	public static DataUser getUser(DataVector vect) {
+//	public static DataUser getUser(DataVector vect) {
+//		
+//		return new DataUser(usersByUCR.get(vect), vect);
+//	}
+
+	protected static JSONObject post(String serverAdress,Integer serverPort, JSONObject obj ) throws Exception {
+		String toBeSent = obj.toString();
 		
-		return new DataUser(usersByUCR.get(vect), vect);
+		OutputStreamWriter writer = null;
+		   BufferedReader reader = null;
+		   String response = null;
+		   try {
+		     //encodage des paramètres de la requête
+		      String donnees = URLEncoder.encode(toBeSent, "UTF-8");
+
+		      //création de la connection
+		      URL url = new URL("http://"+serverAdress+":"+serverPort);
+		      URLConnection conn = url.openConnection();
+		      conn.setDoOutput(true);
+		      
+		      //envoi de la requête
+		      writer = new OutputStreamWriter(conn.getOutputStream());
+		      writer.write(donnees);
+		      writer.flush();
+
+		      //lecture de la réponse
+		      reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		      String ligne;
+		      while ((ligne = reader.readLine()) != null) {
+		         response +=ligne;
+		      }
+		   }catch (Exception e) {
+		      e.printStackTrace();
+		   }finally{
+		      try{writer.close();}catch(Exception e){}
+		      try{reader.close();}catch(Exception e){}
+		   }
+		try {
+			return new JSONObject(response);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new Exception("Unreadable JSON received from the server");
+		}
+	}
+	protected static JSONObject get(String serverAdress,Integer serverPort, String path ) throws Exception {
+
+		OutputStreamWriter writer = null;
+		   BufferedReader reader = null;
+		   String response = null;
+		   try {
+
+		      //création de la connection
+		      URL url = new URL("http://"+serverAdress+":"+serverPort+path);
+		      System.out.println(url.toString());
+		      URLConnection conn = url.openConnection();
+		      conn.setDoOutput(true);
+		      
+		      //envoi de la requête
+		      writer = new OutputStreamWriter(conn.getOutputStream());
+		      writer.flush();
+
+		      //lecture de la réponse
+		      reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		      String ligne;
+		      while ((ligne = reader.readLine()) != null) {
+		         response +=ligne;
+		      }
+		   }catch (Exception e) {
+		      e.printStackTrace();
+		   }finally{
+		      try{writer.close();}catch(Exception e){}
+		      try{reader.close();}catch(Exception e){}
+		   }
+		try {
+			System.out.println("response from server is\n"+response);
+			return new JSONObject(response);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new Exception("Unreadable JSON received from the server");
+		}
 	}
 	
 }

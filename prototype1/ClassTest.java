@@ -8,6 +8,17 @@ public class ClassTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
+		try {
+			Interprete.get("138.195.76.136", 80,"/all").toString();
+			System.out.println("Good !");
+		} catch (Exception e1) {
+			System.out.println("Something went wrong");
+			e1.printStackTrace();
+		}
+		
+		
+		
 //		String[] categories = {"Tennis", "Linux","Fleurs","Chocolat","Tsonga","Kubrick","Chasse","Marathon","Art moderne","Randonnee","Magritte"};
 //		String[] categories = {"Pasinilinna","Borloo","Architecture","CPNT"};
 		String[] categories = {"Pasinilinna"};
