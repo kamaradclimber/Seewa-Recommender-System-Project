@@ -97,7 +97,7 @@ public class Interprete {
 
 		OutputStreamWriter writer = null;
 		   BufferedReader reader = null;
-		   String response = null;
+		   String response = "";
 		   try {
 
 		      //création de la connection
@@ -112,9 +112,9 @@ public class Interprete {
 
 		      //lecture de la réponse
 		      reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		      String ligne;
+		      String ligne = null;
 		      while ((ligne = reader.readLine()) != null) {
-		         response +=ligne;
+		         response = response +ligne;
 		      }
 		   }catch (Exception e) {
 		      e.printStackTrace();
