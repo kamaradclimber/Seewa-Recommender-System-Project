@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 
 
 public class Interprete {
@@ -54,7 +56,7 @@ public class Interprete {
 //		return new DataUser(usersByUCR.get(vect), vect);
 //	}
 
-	protected static JSONObject post(String serverAdress,Integer serverPort, JSONObject obj ) throws Exception {
+	protected static JSONArray post(String serverAdress,Integer serverPort, JSONObject obj ) throws Exception {
 		String toBeSent = obj.toString();
 		
 		OutputStreamWriter writer = null;
@@ -86,14 +88,48 @@ public class Interprete {
 		      try{writer.close();}catch(Exception e){}
 		      try{reader.close();}catch(Exception e){}
 		   }
-		try {
-			return new JSONObject(response);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			throw new Exception("Unreadable JSON received from the server");
-		}
+		
+			 Object objet=JSONValue.parse(response);
+			  JSONArray array=(JSONArray)objet;
+			return array;
 	}
-	protected static JSONObject get(String serverAdress,Integer serverPort, String path ) throws Exception {
+	protected static JSONArray get(String serverAdress,Integer serverPort, String path, JSONObject json ) throws Exception {
+
+		OutputStreamWriter writer = null;
+		   BufferedReader reader = null;
+		   String response = "";
+		   try {
+
+		      //création de la connection
+		      URL url = new URL("http://"+serverAdress+":"+serverPort+path+"?req="+json.toString());
+		      System.out.println(url.toString());
+		      URLConnection conn = url.openConnection();
+		      conn.setDoOutput(true);
+		      
+		      //envoi de la requête
+		      writer = new OutputStreamWriter(conn.getOutputStream());
+		      writer.flush();
+
+		      //lecture de la réponse
+		      System.out.println("Debut de la reponse");
+		      reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		      String ligne = null;
+		      while ((ligne = reader.readLine()) != null) {
+		         response = response +ligne;
+		      }
+		   }catch (Exception e) {
+		      e.printStackTrace();
+		   }finally{
+		      try{writer.close();}catch(Exception e){}
+		      try{reader.close();}catch(Exception e){}
+		   }
+
+			Object objet=JSONValue.parse(response);
+			  JSONArray array=(JSONArray)objet;
+			return array;
+	}
+	
+	protected static JSONArray get(String serverAdress,Integer serverPort, String path) throws Exception {
 
 		OutputStreamWriter writer = null;
 		   BufferedReader reader = null;
@@ -111,6 +147,7 @@ public class Interprete {
 		      writer.flush();
 
 		      //lecture de la réponse
+		      System.out.println("Debut de la reponse");
 		      reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		      String ligne = null;
 		      while ((ligne = reader.readLine()) != null) {
@@ -122,13 +159,10 @@ public class Interprete {
 		      try{writer.close();}catch(Exception e){}
 		      try{reader.close();}catch(Exception e){}
 		   }
-		try {
-			System.out.println("response from server is\n"+response);
-			return new JSONObject(response);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			throw new Exception("Unreadable JSON received from the server");
-		}
+
+			Object objet=JSONValue.parse(response);
+			  JSONArray array=(JSONArray)objet;
+			return array;
 	}
 	
 }

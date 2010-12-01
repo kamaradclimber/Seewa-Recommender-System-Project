@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.json.simple.JSONObject;
+
 
 public class ClassTest {
 
@@ -10,7 +12,12 @@ public class ClassTest {
 	public static void main(String[] args) {
 		
 		try {
-			Interprete.get("138.195.76.136", 80,"/all").toString();
+
+			JSONObject requete = new JSONObject();
+			requete.put("collection","themes");
+			requete.put("id", "4c8398c09993d17910000013");
+			
+			System.out.println(Interprete.get("138.195.76.136", 80,"/request",requete).toString());
 			System.out.println("Good !");
 		} catch (Exception e1) {
 			System.out.println("Something went wrong");
