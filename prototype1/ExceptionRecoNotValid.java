@@ -3,10 +3,9 @@ public class RecoException extends Exception {
 
 	//On associe à tous les types d'exception que nous pouvons avoir un code :
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5619186151808485999L;
+	
+	/* Exceptions concernant la requête de recommandation */
+	
 	static public final int ERR_UNKNOWN_REQUEST = 1;  
 	static public final int ERR_DB_READING_USER = 2;
 	static public final int ERR_DB_READING_CLUSTER = 3;
@@ -15,6 +14,10 @@ public class RecoException extends Exception {
 	static public final int ERR_NO_USER_TO_RECOMMEND = 6;
 	static public final int ERR_VERIFICATEUR = 7;
 	static public final int ERR_CONNECTION_DB = 8;
+	
+	/* Exceptions concernant la mise à jour des clusters */
+	
+	
 	
 	
 	public int code;
