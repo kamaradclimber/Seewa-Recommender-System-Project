@@ -10,7 +10,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	public AlgoLegerUserCluster() throws RecoException
 	{	
 		
-		clusters = Interprete.readClusters(new Request("user_clusters")); // on reccupère la liste des clusters
+		clusters = Interprete.readClusters(); // on reccupère la liste des clusters TODO : remplacer par readLCustersCentroids
 		
 		/* Ce qui suit ne parait plus n�cessaire avec la gestion d'exceptions, � confirmer
 		 * 

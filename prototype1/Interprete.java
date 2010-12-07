@@ -21,8 +21,10 @@ static DB db;
 
 	static {
 		try {
-			Mongo mongo = new Mongo( "138.195.76.136", 27017 );
-			DB db = mongo.getDB( "test" );
+			System.out.print("Ouverture de la base....");
+			Mongo mongo = new Mongo( "138.195.76.136"  , 80 );
+			db = mongo.getDB( "test" );
+			System.out.println("[done]");
 		}
 		catch (UnknownHostException ex) {
 			RecoException erreur = new RecoException(RecoException.ERR_CONNECTION_DB);
@@ -31,14 +33,6 @@ static DB db;
 		}
 	}
 	
-	public void write(String table, String column, String data) {
-		//UPDATE table SET value=data WHERE name=column
-	}
-
-	public List<String> read(Request r) {
-		//SELECT ....
-		return new ArrayList<String>();
-	}
 
 	static private DataVector db2DataVector(DBObject obj, Integer arrayId, String mongoID) {
 		// prend un dbobject pour en creer un datavector
@@ -66,7 +60,7 @@ static DB db;
 
 	static public ArrayList<DataCluster> readClustersCentroids(Request request) throws RecoException {
 		//this function should be used only for getting centroid (for research use only)
-		// Un cluster en base de donnée est stocké avec un champ centroid
+		// Un cluster en base de donnï¿½e est stockï¿½ avec un champ centroid
 		//cette fonction est un peu optmisee pour la recherche quand on a besoin seulement des centroids
 		try {
 		DBCollection coll = db.getCollection("clusters");
@@ -94,7 +88,7 @@ static DB db;
 
 
 	static public ArrayList<DataCluster> readClusters() throws RecoException {
-		// Un cluster en base de donnée est stocké avec un champ centroid et des liens vers les UTR
+		// Un cluster en base de donnï¿½e est stockï¿½ avec un champ centroid et des liens vers les UTR
 		try {
 		DBCollection coll = db.getCollection("clusters");
 		DBCollection users = db.getCollection("users");
@@ -130,7 +124,7 @@ static DB db;
 	} 
 
 	public static boolean writeClusters(ArrayList<DataCluster> clusters) throws RecoException {
-		//renvoie j'ai réussi ou pas 
+		//renvoie j'ai rï¿½ussi ou pas 
 		//Interprete.clusters=clusters; // a quoi sert cette ligne ? FIXME
 		try {
 		DBCollection users = db.getCollection("clusters");
@@ -155,8 +149,8 @@ static DB db;
 		}
 	}
 
-	public static DataVector readUTR(String mongoID) throws RecoException { //TODO mettre un type un peu plus précis pour l íd
-		//renvoie l'UTR d'un user à partir d'un id de l'user
+	public static DataVector readUTR(String mongoID) throws RecoException { //TODO mettre un type un peu plus prï¿½cis pour l ï¿½d
+		//renvoie l'UTR d'un user ï¿½ partir d'un id de l'user
 		try {
 		DBCollection users = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",mongoID); //preparation de la query
@@ -187,13 +181,18 @@ static DB db;
 
 	public static DataUser getUser(DataVector utr) throws RecoException{
 		try {
-		//renvoie l'utilisateur qui correspond à l'UTR passé en argument
+		//renvoie l'utilisateur qui correspond Ã  l'UTR passÃ© en argument
 		DBCollection users = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",utr.getMongoId()); //preparation de la query
 		BasicDBObject user = (BasicDBObject) users.findOne(query);
 		assert (utr.getArrayId() == (Integer) user.get("_id"));
 		return new DataUser( user.get("name").toString(), utr, (String) utr.getMongoId());
+		} catch (Exception e) {
+			System.out.println("Heho ! ya une erreur, de toute facon il va y avoir un pointeur null exception dici peu");
+			return null;
+		}
 	}
+	
 
 
 
@@ -296,7 +295,7 @@ static DB db;
 		
 		BasicDBObject anUTR = new BasicDBObject("user", userId);
 		BasicDBObject theme_val;
-		while (results.hasNext()) // on rajoute tous les thèmes avec leur valeur d'UTR
+		while (results.hasNext()) // on rajoute tous les thï¿½mes avec leur valeur d'UTR
 		{
 			aResult = results.next();
 			theme_val = (BasicDBObject) aResult.get("value");
