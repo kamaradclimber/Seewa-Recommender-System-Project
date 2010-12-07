@@ -1,11 +1,16 @@
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 
 
 public class DataCluster extends ArrayList<DataVector> implements Data  {
 
+	/**
+	 * le truc qui suit permet d'enlever un warning génant : TOUNDERSTAND 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	DataVector centroid = new DataVector(false);
 	Interprete interprete;
 	private int id = 0;
@@ -35,6 +40,13 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		
 	}
 	
+	public DataCluster(int id, DataVector centroid, ArrayList<DataVector> UTRs) {
+		super();
+		this.addAll(UTRs);
+		this.centroid = centroid;
+		this.id = id;
+	}
+	
 	public DataVector getCentroid() {
 		return centroid;
 	}
@@ -56,12 +68,6 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 
 	
 	
-	public void initialize(Request r) {
-		List<String> t =interprete.read(r);
-		//this.centroid =t.get(0);
-		
-	}
-	
 	public void singleUpdateCentroid(DataVector vect, Boolean removed) {
 		// this function updates the centroid in case of single add or removed point
 		// the bool removed is true if we have just removed the vector, false if have just added it
@@ -72,7 +78,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		} else {
 			nbOfPointsBeforeAction++;
 		}
-		DataVector newCentroid = new DataVector();
+		DataVector newCentroid = new DataVector(false);
 		if (removed) {
 			for(String theme : this.centroid.keySet()) {
 				newCentroid.put(theme, (this.centroid.get(theme)* nbOfPointsBeforeAction - vect.get(theme))/(nbOfPointsBeforeAction -1));

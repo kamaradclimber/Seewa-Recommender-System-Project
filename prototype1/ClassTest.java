@@ -20,7 +20,7 @@ public class ClassTest {
 		Random r = new Random();
 		ArrayList<DataVector> vecteurs = new ArrayList<DataVector>();
 		for (int id =0; id<50000; id++) {
-			DataVector vecteur = new DataVector(id);
+			DataVector vecteur = new DataVector(id,METTRE UN USER_ID provenant de mongo);
 			for (String str : categories) {
 				vecteur.put(str, r.nextFloat()*10);
 			}
