@@ -154,7 +154,12 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 
 	@Override
 	void output(Data d) {
-		Interprete.writeClusters(clusters);
+		try {
+			Interprete.writeClusters(clusters);
+		} catch (RecoException e) {
+			System.out.println("Fail sur l'écriture");
+			e.printStackTrace();
+		}
 
 	}
 

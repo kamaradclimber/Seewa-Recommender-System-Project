@@ -63,7 +63,7 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 	}
 
 	public Object getUserId() {
-		return this.userId;;
+		return this.userId;
 	}
 
 

@@ -12,7 +12,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		
 		clusters = Interprete.readClusters(new Request("user_clusters")); // on reccupÃ¨re la liste des clusters
 		
-		/* Ce qui suit ne parait plus nŽcessaire avec la gestion d'exceptions, ˆ confirmer
+		/* Ce qui suit ne parait plus nï¿½cessaire avec la gestion d'exceptions, ï¿½ confirmer
 		 * 
 		 * 
 		if (clusters==null) {
@@ -47,20 +47,6 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		DataCluster bestCandidate= null;
 		double bestDistance = Double.MAX_VALUE;
 		
-		/* Ce qui suit ne parait plus nŽcessaire avec la gestion d'exceptions, ˆ confirmer
-		
-		if (clusters==null || clusters.size()==0) {
-			System.out.println("DEBUG : la liste des clusters est vide, le chargement Ã  du Ã©chouer");
-			System.out.println("DEBUG : je met donc un cluster factice pour que le chargement continue mais bon cest vraiment une rustine");
-			DataCluster rustine = new DataCluster();
-			DataVector t = new DataVector(false);
-			t.put("theme_factice", new Float(0.1));
-			rustine.add(t);
-			rustine.updateCentroid();
-			clusters.add(rustine);
-			
-		}
-		*/
 		
 		for (DataCluster candidate : clusters) { //on cherche la centroid la plus proche
 			double dist = AlgoLourdFlatClusterization.squaredDistance(candidate.getCentroid(), user);

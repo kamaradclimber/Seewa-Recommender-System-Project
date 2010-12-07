@@ -10,7 +10,12 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 	public AlgoLourdFlatClusterization(ArrayList<DataCluster> clusters)
 	{
 		this.clusters=clusters;
-		Interprete.writeClusters(clusters);
+		try {
+			Interprete.writeClusters(clusters);
+		} catch (RecoException e) {
+			System.out.println("Fail sur l'écriture");
+			e.printStackTrace();
+		}
 	}
 	
 	public AlgoLourdFlatClusterization(int nbclusters, ArrayList<DataVector> vecteurs) throws Exception{
@@ -74,7 +79,12 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 
 	@Override
 	void output(Data d) {
-		Interprete.writeClusters(clusters);
+		try {
+			Interprete.writeClusters(clusters);
+		} catch (RecoException e) {
+			System.out.println("Fail sur l'écriture");
+			e.printStackTrace();
+		}
 
 	}
 

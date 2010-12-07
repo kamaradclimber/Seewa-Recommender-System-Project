@@ -169,6 +169,15 @@ public class Interprete {
 		//usersByNames.put(username,ucr);
 		//usersByUCR.put(ucr, username);
 	}
+
+	public static DataUser getUser(DataVector utr) {
+		//renvoie l'utilisateur qui correspond à l'UTR passé en argument
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",utr.getUserId()); //preparation de la query
+		BasicDBObject user = (BasicDBObject) users.findOne(query);
+		assert (utr.getId() == (Integer) user.get("_id"));
+		return new DataUser(user.get("name").toString(), utr, (Integer) utr.getUserId());
+	}
 	
 //	public static DataUser getUser(DataVector vect) {
 //		

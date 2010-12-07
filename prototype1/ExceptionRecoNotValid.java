@@ -3,6 +3,10 @@ public class RecoException extends Exception {
 
 	//On associe ˆ tous les types d'exception que nous pouvons avoir un code :
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5619186151808485999L;
 	static public final int ERR_UNKNOWN_REQUEST = 1;  
 	static public final int ERR_DB_READING_USER = 2;
 	static public final int ERR_DB_READING_CLUSTER = 3;
