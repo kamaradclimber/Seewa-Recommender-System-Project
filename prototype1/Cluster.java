@@ -28,6 +28,13 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		this.id = id;
 	}
 	
+	public DataCluster(DataVector centroid, ArrayList<DataVector> UTRs) {
+		super();
+		this.addAll(UTRs);
+		this.centroid = centroid;
+		
+	}
+	
 	public DataVector getCentroid() {
 		return centroid;
 	}

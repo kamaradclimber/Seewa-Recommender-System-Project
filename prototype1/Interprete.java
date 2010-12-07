@@ -1,17 +1,14 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
+import com.mongodb.Mongo;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
 
 
 public class Interprete {
@@ -20,6 +17,11 @@ public class Interprete {
 	static Hashtable<String, DataVector> usersByNames= new Hashtable<String, DataVector>();
 	static Hashtable<DataVector, String> usersByUCR = new Hashtable<DataVector, String>();
 	
+
+	//DB connection
+	static Mongo mongo = new Mongo( "138.195.76.136", 27017 );
+	static DB db = mongo.getDB( "test" );
+
 	public void write(String table, String column, String data) {
 		//UPDATE table SET value=data WHERE name=column
 	}
@@ -29,17 +31,37 @@ public class Interprete {
 		return new ArrayList<String>();
 	}
 
-	static public ArrayList<DataCluster> readClusters(Request request) {
+	static private DataVector db2DataVector(DBObject obj) {
+		// TODO faire la fonction qui prend un dbobject pour en creer un datavector
 		
+	}
+	
+	
+	 static public ArrayList<DataCluster> readClusters(Request request) {
+		 // Un cluster en base de donnée est stocké avec un champ centroid, et une liste des UTR
+		DBCollection coll = db.getCollection("clusters");
+		DBCursor cursor = coll.find();
+		ArrayList<DataCluster> clusters = new ArrayList<DataCluster>();
+		
+		
+		DBObject cluster= null;
+		while(cursor.hasNext()) {
+			cluster = cursor.next();
+			//init de la centroid :
+			DataVector centroid = new DataVector(false);
+			
+			centroid = Interprete.db2DataVector(cluster.get("centroid"));
+			
+		}
 		return clusters;
 	}
 	
-	static public boolean writeClusters(ArrayList<DataCluster> clusters) {
+	public boolean writeClusters(ArrayList<DataCluster> clusters) {
 		Interprete.clusters=clusters;
 		return false;
 	}
 
-	static public DataVector readUcr(String username) {
+	public DataVector readUcr(String username) {
 		
 		return usersByNames.get(username);
 	}
