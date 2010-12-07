@@ -12,13 +12,13 @@ public class Request {
 		return this.request;
 	}
 	
-	public String getTypeOfRequest() throws Exception {
+	public String getTypeOfRequest() throws RecoException {
 		if (this.request.contains("USER")) {
 			return "USER";
 		} else if (this.request.contains("PAGE")) {
 			return "PAGE";
 		} else {
-			throw new Exception("Tu demandes une requete de type inconnu");
+			throw new RecoException(RecoException.ERR_UNKNOWN_REQUEST);
 		}
 	}
 	

@@ -14,18 +14,15 @@ public DispatcherAlgoLeger() {
 	this.algos_to_do = new Hashtable<AlgoLeger, Request>();
 }
 
-	public List<Recommendation> dispatches(Request req) {
+	public List<Recommendation> dispatches(Request req) throws RecoException {
 
-		try {
-			if (req.getTypeOfRequest()=="USER") {
-				Request reqBis = new Request(req.get().substring(5));
-				if(algos_to_do==null) System.out.print("es");
-				algos_to_do.put(new AlgoLegerUserCluster(), reqBis);
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+		
+		if (req.getTypeOfRequest()=="USER") {
+			Request reqBis = new Request(req.get().substring(5));
+			if(algos_to_do==null) System.out.print("es");
+			algos_to_do.put(new AlgoLegerUserCluster(), reqBis);
 		}
+				
 		
 		//on execute tous les algos avec la requete qui convient et on rassemble les recommendations 
 		List<Recommendation> recos = new ArrayList<Recommendation>();

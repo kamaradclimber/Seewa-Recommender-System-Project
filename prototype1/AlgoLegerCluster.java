@@ -7,7 +7,7 @@ public class AlgoLegerCluster extends AlgoLeger {
 	public Recommendation answers(Request req) {
 		String username = "Bobby"; //req.username
 		ArrayList<DataCluster> clusters = (new Interprete()).readClusters(new Request("user_clusters")); // on reccupère la liste des clusters
-		DataVector user = (new Interprete()).readUcr(username); //get the UCR of the user asking for recommendation
+		DataVector user = (new Interprete()).readUTR(username); //get the UCR of the user asking for recommendation
 		
 		DataCluster bestChoice= null;
 		Double bestDistance = Double.MAX_VALUE;

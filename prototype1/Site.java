@@ -2,13 +2,12 @@
 public class Site {
 	
 	public Recommendation requestReco(Request req) {
-		Recommendeur reco = new Recommendeur();
 		try {
-			Recommendation recommendation =  reco.recommendMeSomeThing(req);
-			return recommendation;
-		} catch (ExceptionRecoNotValid e) {
-			System.out.println("La recommendation nétait pas valide, que faire");
-			e.printStackTrace();
+		Recommendeur reco = new Recommendeur();
+		Recommendation recommendation =  reco.recommendMeSomeThing(req);
+		return recommendation;
+		} catch (RecoException e) {
+			System.out.println("Erreur :"+e.getCode());
 			return null;
 		}
 	}
