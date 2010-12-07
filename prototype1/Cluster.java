@@ -35,6 +35,13 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		
 	}
 	
+	public DataCluster(int id, DataVector centroid, ArrayList<DataVector> UTRs) {
+		super();
+		this.addAll(UTRs);
+		this.centroid = centroid;
+		this.id = id;
+	}
+	
 	public DataVector getCentroid() {
 		return centroid;
 	}
