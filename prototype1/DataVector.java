@@ -7,18 +7,13 @@ import java.util.Hashtable;
 public class DataVector extends Hashtable<String, Float> implements Data  {
 	
 	private int arrayId = 0;
-	private Integer mongoID;
-//	public DataVector() {
-//		super();
-//		//constructeur vide
-//	}
+	private String mongoID; //on stocke l'id de l'user qui est associé au vector, si on parle dun user sinon il est null
+
 	
-	private Integer userId;
-	
-	public DataVector(int id, Integer mongoID) {
+	public DataVector(int id, String mongoID) {
 		super();
 		this.arrayId = id;
-		this.mongoID = userId; // ceci correspond a l'id de l'utilisateur auquel le data est eventuellement lié
+		this.mongoID = mongoID; // ceci correspond a l'id de l'utilisateur auquel le data est eventuellement lié
 	}
 	
 	public DataVector(boolean vectorThatMatters) {
@@ -59,7 +54,7 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 
 
 	@Override
-	public Integer getMongoId() {
+	public String getMongoId() {
 		return this.mongoID;
 	}
 
