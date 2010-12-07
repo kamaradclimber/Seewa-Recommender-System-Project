@@ -12,30 +12,38 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	private Hashtable<DataVector, Integer> whosMyCluster = new Hashtable<DataVector, Integer>();
 	private int nb_vectors = 0;
 	
-	public AlgoLourdFlatClusterizationIneg(int nbClusters, ArrayList<DataVector> vecteurs) throws Exception{
-		clusters = new ArrayList<DataCluster>();
-		this.nbClusters = nbClusters;
-		this.nb_vectors = vecteurs.size();
+	public AlgoLourdFlatClusterizationIneg(ArrayList<DataVector> newVectors) throws RecoException{
+		System.out.print("Lecture des clusters dans la base de données...");
+		clusters = Interprete.readClusters();
+		System.out.print("...[done]\n");
+		
+		this.nbClusters = clusters.size();
+		
+		for (DataCluster c : clusters) { this.nb_vectors += c.size(); } //on compte ausi les vecteurs deja presents
+		this.nb_vectors += newVectors.size();
+		
 		for (int i=0; i<nbClusters; i++){
-			if (vecteurs.isEmpty()) throw new Exception("WTF ?!");
-			DataCluster cluster = new DataCluster(i);
-			cluster.add(vecteurs.get(0));
-			clusters.add(cluster);
-			cluster.updateCentroid();
-			vecteurs.remove(0);
+			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new RecoException(RecoException.NO_CLUSTER);
+			DataCluster cluster = clusters.get(i);
+			cluster.setId(i); //on impose l'id pour que ca matche bien la position dans le tableau
+			if (cluster.isEmpty()) {
+				cluster.add(newVectors.get(0));
+				newVectors.remove(0);
+			}
+			cluster.updateCentroid(); // cette maj n'est pas forcement utile et un peu lourde je trouve alors qu'on pourrait peut etre la sortir de cette boucle et la faire a la fin FIXME
 		}
-		clusters.get(0).addAll(vecteurs);
+		clusters.get(0).addAll(newVectors); // on met tous les nouveaux vecteurs dans un cluster au pif.
 		for(DataCluster c : clusters) { // pour savoir où sont les vecteurs
 			for(DataVector vect :c) {
-				whosMyCluster.put(vect, c.getId());
+				whosMyCluster.put(vect, c.getArrayId());
 			}
 		}
 	}
 	
 	@Override
-	public void maj() throws Exception {
+	public void maj() throws RecoException {
 		if (clusters.size()<1) {
-			throw new Exception("cest stupide de demander moins de 1 cluster");
+			throw new RecoException(RecoException.NO_CLUSTER);
 		}
 		
 		//d'apres le papier d'Elkan
@@ -54,18 +62,18 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		
 		//initialisation des lowerBound et upperBound
 		for(DataVector x : vectors) {
-			r[x.getId()] = false;
+			r[x.getArrayId()] = false;
 			Double minDistance = Double.MAX_VALUE;
 
 			for(DataCluster c : clusters) {
-				lowerBound[x.getId()][c.getId()] = new Double(0);
+				lowerBound[x.getArrayId()][c.getArrayId()] = new Double(0);
 				Double candidateDistance = distance(x,c.getCentroid());
-				lowerBound[x.getId()][c.getId()] = candidateDistance;
+				lowerBound[x.getArrayId()][c.getArrayId()] = candidateDistance;
 				if(candidateDistance < minDistance) {
 					minDistance = candidateDistance;
 				}
 			}
-			upperBound[x.getId()] = minDistance;
+			upperBound[x.getArrayId()] = minDistance;
 		}
 
 		while ((  lastError - currentError) / lastError > 0.01 ) { //tant que ca bouge on continue la manoeuvre
@@ -93,7 +101,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 				c.clear(); // on vide le cluster pour pouvoir y ajouter ensuite ses nouveaux membres
 			}
 			for (DataVector vect : vectors) {
-				if (upperBound[vect.getId()] <= s[whosMyCluster.get(vect)]) {
+				if (upperBound[vect.getArrayId()] <= s[whosMyCluster.get(vect)]) {
 					continue;
 				}
 				DataCluster bestCandidate = clusters.get(whosMyCluster.get(vect));
@@ -101,18 +109,18 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 					if(candidate == clusters.get(whosMyCluster.get(vect))) {
 						continue;
 					}
-					if (upperBound[vect.getId()] > lowerBound[vect.getId()][candidate.getId()] && upperBound[vect.getId()] > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getId()]) {
+					if (upperBound[vect.getArrayId()] > lowerBound[vect.getArrayId()][candidate.getArrayId()] && upperBound[vect.getArrayId()] > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getArrayId()]) {
 						Double dxcx = new Double(0);
-						if(r[vect.getId()]) {
+						if(r[vect.getArrayId()]) {
 							dxcx = distance(vect,clusters.get(whosMyCluster.get(vect)).getCentroid());
-							lowerBound[vect.getId()][clusters.get(whosMyCluster.get(vect)).getId()] =  dxcx;
-							r[vect.getId()] = false;
+							lowerBound[vect.getArrayId()][clusters.get(whosMyCluster.get(vect)).getArrayId()] =  dxcx;
+							r[vect.getArrayId()] = false;
 						} else {
-							dxcx = upperBound[vect.getId()];
+							dxcx = upperBound[vect.getArrayId()];
 						}
-						if(dxcx > lowerBound[vect.getId()][candidate.getId()] || dxcx > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getId()]) {
+						if(dxcx > lowerBound[vect.getArrayId()][candidate.getArrayId()] || dxcx > 1/2 * distanceInterCentroid[whosMyCluster.get(vect)][candidate.getArrayId()]) {
 							Double dxc = distance(vect, candidate.getCentroid());
-							lowerBound[vect.getId()][candidate.getId()] =  dxc;
+							lowerBound[vect.getArrayId()][candidate.getArrayId()] =  dxc;
 							if(dxc < dxcx) {
 								bestCandidate = candidate;
 							}
@@ -120,23 +128,23 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 					}
 				}
 				bestCandidate.add(vect);
-				whosMyCluster.put(vect, bestCandidate.getId());
+				whosMyCluster.put(vect, bestCandidate.getArrayId());
 			}
 			Hashtable<Integer, DataVector> lastCentroid= new Hashtable<Integer, DataVector>();
 			for (DataCluster c : clusters) {
-				lastCentroid.put(c.getId(),(DataVector) c.getCentroid().clone());
+				lastCentroid.put(c.getArrayId(),(DataVector) c.getCentroid().clone());
 				
 				c.updateCentroid();
 			}
 			//maj des lowerBound et upperBound
 			for(DataVector x : vectors) {
 				for (DataCluster c : clusters) {
-					Double deplacement = distance(lastCentroid.get(c.getId()),c.getCentroid() );
-					lowerBound[x.getId()][c.getId()] = Math.max(0,lowerBound[x.getId()][c.getId()] - deplacement );
-					lowerBound[x.getId()][c.getId()] = 0.0;
-					if(c.getId() == whosMyCluster.get(x)) {
-						upperBound[x.getId()] =  upperBound[x.getId()] + deplacement ;
-						r[x.getId()] = true;
+					Double deplacement = distance(lastCentroid.get(c.getArrayId()),c.getCentroid() );
+					lowerBound[x.getArrayId()][c.getArrayId()] = Math.max(0,lowerBound[x.getArrayId()][c.getArrayId()] - deplacement );
+					lowerBound[x.getArrayId()][c.getArrayId()] = 0.0;
+					if(c.getArrayId() == whosMyCluster.get(x)) {
+						upperBound[x.getArrayId()] =  upperBound[x.getArrayId()] + deplacement ;
+						r[x.getArrayId()] = true;
 					}
 				}
 			}
@@ -145,23 +153,23 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		}
 	}
 
-	
-	@Override
-	Data input() {
-		Interprete.readClusters(null); // TODO : quelle requete faut il mettre pour reccupérer les bons clusters ? fautil une requete ?
-		return null;
-	}
-
-	@Override
-	void output(Data d) {
-		try {
-			Interprete.writeClusters(clusters);
-		} catch (RecoException e) {
-			System.out.println("Fail sur l'écriture");
-			e.printStackTrace();
-		}
-
-	}
+//  quelque chose utilise cette aprtie du code ? cest vraiment DEPRECATED :)	
+//	@Override
+//	Data input() {
+//		Interprete.readClusters(null); // TODO : quelle requete faut il mettre pour reccupérer les bons clusters ? fautil une requete ?
+//		return null;
+//	}
+//
+//	@Override
+//	void output(Data d) {
+//		try {
+//			Interprete.writeClusters(clusters);
+//		} catch (RecoException e) {
+//			System.out.println("Fail sur l'écriture");
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	private DataVector centroid(DataCluster c) {
 		c.updateCentroid();
@@ -169,7 +177,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	}
 	
 	
-	static private double squaredDistance(DataVector v1, DataVector v2) {
+	static public double squaredDistance(DataVector v1, DataVector v2) {
 		HashSet<String> union = new HashSet<String>();
 		union.addAll(v1.keySet());
 		union.addAll(v2.keySet());// on a calculé l'union des clés sur lesquelles on calcule la distance
