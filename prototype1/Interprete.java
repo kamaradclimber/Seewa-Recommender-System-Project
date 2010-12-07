@@ -184,5 +184,118 @@ public class Interprete {
 //		return new DataUser(usersByUCR.get(vect), vect);
 //	}
 
+
 	
+	public static boolean updateUTR(){
+		//recalculate the UTR of all users using Map-Reduce (twice)
+		
+		DBCollection upages = db.getCollection("upages");
+		
+		String map = "function()" +
+		"{" +
+			"this.themes.forEach(" +
+				"function(z){" +
+					"emit( {user: this.id , theme: z.name} , [this.pageRank , 1]  );" +
+				"});" +
+		"};";
+		// Upages-> {userId-theme} , {pageRank-nb}
+		
+		String reduce = "function( key , values )" +
+		"{" +
+			"var sumPR = 0;"+
+			"var nbPages = 0;"+
+			"for (var i=0; i<values.length;i++){"+
+				"sumPR += values[i][0];"+ //somme pageRank
+				"nbPages += values[i][1];}"+ // nb pages
+			"return [sumPR, nbPages];" +
+		"};";
+		// {userId-theme}, {somme(pageRank)-nb}
+		
+		upages.mapReduce(map, reduce, /*collection de result*/ "temporaryutr", /*query*/null);
+		DBCollection temporaryutr = db.getCollection("temporaryutr");
+		
+		map = "function()" +
+		"{" +
+			"var utr = this.value[0]/this.value[1];" + // utr= somme(pageRank)/nb pages
+					"emit( this.user , {this.theme : utr}  );" +
+				"});" +
+		"};";
+		
+		
+		reduce = "function( key , values )" +
+		"{" +
+			"var utrSet={};"+
+			"for (var i=0; i<values.length;i++){"+
+				"for(var name in values[i]){"+
+					"utrSet.push({name: values[i].get(name)});}} "+
+			"return utrSet;" +
+		"};";
+		
+		DBCursor results= temporaryutr.mapReduce(map, reduce, /*coll de result*/ null, /*query*/null).results();
+		
+		// on place les utr dans users
+		DBCollection users = db.getCollection("users");
+		DBObject aResult;
+		BasicDBObject query = new BasicDBObject();
+		BasicDBObject field = new BasicDBObject("UTR", 1);
+		BasicDBObject anUTR;
+		while (results.hasNext())
+		{
+			aResult = results.next();
+			query.put("_id", aResult.get("_id"));
+			
+			anUTR= (BasicDBObject) aResult.get("value");
+			anUTR.put("user", aResult.get("_id"));
+			users.findAndModify(query, field, null, false ,anUTR, false, true); 
+			query.clear();
+		}
+		
+		return true;
+	}
+	
+	public static boolean updateUTR(int userId){
+		//recalculate the UTR of the User with '_id'= userId using Map-Reduce
+		DBCollection upages = db.getCollection("upages");
+		
+		String map = "function()" +
+		"{" +
+			"this.themes.forEach(" +
+				"function(z){" +
+					"emit( z.name , {PR: this.pageRank , nb: 1}  );" +
+				"});" +
+		"};";
+		// Upages-> theme , {pageRank-nb}
+		
+		String reduce = "function( key , values )" +
+		"{" +
+			"var sumPR = 0;"+
+			"var nbPages = 0;"+
+			"for (var i=0; i<values.length;i++){"+
+				"sumPR += values[i].get('PR');"+ //somme pageRank
+				"nbPages += values[i].get('nb');}"+ // nb pages
+			"return {PR : sumPR, nb : nbPages};" +
+		"};";
+		// theme {somme(pageRank)-nb}
+		
+		DBCursor results = upages.mapReduce(map, reduce, /*collection de result*/ null, /*query*/query).results();
+		
+		DBObject aResult;
+		
+		
+		BasicDBObject anUTR = new BasicDBObject("user", userId);
+		BasicDBObject theme_val;
+		while (results.hasNext()) // on rajoute tous les thèmes avec leur valeur d'UTR
+		{
+			aResult = results.next();
+			theme_val = (BasicDBObject) aResult.get("value");
+			double utrvalue = theme_val.getDouble("PR")/ theme_val.getInt("nb");
+			anUTR.put((String) theme_val.get("_id"), utrvalue);// {theme,value}
+		}
+		
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("id", userId);
+		BasicDBObject field = new BasicDBObject("UTR", 1);
+		users.findAndModify(query, field, null, false ,anUTR, false, true); 
+		return true;
+	}
 }
