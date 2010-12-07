@@ -10,6 +10,7 @@ public class RecoException extends Exception {
 	static public final int ERR_WRITING_CLUSTER = 5;
 	static public final int ERR_NO_USER_TO_RECOMMEND = 6;
 	static public final int ERR_VERIFICATEUR = 7;
+	static public final int ERR_CONNECTION_DB = 8;
 	
 	
 	public int code;

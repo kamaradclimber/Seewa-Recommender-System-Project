@@ -1,4 +1,5 @@
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -15,9 +16,10 @@ public class Interprete {
 	
 
 	//DB connection
+	
 	static Mongo mongo = new Mongo( "138.195.76.136", 27017 );
 	static DB db = mongo.getDB( "test" );
-
+		
 	public void write(String table, String column, String data) {
 		//UPDATE table SET value=data WHERE name=column
 	}
@@ -51,7 +53,7 @@ public class Interprete {
 	}
 	
 	
-	 static public ArrayList<DataCluster> readClustersCentroids(Request request) {
+	 static public ArrayList<DataCluster> readClustersCentroids(Request request) throws RecoException {
 		 //this function should be used only for getting centroid (for research use only)
 		 // Un cluster en base de donnée est stocké avec un champ centroid
 		 //cette fonction est un peu optmisee pour la recherche quand on a besoin seulement des centroids
@@ -79,7 +81,7 @@ public class Interprete {
 		}
 	}
 	
-	}
+	
 	
 	 static public ArrayList<DataCluster> readClusters(Request request) {
 		 // Un cluster en base de donnée est stocké avec un champ centroid et des liens vers les UTR
@@ -112,7 +114,7 @@ public class Interprete {
 		return clusters;
 	} 
 	 	 
-	public boolean writeClusters(ArrayList<DataCluster> clusters) {
+	public static boolean writeClusters(ArrayList<DataCluster> clusters) throws RecoException {
 		//renvoie j'ai réussi ou pas 
 		//Interprete.clusters=clusters; // a quoi sert cette ligne ? FIXME
 		try {
@@ -138,7 +140,7 @@ public class Interprete {
 		}
 	}
 
-	public DataVector readUcr(Object id) { //TODO mettre un type un peu plus précis pour l íd
+	public static DataVector readUTR(Object id) throws RecoException { //TODO mettre un type un peu plus précis pour l íd
 		//renvoie l'UTR d'un user à partir d'un id de l'user
 		try {
 		DBCollection users = db.getCollection("users");
@@ -154,7 +156,7 @@ public class Interprete {
 	}
 		
 	
-	static public void writeUcr(Object id, DataVector utr) {
+	static public void writeUTR(Object id, DataVector utr) {
 		//TODO : gestion de l'exception
 
 		DBCollection users = db.getCollection("users");
