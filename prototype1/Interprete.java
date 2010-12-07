@@ -29,11 +29,11 @@ public class Interprete {
 		return new ArrayList<String>();
 	}
 
-	static private DataVector db2DataVector(DBObject obj, Integer id, Integer user_id) {
+	static private DataVector db2DataVector(DBObject obj, Integer arrayId, String mongoID) {
 		// prend un dbobject pour en creer un datavector
 		DataVector vector = null;
-		if (id != null ) {
-			vector = new DataVector(id, user_id);	
+		if (arrayId != null ) {
+			vector = new DataVector(arrayId, mongoID);
 		} else {
 			vector = new DataVector(false);	
 		}
@@ -69,9 +69,9 @@ public class Interprete {
 			//init de la centroid :
 			DataVector centroid = new DataVector(false);
 			DBObject cent = (DBObject) cluster.get("centroid");
-			Integer id   =  (Integer) cluster.get("_id");
+			String mongoID   =  (String) cluster.get("_id");
 			centroid = Interprete.db2DataVector(cent, null,null);
-			clusters.add(new DataCluster(null, centroid, new ArrayList<DataVector>(), id));
+			clusters.add(new DataCluster(null, centroid, new ArrayList<DataVector>(), mongoID));
 		}
 		return clusters;
 		}
@@ -95,17 +95,18 @@ public class Interprete {
 			//init de la centroid :
 			DataVector centroid = new DataVector(false);
 			DBObject cent = (DBObject) cluster.get("centroid");
-			Integer id   =  (Integer) cluster.get("_id");
+			String id   =  (String) cluster.get("_id");
 			centroid = Interprete.db2DataVector(cent, null,null);
 			
 			BasicDBList utrs = (BasicDBList) cluster.get("utr_ids");
 			ArrayList<DataVector> utrss =  new ArrayList<DataVector>();
-			for (Object user_id : utrs) {
+			for (Object arrayId : utrs) {
 				BasicDBObject query = new BasicDBObject();
-				query.put("_id", user_id);
+				query.put("_id", arrayId);
 				DBObject user = users.findOne(query, new BasicDBObject("utr",1)); //on reccupere seulemnent le champ utr
 				DBObject userr = (DBObject) user.get("utr");
-				utrss.add(Interprete.db2DataVector(userr, (Integer) user_id,(Integer) user_id)); //FIXME il y  asurementn un probleme
+				String mongoID =(String) user.get("_id");
+				utrss.add(Interprete.db2DataVector(userr, (Integer) arrayId, mongoID));
 			}
 			clusters.add(new DataCluster(null, centroid, utrss, id));
 		}
@@ -138,15 +139,15 @@ public class Interprete {
 		}
 	}
 
-	public static DataVector readUTR(Object id) throws RecoException { //TODO mettre un type un peu plus précis pour l íd
+	public static DataVector readUTR(String mongoID) throws RecoException { //TODO mettre un type un peu plus précis pour l íd
 		//renvoie l'UTR d'un user à partir d'un id de l'user
 		try {
 		DBCollection users = db.getCollection("users");
-		BasicDBObject query = new BasicDBObject("_id",id); //preparation de la query
+		BasicDBObject query = new BasicDBObject("_id",mongoID); //preparation de la query
 		DBObject user = users.findOne(query,new BasicDBObject("utr",1));
 		DBObject utr =  (DBObject) user.get("utr"); //on caste TODO : faire un try..catch pour eviter les pblemes
 		
-		return Interprete.db2DataVector(utr, (Integer)id,(Integer)id); //this data matters so on lui passe l'id qui va bien
+		return Interprete.db2DataVector(utr, null, mongoID); //this data matters so on lui passe l'id qui va bien
 		}
 		catch (MongoException ex) {
 			throw new RecoException(RecoException.ERR_DB_READING_USER);
@@ -174,7 +175,7 @@ public class Interprete {
 		BasicDBObject query = new BasicDBObject("_id",utr.getMongoId()); //preparation de la query
 		BasicDBObject user = (BasicDBObject) users.findOne(query);
 		assert (utr.getArrayId() == (Integer) user.get("_id"));
-		return new DataUser( user.get("name").toString(), utr, (Integer) utr.getMongoId());
+		return new DataUser( user.get("name").toString(), utr, (String) utr.getMongoId());
 	}
 
 	

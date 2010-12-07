@@ -14,7 +14,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	DataVector centroid = new DataVector(false);
 	Interprete interprete;
 	private Integer id = 0;
-	private Integer mongoID;
+	private String mongoID;
 	
 	public Integer getArrayId() { // l'id qui sert dans les tableaux
 		return this.id;
@@ -31,7 +31,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		System.out.println("Je suis un cluster crée à partir de rien, es-tu sur de vouloir faire ca ?");
 	}
 	
-	public DataCluster(Integer id, DataVector centroid, ArrayList<DataVector> UTRs, Integer mongoID) {
+	public DataCluster(Integer id, DataVector centroid, ArrayList<DataVector> UTRs, String mongoID) {
 		super();
 		this.mongoID = mongoID;
 		this.addAll(UTRs);
@@ -108,7 +108,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	}
 
 	@Override
-	public Integer getMongoId() { // l'id de mongo dans la table cluster
+	public String getMongoId() { // l'id de mongo dans la table cluster
 		return this.mongoID;
 	}
 
