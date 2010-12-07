@@ -1,7 +1,7 @@
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+
 import java.util.List;
 
 
@@ -69,23 +69,22 @@ static DB db;
 		// Un cluster en base de donnée est stocké avec un champ centroid
 		//cette fonction est un peu optmisee pour la recherche quand on a besoin seulement des centroids
 		try {
-			DBCollection coll = db.getCollection("clusters");
-			DBCursor cursor = coll.find();
-			ArrayList<DataCluster> clusters = new ArrayList<DataCluster>();
-
-
-			DBObject cluster= null;
-			while(cursor.hasNext()) {
-				cluster = cursor.next();
-				//init de la centroid :
-				DataVector centroid = new DataVector(false);
-				DBObject cent = (DBObject) cluster.get("centroid");
-				Integer id_   =  (Integer) cluster.get("_id");
-				int id = (int) id_;
-				centroid = Interprete.db2DataVector(cent, null,null);
-				clusters.add(new DataCluster(id, centroid, new ArrayList<DataVector>()));
-			}
-			return clusters;
+		DBCollection coll = db.getCollection("clusters");
+		DBCursor cursor = coll.find();
+		ArrayList<DataCluster> clusters = new ArrayList<DataCluster>();
+		
+		
+		DBObject cluster= null;
+		while(cursor.hasNext()) {
+			cluster = cursor.next();
+			//init de la centroid :
+			DataVector centroid = new DataVector(false);
+			DBObject cent = (DBObject) cluster.get("centroid");
+			Integer id   =  (Integer) cluster.get("_id");
+			centroid = Interprete.db2DataVector(cent, null,null);
+			clusters.add(new DataCluster(null, centroid, new ArrayList<DataVector>(), id));
+		}
+		return clusters;
 		}
 		catch (MongoException ex) {
 			throw new RecoException(RecoException.ERR_DB_READING_CLUSTER);
@@ -108,8 +107,7 @@ static DB db;
 			//init de la centroid :
 			DataVector centroid = new DataVector(false);
 			DBObject cent = (DBObject) cluster.get("centroid");
-			Integer id_   =  (Integer) cluster.get("_id");
-			int id = (int) id_;
+			Integer id   =  (Integer) cluster.get("_id");
 			centroid = Interprete.db2DataVector(cent, null,null);
 
 			BasicDBList utrs = (BasicDBList) cluster.get("utr_ids");
@@ -121,7 +119,7 @@ static DB db;
 				DBObject userr = (DBObject) user.get("utr");
 				utrss.add(Interprete.db2DataVector(userr, (Integer) user_id,(Integer) user_id)); //FIXME il y  asurementn un probleme
 			}
-			clusters.add(new DataCluster(id, centroid, utrss));
+			clusters.add(new DataCluster(null, centroid, utrss, id));
 		}
 		return clusters;
 		}
@@ -134,18 +132,18 @@ static DB db;
 		//renvoie j'ai réussi ou pas 
 		//Interprete.clusters=clusters; // a quoi sert cette ligne ? FIXME
 		try {
-			DBCollection users = db.getCollection("clusters");
-			for (DataCluster cluster : clusters) {
-				BasicDBObject query = new BasicDBObject("_id",cluster.getId());
-				BasicDBObject clusterr = new BasicDBObject();
-				clusterr.put("centroid", Interprete.dataVector2db(cluster.getCentroid())); //on rajoute la centroid
-				BasicDBList vectors = new BasicDBList();
-				for (DataVector utr : cluster) {
-					vectors.add(utr.getUserId()); //on ajoute l'id du user pour l'identifier 
-				}
-				clusterr.put("utr_ids", vectors);
-				users.update(query, clusterr ,true,false);
-
+		DBCollection users = db.getCollection("clusters");
+		for (DataCluster cluster : clusters) {
+			BasicDBObject query = new BasicDBObject("_id",cluster.getArrayId());
+			BasicDBObject clusterr = new BasicDBObject();
+			clusterr.put("centroid", Interprete.dataVector2db(cluster.getCentroid())); //on rajoute la centroid
+			BasicDBList vectors = new BasicDBList();
+			for (DataVector utr : cluster) {
+				vectors.add(utr.getMongoId()); //on ajoute l'id du user pour l'identifier 
+			}
+			clusterr.put("utr_ids", vectors);
+			users.update(query, clusterr ,true,false);
+			
 			}
 
 
@@ -186,10 +184,14 @@ static DB db;
 		//usersByUCR.put(ucr, username);
 	}
 
-	//	public static DataUser getUser(DataVector vect) {
-	//		
-	//		return new DataUser(usersByUCR.get(vect), vect);
-	//	}
+	public static DataUser getUser(DataVector utr) {
+		//renvoie l'utilisateur qui correspond à l'UTR passé en argument
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",utr.getMongoId()); //preparation de la query
+		BasicDBObject user = (BasicDBObject) users.findOne(query);
+		assert (utr.getArrayId() == (Integer) user.get("_id"));
+		return new DataUser( user.get("name").toString(), utr, (Integer) utr.getMongoId());
+	}
 
 
 }

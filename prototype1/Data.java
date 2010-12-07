@@ -4,8 +4,8 @@ public interface Data {
 // mais on peut tout a fait mettre des types différents...
 	
 	
-	
-	public void write();
+	public Integer getMongoId();
+	//public void write();
 	
 }
 

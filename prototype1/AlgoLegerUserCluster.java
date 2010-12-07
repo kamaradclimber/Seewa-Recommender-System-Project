@@ -27,7 +27,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		this.clusters=clusters;
 	}
 	
-	public AlgoLegerUserCluster(AlgoLourdFlatClusterization anAlgo)
+	public AlgoLegerUserCluster(AlgoLourdFlatClusterizationIneg anAlgo)
 	{
 		if (anAlgo.clusters==null)
 			try {
@@ -49,7 +49,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		
 		
 		for (DataCluster candidate : clusters) { //on cherche la centroid la plus proche
-			double dist = AlgoLourdFlatClusterization.squaredDistance(candidate.getCentroid(), user);
+			double dist = AlgoLourdFlatClusterizationIneg.squaredDistance(candidate.getCentroid(), user);
 			if (dist< bestDistance) { //si on a trouvé une centroid plus proche on maj
 				bestCandidate = candidate;
 				bestDistance = dist;
@@ -86,7 +86,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		DataVector user;
 		user = Interprete.readUTR(username);
 		DataUser newBestBuddy = findCloseUser(user);
-		return new Recommendation(newBestBuddy.name);
+		return new Recommendation(newBestBuddy.getName());
 		
 		
 		//get the UTR of the user asking for recommendation
