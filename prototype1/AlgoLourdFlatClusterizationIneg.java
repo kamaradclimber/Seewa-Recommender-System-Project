@@ -12,9 +12,9 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	private Hashtable<DataVector, Integer> whosMyCluster = new Hashtable<DataVector, Integer>();
 	private int nb_vectors = 0;
 	
-	public AlgoLourdFlatClusterizationIneg(ArrayList<DataVector> newVectors) throws Exception{
+	public AlgoLourdFlatClusterizationIneg(ArrayList<DataVector> newVectors) throws RecoException{
 		System.out.print("Lecture des clusters dans la base de données...");
-		clusters = Interprete.readClusters(new Request(null));
+		clusters = Interprete.readClusters();
 		System.out.print("...[done]\n");
 		
 		this.nbClusters = clusters.size();
@@ -23,7 +23,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		this.nb_vectors += newVectors.size();
 		
 		for (int i=0; i<nbClusters; i++){
-			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new Exception("WTF ?!");
+			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new RecoException(RecoException.NO_CLUSTER);
 			DataCluster cluster = clusters.get(i);
 			cluster.setId(i); //on impose l'id pour que ca matche bien la position dans le tableau
 			if (cluster.isEmpty()) {
@@ -41,9 +41,9 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	}
 	
 	@Override
-	public void maj() throws Exception {
+	public void maj() throws RecoException {
 		if (clusters.size()<1) {
-			throw new Exception("cest stupide de demander moins de 1 cluster");
+			throw new RecoException(RecoException.NO_CLUSTER);
 		}
 		
 		//d'apres le papier d'Elkan

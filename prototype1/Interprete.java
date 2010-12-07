@@ -165,7 +165,7 @@ static DB db;
 			return Interprete.db2DataVector(utr, (Integer)id,(Integer)id); //this data matters so on lui passe l'id qui va bien
 		}
 		catch (MongoException ex) {
-			throw new RecoException(RecoException.ERR_DB_READING_USER);
+			throw new RecoException(RecoException.ERR_DB_READING_UTR);
 		}
 	}
 
@@ -184,13 +184,18 @@ static DB db;
 		//usersByUCR.put(ucr, username);
 	}
 
-	public static DataUser getUser(DataVector utr) {
+	public static DataUser getUser(DataVector utr) throws RecoException{
+		try {
 		//renvoie l'utilisateur qui correspond à l'UTR passé en argument
 		DBCollection users = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",utr.getMongoId()); //preparation de la query
 		BasicDBObject user = (BasicDBObject) users.findOne(query);
 		assert (utr.getArrayId() == (Integer) user.get("_id"));
 		return new DataUser( user.get("name").toString(), utr, (Integer) utr.getMongoId());
+		}
+		catch (MongoException ex) {
+			throw new RecoException(RecoException.ERR_DB_READING_USER);
+		}
 	}
 
 

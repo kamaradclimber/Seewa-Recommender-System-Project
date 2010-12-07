@@ -14,10 +14,11 @@ public class RecoException extends Exception {
 	static public final int ERR_NO_USER_TO_RECOMMEND = 6;
 	static public final int ERR_VERIFICATEUR = 7;
 	static public final int ERR_CONNECTION_DB = 8;
+	static public final int ERR_DB_READING_UTR = 9;
 	
 	/* Exceptions concernant la mise ˆ jour des clusters */
 	
-	
+	static public final int NO_CLUSTER = 10;
 	
 	
 	public int code;
