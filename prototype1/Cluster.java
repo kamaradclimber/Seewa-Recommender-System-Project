@@ -31,18 +31,6 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		System.out.println("Je suis un cluster crée à partir de rien, es-tu sur de vouloir faire ca ?");
 	}
 	
-//	public DataCluster(int id) {
-//		super();
-//		this.id = id;
-//	}
-//	
-//	public DataCluster(DataVector centroid, ArrayList<DataVector> UTRs) {
-//		super();
-//		this.addAll(UTRs);
-//		this.centroid = centroid;
-//		
-//	}
-//	
 	public DataCluster(Integer id, DataVector centroid, ArrayList<DataVector> UTRs, Integer mongoID) {
 		super();
 		this.mongoID = mongoID;
