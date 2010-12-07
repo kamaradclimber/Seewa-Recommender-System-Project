@@ -13,9 +13,12 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 //		//constructeur vide
 //	}
 	
-	public DataVector(int id) {
+	private Integer userId;
+	
+	public DataVector(int id, Integer userId) {
 		super();
 		this.id = id;
+		this.userId = userId; // ceci correspond a l'id de l'utilisateur auquel le data est eventuellement lié
 	}
 	
 	public DataVector(boolean vectorThatMatters) {
@@ -23,6 +26,7 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 		super();
 		if (vectorThatMatters) System.out.println("bon faut appeler avec les bons arguments quand meme : on appelle ce constructeur que si le vecteur créé ne represente rien cf definition du constructeur");
 		this.id = 0;
+		this.userId = null;
 	}
 	
 	public int getId() {
@@ -58,12 +62,10 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 		return this.get(key);
 	}
 
-
-	@Override
-	public void initialize(Request r) {
-		// TODO Auto-generated method stub
-		
+	public Object getUserId() {
+		return this.userId;;
 	}
+
 
 //	public DataVector clone() {
 //		return this.clone();

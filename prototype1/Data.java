@@ -6,7 +6,6 @@ public interface Data {
 	
 	
 	public void write();
-	public void initialize(Request r);
 	
 }
 
