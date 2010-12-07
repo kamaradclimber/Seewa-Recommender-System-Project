@@ -1,7 +1,7 @@
 
-import java.net.UnknownHostException;
+
 import java.util.ArrayList;
-import java.util.Hashtable;
+
 import java.util.List;
 
 
@@ -69,10 +69,9 @@ public class Interprete {
 			//init de la centroid :
 			DataVector centroid = new DataVector(false);
 			DBObject cent = (DBObject) cluster.get("centroid");
-			Integer id_   =  (Integer) cluster.get("_id");
-			int id = (int) id_;
+			Integer id   =  (Integer) cluster.get("_id");
 			centroid = Interprete.db2DataVector(cent, null,null);
-			clusters.add(new DataCluster(id, centroid, new ArrayList<DataVector>()));
+			clusters.add(new DataCluster(null, centroid, new ArrayList<DataVector>(), id));
 		}
 		return clusters;
 		}
@@ -120,7 +119,7 @@ public class Interprete {
 		try {
 		DBCollection users = db.getCollection("clusters");
 		for (DataCluster cluster : clusters) {
-			BasicDBObject query = new BasicDBObject("_id",cluster.getId());
+			BasicDBObject query = new BasicDBObject("_id",cluster.getArrayId());
 			BasicDBObject clusterr = new BasicDBObject();
 			clusterr.put("centroid", Interprete.dataVector2db(cluster.getCentroid())); //on rajoute la centroid
 			BasicDBList vectors = new BasicDBList();
@@ -175,7 +174,7 @@ public class Interprete {
 		DBCollection users = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",utr.getUserId()); //preparation de la query
 		BasicDBObject user = (BasicDBObject) users.findOne(query);
-		assert (utr.getId() == (Integer) user.get("_id"));
+		assert (utr.getArrayId() == (Integer) user.get("_id"));
 		return new DataUser(user.get("name").toString(), utr, (Integer) utr.getUserId());
 	}
 	

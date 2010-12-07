@@ -13,35 +13,39 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	
 	DataVector centroid = new DataVector(false);
 	Interprete interprete;
-	private int id = 0;
+	private Integer id = 0;
+	private Integer mongoID;
 	
-	public int getId() {
+	public Integer getArrayId() { // l'id qui sert dans les tableaux
 		return this.id;
 	}
 	
 	public int hashCode() {
 		//test pour essayer d'accélerer les requtees dans les hastables
+		//est-ce encore utile ? FIXME
 		return this.id;
 	}
 	
 	public DataCluster() {
 		super();
+		System.out.println("Je suis un cluster crée à partir de rien, es-tu sur de vouloir faire ca ?");
 	}
 	
-	public DataCluster(int id) {
+//	public DataCluster(int id) {
+//		super();
+//		this.id = id;
+//	}
+//	
+//	public DataCluster(DataVector centroid, ArrayList<DataVector> UTRs) {
+//		super();
+//		this.addAll(UTRs);
+//		this.centroid = centroid;
+//		
+//	}
+//	
+	public DataCluster(Integer id, DataVector centroid, ArrayList<DataVector> UTRs, Integer mongoID) {
 		super();
-		this.id = id;
-	}
-	
-	public DataCluster(DataVector centroid, ArrayList<DataVector> UTRs) {
-		super();
-		this.addAll(UTRs);
-		this.centroid = centroid;
-		
-	}
-	
-	public DataCluster(int id, DataVector centroid, ArrayList<DataVector> UTRs) {
-		super();
+		this.mongoID = mongoID;
 		this.addAll(UTRs);
 		this.centroid = centroid;
 		this.id = id;
@@ -60,11 +64,6 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		}
 	}
 	
-	public void write() {
-		//TODO faut-il une methode decriture les clusters, THINK : quelle stratégie d'enregistrement des données 
-	//	interprete.write("clusters","centroid", centroid);
-	// interprete.write la liste de tous les memebres du cluster
-	}
 
 	
 	
@@ -118,5 +117,18 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		for (String key : this.centroid.keySet()) { // on finit par diviser par le bon nombre  d'utilisateurs pour chaque catégorie
 			this.centroid.put(key, this.centroid.get(key)/ counters.get(key));
 		}
+	}
+
+	@Override
+	public Integer getMongoId() { // l'id de mongo dans la table cluster
+		return this.mongoID;
+	}
+
+	public void setId(int i) { //impose l'id au cluster (pour bien le mettre dans les tableaux
+		if (this.getArrayId() == null) {
+			System.out.println("tu es sur de vouloir specifier l'id ? tu devrais verifier pkoi est-ce qu'il est deja defini ");
+		}
+		this.id = i;
+		
 	}
 }
