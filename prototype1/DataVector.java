@@ -8,7 +8,7 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 	
 	private int arrayId = 0;
 	private String mongoID; //on stocke l'id de l'user qui est associé au vector, si on parle dun user sinon il est null
-
+	//TODO : et si on mettait userID, ou juste "Objet user;"?
 	
 	public DataVector(int id, String mongoID) {
 		super();

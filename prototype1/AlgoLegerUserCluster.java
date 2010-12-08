@@ -10,7 +10,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	public AlgoLegerUserCluster() throws RecoException
 	{	
 		
-		clusters = Interprete.readClusters(); // on reccupère la liste des clusters TODO : remplacer par readLCustersCentroids
+		clusters = Interprete.readClustersCentroids(null); // on reccupère la liste des clusters TODO : remplacer par readLCustersCentroids
 		
 		/* Ce qui suit ne parait plus n�cessaire avec la gestion d'exceptions, � confirmer
 		 * 
@@ -28,6 +28,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	}
 	
 	public AlgoLegerUserCluster(AlgoLourdFlatClusterizationIneg anAlgo)
+	//TODO vas-t-on jamais l'utiliser
 	{
 		if (anAlgo.clusters==null)
 			try {
@@ -43,7 +44,6 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	
 	private DataCluster findCluster(DataVector user) throws RecoException
 	{	
-		
 		DataCluster bestCandidate= null;
 		double bestDistance = Double.MAX_VALUE;
 		

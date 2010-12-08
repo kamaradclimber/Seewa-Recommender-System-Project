@@ -9,11 +9,15 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	 * le truc qui suit permet d'enlever un warning génant : TOUNDERSTAND 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static int idCount;//variable permettant d'initialiser les id : verifie que tt les id sont différents.
 	
+	static { 
+		idCount = 1;
+	}
 	
 	DataVector centroid = new DataVector(false);
 	Interprete interprete;
-	private Integer id = 0;
+	private int id ;
 	private String mongoID;
 	
 	public Integer getArrayId() { // l'id qui sert dans les tableaux
@@ -23,20 +27,28 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	public int hashCode() {
 		//test pour essayer d'accélerer les requtees dans les hastables
 		//est-ce encore utile ? FIXME
-		return this.id;
+		return (int) this.id;
 	}
 	
 	public DataCluster() {
 		super();
+		id = idCount;
+		idCount++;
 		System.out.println("Je suis un cluster crée à partir de rien, es-tu sur de vouloir faire ca ?");
 	}
 	
-	public DataCluster(Integer id, DataVector centroid, ArrayList<DataVector> UTRs, String mongoID) {
+	public DataCluster(int id, DataVector centroid, ArrayList<DataVector> UTRs, String mongoID) {
 		super();
 		this.mongoID = mongoID;
 		this.addAll(UTRs);
 		this.centroid = centroid;
-		this.id = id;
+		if (id!=0) {
+			this.id = id;
+			idCount = Math.max(idCount, id+1);
+		}else {
+			this.id=idCount;
+			idCount++;
+		}
 	}
 	
 	public DataVector getCentroid() {
@@ -113,10 +125,10 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	}
 
 	public void setId(int i) { //impose l'id au cluster (pour bien le mettre dans les tableaux
-		if (this.getArrayId() == null) {
-			System.out.println("tu es sur de vouloir specifier l'id ? tu devrais verifier pkoi est-ce qu'il est deja defini ");
-		}
+		if (i<= idCount )
+			System.out.println("tu es sur de vouloir specifier l'id ? Un autre Cluster a probablement déja cet id! Après tout tu dois savoir ce que tu fais. Modif effectuée.");
+
 		this.id = i;
-		
+		idCount = Math.max(id+1,idCount);		
 	}
 }
