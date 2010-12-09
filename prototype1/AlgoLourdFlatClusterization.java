@@ -12,7 +12,7 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 		this.clusters=clusters;
 		try {
 			Interprete.writeClusters(clusters);
-		} catch (RecoException e) {
+		} catch (ExceptionRecoNotValid e) {
 			System.out.println("Fail sur l'écriture");
 			e.printStackTrace();
 		}
@@ -71,27 +71,12 @@ public class AlgoLourdFlatClusterization extends AlgoLourd {
 	}
 
 	
-	@Override
-	Data input() {
-		Interprete.readClusters(null); // TODO : quelle requete faut il mettre pour reccupérer les bons clusters ? fautil une requete ?
-		return null;
-	}
 
-	@Override
-	void output(Data d) {
-		try {
-			Interprete.writeClusters(clusters);
-		} catch (RecoException e) {
-			System.out.println("Fail sur l'écriture");
-			e.printStackTrace();
-		}
 
-	}
-
-	private DataVector centroid(DataCluster c) {
-		c.updateCentroid();
-		return  c.getCentroid();
-	}
+//	private DataVector centroid(DataCluster c) {
+//		c.updateCentroid();
+//		return  c.getCentroid();
+//	}
 	
 	
 	static public double squaredDistance(DataVector v1, DataVector v2) {

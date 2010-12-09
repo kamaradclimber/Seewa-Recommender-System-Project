@@ -12,7 +12,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	private Hashtable<DataVector, Integer> whosMyCluster = new Hashtable<DataVector, Integer>();
 	private int nb_vectors = 0;
 	
-	public AlgoLourdFlatClusterizationIneg(ArrayList<DataVector> newVectors) throws RecoException{
+	public AlgoLourdFlatClusterizationIneg(ArrayList<DataVector> newVectors) throws ExceptionRecoNotValid{
 		System.out.print("Lecture des clusters dans la base de données...");
 		clusters = Interprete.readClusters();
 		System.out.print("...[done]\n");
@@ -23,7 +23,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		this.nb_vectors += newVectors.size();
 		
 		for (int i=0; i<nbClusters; i++){
-			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new RecoException(RecoException.NO_CLUSTER);
+			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new ExceptionRecoNotValid(ExceptionRecoNotValid.NO_CLUSTER);
 			DataCluster cluster = clusters.get(i);
 			cluster.setId(i); //on impose l'id pour que ca matche bien la position dans le tableau
 			if (cluster.isEmpty()) {
@@ -41,9 +41,9 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	}
 	
 	@Override
-	public void maj() throws RecoException {
+	public void maj() throws ExceptionRecoNotValid {
 		if (clusters.size()<1) {
-			throw new RecoException(RecoException.NO_CLUSTER);
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.NO_CLUSTER);
 		}
 		
 		//d'apres le papier d'Elkan
@@ -153,28 +153,11 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		}
 	}
 
-//  quelque chose utilise cette aprtie du code ? cest vraiment DEPRECATED :)	
-//	@Override
-//	Data input() {
-//		Interprete.readClusters(null); // TODO : quelle requete faut il mettre pour reccupérer les bons clusters ? fautil une requete ?
-//		return null;
-//	}
-//
-//	@Override
-//	void output(Data d) {
-//		try {
-//			Interprete.writeClusters(clusters);
-//		} catch (RecoException e) {
-//			System.out.println("Fail sur l'écriture");
-//			e.printStackTrace();
-//		}
-//
-//	}
 
-	private DataVector centroid(DataCluster c) {
-		c.updateCentroid();
-		return  c.getCentroid();
-	}
+//	private DataVector centroid(DataCluster c) {
+//		c.updateCentroid();
+//		return  c.getCentroid();
+//	}
 	
 	
 	static public double squaredDistance(DataVector v1, DataVector v2) {

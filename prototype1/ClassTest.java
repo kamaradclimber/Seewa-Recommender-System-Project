@@ -1,5 +1,6 @@
 import java.util.ArrayList;
-import java.util.Random;
+
+import org.bson.types.ObjectId;
 
 
 
@@ -12,77 +13,50 @@ public class ClassTest {
 	public static void main(String[] args) {
 		
 	try {
-		Interprete.readClusters();
-	} catch (RecoException e) {
+		Interprete.writeClusters(new ArrayList<DataCluster>());
+	} catch (Exception e) {
 		System.out.println("Ba oui ya un probleme, va falloir le gérer Johnny");
 		e.printStackTrace();
 	}
-		
-		
-//		String[] categories = {"Tennis", "Linux","Fleurs","Chocolat","Tsonga","Kubrick","Chasse","Marathon","Art moderne","Randonnee","Magritte"};
-//		String[] categories = {"Pasinilinna","Borloo","Architecture","CPNT"};
-//		String[] categories = {"Pasinilinna"};
-//		Random r = new Random();
-//		ArrayList<DataVector> vecteurs = new ArrayList<DataVector>();
-//		for (int id =0; id<50000; id++) {
-//			DataVector vecteur = new DataVector(id,METTRE UN USER_ID provenant de mongo);
-//			for (String str : categories) {
-//				vecteur.put(str, r.nextFloat()*10);
-//			}
-//			vecteurs.add(vecteur);
-//		}
-//		if (true) {
-//			try {
-//				AlgoLourdFlatClusterizationIneg algo = new AlgoLourdFlatClusterizationIneg(10, vecteurs);
-//				//			for (Cluster cluster : algo.clusters) {
-//				//				System.out.println("---");
-//				//				for (DataVector vecteur : cluster) {
-//				//					System.out.println(vecteur);
-//				//				}
-//				//				System.out.println("centroid : "+cluster.centroid);
-//				//			}
-//				long start = System.currentTimeMillis();
-//				algo.maj();
-//				long end = System.currentTimeMillis();
-//				System.out.println((end-start)/1000);
-////				for (Cluster cluster : algo.clusters) {
-////					System.out.println("---");
-////					for (DataVector vecteur : cluster) {
-////						System.out.println(vecteur);
-////					}
-////					System.out.println("centroid : "+cluster.centroid);
-////				}
-//
-//				AlgoLourdFlatClusterization algo2 = new AlgoLourdFlatClusterization(10, vecteurs);
-//				//			for (Cluster cluster : algo.clusters) {
-//				//				System.out.println("---");
-//				//				for (DataVector vecteur : cluster) {
-//				//					System.out.println(vecteur);
-//				//				}
-//				//				System.out.println("centroid : "+cluster.centroid);
-//				//			}
-//				long start2 = System.currentTimeMillis();
-//				algo2.maj();
-//				long end2 = System.currentTimeMillis();
-//				System.out.println((end2-start2)/1000);
-//				
-////				Visualizer v= new Visualizer();
-////				v.visualizerCluster(algo.clusters.get(0));
-//
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//			
-//			Site site= new Site();
-//			Request req= new Request("RECO USER FOR GREG");
-//			site.requestReco(req);
-			
-//			Visualizer v= new Visualizer();
-//			v.visualizerCluster(algo.clusters.get(0));
-//			
-//		}
-		
-
+	if (true) {
+	try {
+		System.out.print("Test de lecture des clusters (centroid seulement)...");
+		ArrayList<DataCluster>   clusters= Interprete.readClustersCentroids();
+		if (clusters.size()==0) {
+			System.out.println("[failed]");
+			System.out.println("  -> La liste des lcusters est vide (peut etre qu'il n'y a rien dans la base de données...");
+		} else {
+			for (DataCluster c : clusters) {
+				System.out.println("un cluster :");
+				System.out.println(c);
+			}
+			System.out.println("[done]");
+		}
+	} catch (Exception e) {
+		System.out.println("[failed]");
+		e.printStackTrace();
+	}
+	}
+	if (true) {
+	try {
+		System.out.print("Test de lecture des clusters...");
+		ArrayList<DataCluster>   clusters= Interprete.readClusters();
+		if (clusters.size()==0) {
+			System.out.println("[failed]");
+			System.out.println("  -> La liste des lcusters est vide (peut etre qu'il n'y a rien dans la base de données...");
+		} else {
+			for (DataCluster c : clusters) {
+				System.out.println("un cluster :");
+				System.out.println(c);
+			}
+			System.out.println("[done]");
+		}
+	} catch (Exception e) {
+		System.out.println("[failed]");
+		e.printStackTrace();
+	}
+	}
+	Interprete.updateUTR(new ObjectId("bbe0004dff77067352000000"));
 
 		}
 		}

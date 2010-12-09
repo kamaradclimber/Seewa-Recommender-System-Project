@@ -1,16 +1,16 @@
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.bson.types.ObjectId;
 
 
 public class AlgoLegerUserCluster extends AlgoLeger {
 
 	ArrayList<DataCluster> clusters= new ArrayList<DataCluster>();
 	
-	public AlgoLegerUserCluster() throws RecoException
+	public AlgoLegerUserCluster() throws ExceptionRecoNotValid
 	{	
 		
-		clusters = Interprete.readClustersCentroids(null); // on reccupère la liste des clusters TODO : remplacer par readLCustersCentroids
+		clusters = Interprete.readClustersCentroids(); // on reccupère la liste des clusters TODO : remplacer par readLCustersCentroids
 		
 		/* Ce qui suit ne parait plus n�cessaire avec la gestion d'exceptions, � confirmer
 		 * 
@@ -42,7 +42,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	
 	
 	
-	private DataCluster findCluster(DataVector user) throws RecoException
+	private DataCluster findCluster(DataVector user) throws ExceptionRecoNotValid
 	{	
 		DataCluster bestCandidate= null;
 		double bestDistance = Double.MAX_VALUE;
@@ -58,7 +58,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		
 		
 		if (bestCandidate==null) {
-			throw new RecoException(RecoException.ERR_NO_CLUSTER_ASSIGNED_TO_USER); 
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_NO_CLUSTER_ASSIGNED_TO_USER); 
 		}
 		
 		
@@ -67,7 +67,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	}
 	
 	
-	public DataUser findCloseUser(DataVector user) throws RecoException
+	public DataUser findCloseUser(DataVector user) throws ExceptionRecoNotValid
 	{
 		
 		DataCluster hisCluster = findCluster(user);
@@ -79,12 +79,12 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		
 	}
 	
-	public Recommendation answers(Request req) throws RecoException
+	public Recommendation answers(Request req) throws ExceptionRecoNotValid
 	{
 
-		String username = req.get(); //req.username TODO regexp pour retrouver le nom de l'utilisateur dans la string de requete
+		ObjectId userId = req.getUser(); //req.username TODO regexp pour retrouver le nom de l'utilisateur dans la string de requete
 		DataVector user;
-		user = Interprete.readUTR(username);
+		user = Interprete.readUTR(userId);
 		DataUser newBestBuddy = findCloseUser(user);
 		return new Recommendation(newBestBuddy.getName());
 		

@@ -1,5 +1,7 @@
 import java.util.Hashtable;
 
+import org.bson.types.ObjectId;
+
 
 
 
@@ -7,13 +9,13 @@ import java.util.Hashtable;
 public class DataVector extends Hashtable<String, Float> implements Data  {
 	
 	private int arrayId = 0;
-	private String mongoID; //on stocke l'id de l'user qui est associé au vector, si on parle dun user sinon il est null
-	//TODO : et si on mettait userID, ou juste "Objet user;"?
+	private ObjectId userID; //on stocke l'id de l'user qui est associé au vector, si on parle dun user sinon il est null
+	//DONE: et si on mettait userID, ou juste "Objet user;"? c'est fait (greg)
 	
-	public DataVector(int id, String mongoID) {
+	public DataVector(int id, ObjectId userID) {
 		super();
 		this.arrayId = id;
-		this.mongoID = mongoID; // ceci correspond a l'id de l'utilisateur auquel le data est eventuellement lié
+		this.userID = userID; // ceci correspond a l'id de l'utilisateur auquel le data est eventuellement lié
 	}
 	
 	public DataVector(boolean vectorThatMatters) {
@@ -21,7 +23,7 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 		super();
 		if (vectorThatMatters) System.out.println("bon faut appeler avec les bons arguments quand meme : on appelle ce constructeur que si le vecteur créé ne represente rien cf definition du constructeur");
 		this.arrayId = 0;
-		this.mongoID = null;
+		this.userID = null;
 	}
 	
 	public int getArrayId() {
@@ -54,8 +56,8 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 
 
 	@Override
-	public String getMongoId() {
-		return this.mongoID;
+	public ObjectId getMongoId() {
+		return this.userID;
 	}
 
 

@@ -1,12 +1,14 @@
+import org.bson.types.ObjectId;
+
 
 public class DataUser implements Data {
 
 	private String name = "";
 	private DataVector ucr; //on devrait ne se passer que des DataUser à la place  des DataVector (a reflechir) TODO
-	private String id; //l'id qui est dans mongo
+	private ObjectId id; //l'id qui est dans mongo
 	
 	
-	public DataUser(String name, DataVector ucr, String id)
+	public DataUser(String name, DataVector ucr, ObjectId id)
 	{
 		this.id = id;
 		this.name=name;
@@ -18,7 +20,7 @@ public class DataUser implements Data {
 	}
 	
 	@Override
-	public String getMongoId() {
+	public ObjectId getMongoId() {
 		return this.id;
 	}
 

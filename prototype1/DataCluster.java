@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
+
+import org.bson.types.ObjectId;
 
 
 public class DataCluster extends ArrayList<DataVector> implements Data  {
@@ -18,7 +19,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	DataVector centroid = new DataVector(false);
 	Interprete interprete;
 	private int id ;
-	private String mongoID;
+	private ObjectId mongoID;
 	
 	public Integer getArrayId() { // l'id qui sert dans les tableaux
 		return this.id;
@@ -37,7 +38,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		System.out.println("Je suis un cluster crée à partir de rien, es-tu sur de vouloir faire ca ?");
 	}
 	
-	public DataCluster(int id, DataVector centroid, ArrayList<DataVector> UTRs, String mongoID) {
+	public DataCluster(int id, DataVector centroid, ArrayList<DataVector> UTRs, ObjectId mongoID) {
 		super();
 		this.mongoID = mongoID;
 		this.addAll(UTRs);
@@ -120,7 +121,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	}
 
 	@Override
-	public String getMongoId() { // l'id de mongo dans la table cluster
+	public ObjectId getMongoId() { // l'id de mongo dans la table cluster
 		return this.mongoID;
 	}
 

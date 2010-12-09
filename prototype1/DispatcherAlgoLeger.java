@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public DispatcherAlgoLeger() {
 	this.algos_to_do = new Hashtable<AlgoLeger, Request>();
 }
 
-	public List<Recommendation> dispatches(Request req) throws RecoException {
+	public List<Recommendation> dispatches(Request req) throws ExceptionRecoNotValid {
 
 		
 		if (req.getTypeOfRequest()=="USER") {

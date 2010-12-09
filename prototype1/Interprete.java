@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 
 import com.mongodb.*;
 
@@ -23,18 +25,18 @@ static DB db;
 		try {
 			System.out.print("Ouverture de la base....");
 			Mongo mongo = new Mongo( "138.195.76.136"  , 80 );
-			db = mongo.getDB( "test" );
+			db = mongo.getDB( "seewa1" );
 			System.out.println("[done]");
 		}
 		catch (UnknownHostException ex) {
-			RecoException erreur = new RecoException(RecoException.ERR_CONNECTION_DB);
+			ExceptionRecoNotValid erreur = new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_CONNECTION_DB);
 			System.out.println("Erreur :"+erreur.getCode());
 			System.exit(1);
 		}
 	}
 	
 
-	static private DataVector db2DataVector(DBObject obj, Integer arrayId, String mongoID) {
+	static private DataVector db2DataVector(DBObject obj, Integer arrayId, ObjectId mongoID) {
 		// prend un dbobject pour en creer un datavector
 		DataVector vector = null;
 		if (arrayId != null ) {
@@ -43,7 +45,7 @@ static DB db;
 			vector = new DataVector(false);	
 		}
 		for (String key : obj.keySet() ) {
-			vector.put(key, (Float)obj.get(key)); 
+			vector.put(key, new Float( (Double)obj.get(key))); 
 		}
 		return vector;
 
@@ -58,7 +60,7 @@ static DB db;
 	}
 
 
-	static public ArrayList<DataCluster> readClustersCentroids(Request request) throws RecoException {
+	static public ArrayList<DataCluster> readClustersCentroids() throws ExceptionRecoNotValid {
 		//this function should be used only for getting centroid (for research use only)
 		// Un cluster en base de donnï¿½e est stockï¿½ avec un champ centroid
 		//cette fonction est un peu optmisee pour la recherche quand on a besoin seulement des centroids
@@ -74,33 +76,33 @@ static DB db;
 			//init de la centroid :
 			DataVector centroid = new DataVector(false);
 			DBObject cent = (DBObject) cluster.get("centroid");
-			String mongoID   =  (String) cluster.get("_id");
+			ObjectId mongoID   =  (ObjectId) cluster.get("_id");
 			centroid = Interprete.db2DataVector(cent, null,null);
 			
-			//TODO : on doit aussi charger les userId pour trouver une personne a recommender!
-			//=>fait. On ne fait pas d'appel supplémentaire à la BDD.
-			BasicDBList utrs = (BasicDBList) cluster.get("utr_ids");
-			ArrayList<DataVector> utrList =  new ArrayList<DataVector>();
-			
-			//Load user but without the data (only id)
-			for (Object arrayId : utrs) {
-				
-				DataVector utr = new DataVector(0, (String) arrayId);
-				utrList.add(utr);
-			}
+//			//TODO : on doit aussi charger les userId pour trouver une personne a recommender!
+//			//=>fait. On ne fait pas d'appel supplï¿½mentaire ï¿½ la BDD.
+//			BasicDBList utrs = (BasicDBList) cluster.get("utr_ids");
+//			ArrayList<DataVector> utrList =  new ArrayList<DataVector>();
+//			
+//			//Load user but without the data (only id)
+//			for (ObjectId arrayId : utrs) {
+//				
+//				DataVector utr = new DataVector(0, arrayId);
+//				utrList.add(utr);
+//			}
 			
 			clusters.add(new DataCluster(0, centroid, new ArrayList<DataVector>(), mongoID));
 		}
 		return clusters;
 		}
 		catch (MongoException ex) {
-			throw new RecoException(RecoException.ERR_DB_READING_CLUSTER);
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_DB_READING_CLUSTER);
 		}
 	}
 
 
 
-	static public ArrayList<DataCluster> readClusters() throws RecoException {
+	static public ArrayList<DataCluster> readClusters() throws ExceptionRecoNotValid {
 		// Un cluster en base de donnï¿½e est stockï¿½ avec un champ centroid et des liens vers les UTR
 		try {
 		DBCollection clusterCollection = db.getCollection("clusters");
@@ -114,7 +116,7 @@ static DB db;
 			//init of the centroid :
 			DataVector centroid = new DataVector(false);
 			DBObject cent = (DBObject) cluster.get("centroid");
-			String id   =  (String) cluster.get("_id");
+			ObjectId id   =  (ObjectId) cluster.get("_id");
 			centroid = Interprete.db2DataVector(cent, null,null);
 			
 			//add the UTR vectors :
@@ -125,7 +127,7 @@ static DB db;
 				query.put("_id", arrayId);
 				DBObject user = userCollection.findOne(query, new BasicDBObject("utr",1)); //on reccupere seulement le champ utr
 				DBObject utr = (DBObject) user.get("utr");
-				String mongoID =(String) user.get("_id");
+				ObjectId mongoID =(ObjectId) user.get("_id");
 				utrList.add(Interprete.db2DataVector(utr, (Integer) arrayId, mongoID));
 				query.clear();
 			}
@@ -134,14 +136,14 @@ static DB db;
 		return clusters;
 		}
 		catch (MongoException ex) {
-			throw new RecoException(RecoException.ERR_DB_READING_CLUSTER);
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_DB_READING_CLUSTER);
 		}
 	} 
 
-	public static boolean writeClusters(ArrayList<DataCluster> clusters) throws RecoException {
+	public static boolean writeClusters(ArrayList<DataCluster> clusters) throws ExceptionRecoNotValid {
 		//renvoie j'ai rï¿½ussi ou pas 
 		//Interprete.clusters=clusters; // a quoi sert cette ligne ? FIXME
-		//=> cf ligne 13 static: les données étaient enrgistrées dans la classe. En effet, cela ne sert plus a rien
+		//=> cf ligne 13 static: les donnï¿½es ï¿½taient enrgistrï¿½es dans la classe. En effet, cela ne sert plus a rien
 		try {
 		DBCollection clusterCollection = db.getCollection("clusters");
 		for (DataCluster cluster : clusters) {
@@ -161,11 +163,11 @@ static DB db;
 			return true;
 		}
 		catch (MongoException ex) {
-			throw new RecoException(RecoException.ERR_WRITING_CLUSTER);
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_WRITING_CLUSTER);
 		}
 	}
 
-	public static DataVector readUTR(String mongoID) throws RecoException { //TODO mettre un type un peu plus prï¿½cis pour l ï¿½d
+	public static DataVector readUTR(ObjectId mongoID) throws ExceptionRecoNotValid { //TODO mettre un type un peu plus prï¿½cis pour l ï¿½d
 		//renvoie l'UTR d'un user ï¿½ partir d'un id de l'user
 		try {
 		DBCollection users = db.getCollection("users");
@@ -176,7 +178,7 @@ static DB db;
 		return Interprete.db2DataVector(utr, null, mongoID); //this data matters so on lui passe l'id qui va bien
 		}
 		catch (MongoException ex) {
-			throw new RecoException(RecoException.ERR_DB_READING_UTR);
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_DB_READING_UTR);
 		}
 	}
 
@@ -195,7 +197,7 @@ static DB db;
 		//usersByUCR.put(ucr, username);
 	}
 
-	public static DataUser getUser(DataVector utr) throws RecoException{
+	public static DataUser getUser(DataVector utr) throws ExceptionRecoNotValid{
 		try {
 		//renvoie l'utilisateur qui correspond Ã  l'UTR passÃ© en argument
 		DBCollection users = db.getCollection("users");
@@ -209,7 +211,7 @@ static DB db;
 		//assert (utr.getArrayId() == (Integer) user.get("_id"));
 		assert (utr.getMongoId() == user.get("_id"));
 		
-		return new DataUser( user.get("name").toString(), utr, (String) utr.getMongoId());
+		return new DataUser( user.get("name").toString(), utr,  utr.getMongoId());
 		
 		} catch (Exception e) {
 			System.out.println("Heho ! ya une erreur, de toute facon il va y avoir un pointeur null exception dici peu");
@@ -272,7 +274,7 @@ static DB db;
 		DBCollection users = db.getCollection("users");
 		DBObject aResult;
 		BasicDBObject query = new BasicDBObject();
-		BasicDBObject field = new BasicDBObject("UTR", 1);
+		BasicDBObject field = new BasicDBObject("utr", 1);
 		BasicDBObject anUTR;
 		while (results.hasNext())
 		{
@@ -288,7 +290,7 @@ static DB db;
 		return true;
 	}
 	
-	public static boolean updateUTR(int userId){
+	public static boolean updateUTR(ObjectId userId){
 		//recalculate the UTR of the User with '_id'= userId using Map-Reduce
 		DBCollection upages = db.getCollection("upages");
 		
@@ -306,19 +308,20 @@ static DB db;
 			"var sumPR = 0;"+
 			"var nbPages = 0;"+
 			"for (var i=0; i<values.length;i++){"+
-				"sumPR += values[i].get('PR');"+ //somme pageRank
-				"nbPages += values[i].get('nb');}"+ // nb pages
+				"sumPR += values[i]['PR'];"+ //somme pageRank
+				"nbPages += values[i]['nb'];}"+ // nb pages
 			"return {PR : sumPR, nb : nbPages};" +
 		"};";
 		// theme {somme(pageRank)-nb}
 		BasicDBObject query = new BasicDBObject("user", userId);
-		DBCursor results = upages.mapReduce(map, reduce, /*collection de result*/ null, /*query*/ null).results();
+		DBCursor results = upages.mapReduce(map, reduce, /*collection de result*/ null, /*query*/query).results();
 		
 		DBObject aResult;
 		
 		
 		BasicDBObject anUTR = new BasicDBObject("user", userId);
 		BasicDBObject theme_val;
+		System.out.println(anUTR);
 		while (results.hasNext()) // on rajoute tous les thï¿½mes avec leur valeur d'UTR
 		{
 			aResult = results.next();
@@ -326,12 +329,15 @@ static DB db;
 			double utrvalue = theme_val.getDouble("PR")/ theme_val.getInt("nb");
 			anUTR.put((String) theme_val.get("_id"), utrvalue);// {theme,value}
 		}
-		
+		System.out.println(anUTR);
 		DBCollection users = db.getCollection("users");
 		query.clear();
-		query.put("_id", userId);
-		BasicDBObject field = new BasicDBObject("UTR", 1);
-		users.findAndModify(query, field, null, false ,anUTR, false, true); 
+		
+		query.put("_id", userId );
+
+		BasicDBObject update= new BasicDBObject("$set",new BasicDBObject("utr",anUTR));
+		
+		users.update(query, update); 
 		return true;
 	}
 }

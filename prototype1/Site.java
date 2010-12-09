@@ -6,7 +6,7 @@ public class Site {
 		Recommendeur reco = new Recommendeur();
 		Recommendation recommendation =  reco.recommendMeSomeThing(req);
 		return recommendation;
-		} catch (RecoException e) {
+		} catch (ExceptionRecoNotValid e) {
 			System.out.println("Erreur :"+e.getCode());
 			return null;
 		}

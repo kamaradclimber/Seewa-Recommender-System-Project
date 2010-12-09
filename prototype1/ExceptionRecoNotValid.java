@@ -1,10 +1,11 @@
 
-public class RecoException extends Exception {
+@SuppressWarnings("serial")
+public class ExceptionRecoNotValid extends Exception {
 
-	//On associe à tous les types d'exception que nous pouvons avoir un code :
+	//On associe ÀÜ tous les types d'exception que nous pouvons avoir un code :
 	
 	
-	/* Exceptions concernant la requête de recommandation */
+	/* Exceptions concernant la requ√®te de recommandation */
 	
 	static public final int ERR_UNKNOWN_REQUEST = 1;  
 	static public final int ERR_DB_READING_USER = 2;
@@ -16,18 +17,18 @@ public class RecoException extends Exception {
 	static public final int ERR_CONNECTION_DB = 8;
 	static public final int ERR_DB_READING_UTR = 9;
 	
-	/* Exceptions concernant la mise à jour des clusters */
+	/* Exceptions concernant la mise ÀÜ jour des clusters */
 	
 	static public final int NO_CLUSTER = 10;
 	
 	
 	public int code;
 	
-	public RecoException()
+	public ExceptionRecoNotValid()
 	{
 	}
 	
-	public RecoException(int aCode) {
+	public ExceptionRecoNotValid(int aCode) {
 		super();
 		code = aCode;
 	}
