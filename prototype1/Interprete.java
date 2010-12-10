@@ -323,17 +323,24 @@ static DB db;
 		BasicDBObject anUTR = new BasicDBObject("user", userId);
 		BasicDBObject resultatReduce; // objet temporaire contenant theme et valeur
 
-		anUTR.put("utrs", new BasicDBList()); // on rajoute une entre UTR
+		anUTR.put("utrs", new BasicDBObject()); // on rajoute une entre UTR
+		int nbThemeAll =0;
 		while (results.hasNext()) // on rajoute tous les th�mes avec leur valeur d'UTR
 		{
-			
 			aResult = results.next();
-			System.out.println(aResult);		
+//			System.out.println(aResult);		
 			resultatReduce = (BasicDBObject) aResult.get("value");
-			double utrvalue = resultatReduce.getDouble("PR")/ resultatReduce.getInt("nb");
-			BasicDBObject cleValeur = new BasicDBObject((String)aResult.get("_id"), utrvalue);
-			((BasicDBList)anUTR.get("utrs") ).add(cleValeur);// {theme,value}
+			double utrvalue = resultatReduce.getDouble("PR"); /// resultatReduce.getInt("nb");
+			nbThemeAll += resultatReduce.getInt("nb");
+			((BasicDBObject)anUTR.get("utrs") ).put( (String)aResult.get("_id"), utrvalue   );// {theme,value}
 		}
+		BasicDBObject utrs = (BasicDBObject) anUTR.get("utrs");
+		for (String themeName: utrs.keySet()) {
+			utrs.put(themeName, utrs.getDouble(themeName) / nbThemeAll);
+		}
+		anUTR.put("utrs", utrs);
+		
+		
 		System.out.println(anUTR);
 		DBCollection users = db.getCollection("users");
 		query.clear();
