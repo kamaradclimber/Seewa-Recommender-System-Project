@@ -18,7 +18,7 @@ public class ClassTest {
 		System.out.println("Ba oui ya un probleme, va falloir le gérer Johnny");
 		e.printStackTrace();
 	}
-	if (true) {
+	if (false) {
 	try {
 		System.out.print("Test de lecture des clusters (centroid seulement)...");
 		ArrayList<DataCluster>   clusters= Interprete.readClustersCentroids();
@@ -37,7 +37,7 @@ public class ClassTest {
 		e.printStackTrace();
 	}
 	}
-	if (true) {
+	if (false) {
 	try {
 		System.out.print("Test de lecture des clusters...");
 		ArrayList<DataCluster>   clusters= Interprete.readClusters();

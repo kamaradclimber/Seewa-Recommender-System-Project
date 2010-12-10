@@ -290,17 +290,19 @@ static DB db;
 		return true;
 	}
 	
-	public static boolean updateUTR(ObjectId userId){
+	public static boolean updateUTR(ObjectId userId) {
 		//recalculate the UTR of the User with '_id'= userId using Map-Reduce
 		DBCollection upages = db.getCollection("upages");
 		
 		String map = "function()" +
 		"{" +
+			"var that = this;"+
 			"this.themes.forEach(" +
 				"function(z){" +
-					"emit( z.name , {PR: this.pageRank , nb: 1}  );" +
+					"emit( z.name , {PR: that.pageRank  , nb: 1}  );" +
 				"});" +
 		"};";
+		/*this.pageRank*/
 		// Upages-> theme , {pageRank-nb}
 		
 		String reduce = "function( key , values )" +
@@ -316,18 +318,21 @@ static DB db;
 		BasicDBObject query = new BasicDBObject("user", userId);
 		DBCursor results = upages.mapReduce(map, reduce, /*collection de result*/ null, /*query*/query).results();
 		
-		DBObject aResult;
-		
-		
+		DBObject aResult; //stockage temporaire de lelement en cours dans la boucle
+	
 		BasicDBObject anUTR = new BasicDBObject("user", userId);
-		BasicDBObject theme_val;
-		System.out.println(anUTR);
+		BasicDBObject resultatReduce; // objet temporaire contenant theme et valeur
+
+		anUTR.put("utrs", new BasicDBList()); // on rajoute une entre UTR
 		while (results.hasNext()) // on rajoute tous les th�mes avec leur valeur d'UTR
 		{
+			
 			aResult = results.next();
-			theme_val = (BasicDBObject) aResult.get("value");
-			double utrvalue = theme_val.getDouble("PR")/ theme_val.getInt("nb");
-			anUTR.put((String) theme_val.get("_id"), utrvalue);// {theme,value}
+			System.out.println(aResult);		
+			resultatReduce = (BasicDBObject) aResult.get("value");
+			double utrvalue = resultatReduce.getDouble("PR")/ resultatReduce.getInt("nb");
+			BasicDBObject cleValeur = new BasicDBObject((String)aResult.get("_id"), utrvalue);
+			((BasicDBList)anUTR.get("utrs") ).add(cleValeur);// {theme,value}
 		}
 		System.out.println(anUTR);
 		DBCollection users = db.getCollection("users");
