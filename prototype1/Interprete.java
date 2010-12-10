@@ -228,28 +228,65 @@ static DB db;
 		
 		DBCollection upages = db.getCollection("upages");
 		
-		String map = "function()" +
+		String map2 = "function()" +
 		"{" +
+		"'var that = this;"+
 			"this.themes.forEach(" +
 				"function(z){" +
-					"emit( {user: this.id , theme: z.name} , [this.pageRank , 1]  );" +
+					"emit(hfgjerhgjer, {that.user , z.name ,PR : that.pageRank ,nb : 1}  );" +
 				"});" +
 		"};";
 		// Upages-> {userId-theme} , {pageRank-nb}
+		
+		String reduce2 = "function( key , values )" +
+		"{" +
+			"var sumPR = 0;"+
+			"var nbPages = 0;"+
+			"for (var i=0; i<values.length;i++){"+
+				"sumPR += values[i]['PR'];"+ //somme pageRank
+				"nbPages += values[i]['nb'];}"+ // nb pages
+			"return {PR: sumPR, nb :nbPages};" +
+		"};";
+		// {userId-theme}, {somme(pageRank)-nb}
+		
+		String map = "function()" +
+		"{" +
+			"var that = this;"+
+			"this.themes.forEach(" +
+				"function(z){" +
+					"emit( that.user+'qwerty'+z.name,{user: that.user, theme:z.name, PR: that.pageRank  , nb: 1}  );" +
+				"});" +
+		"};";
+		/*this.pageRank*/
+		// Upages-> theme , {pageRank-nb}
 		
 		String reduce = "function( key , values )" +
 		"{" +
 			"var sumPR = 0;"+
 			"var nbPages = 0;"+
+			"var user;"+
+			"var theme;"+
 			"for (var i=0; i<values.length;i++){"+
-				"sumPR += values[i][0];"+ //somme pageRank
-				"nbPages += values[i][1];}"+ // nb pages
-			"return [sumPR, nbPages];" +
+				"user = values[i]['user'];" +
+				"theme = values[i]['theme'];"+
+				"sumPR += values[i]['PR'];"+ //somme pageRank
+				"nbPages += values[i]['nb'];}"+ // nb pages
+			"return {user: user,theme :theme  ,PR : sumPR, nb : nbPages};" +
 		"};";
-		// {userId-theme}, {somme(pageRank)-nb}
 		
 		upages.mapReduce(map, reduce, /*collection de result*/ "temporaryutr", /*query*/null);
+		System.out.println("premier mapreduce fini");
 		DBCollection temporaryutr = db.getCollection("temporaryutr");
+		
+		map = "function() { emit( this.value['user'], {nb:this.value['nb']});}";
+		reduce = "function(key,values) {" +
+				"var nbThemeAll = 0;" +
+				"for (var i=0; i<values.length;i++) {" +
+					"nbThemeAll += values[i]['nb'];" +
+					"}" +
+				"return {nb : nbThemeAll};";
+		temporaryutr.mapReduce(map, reduce, /*collection de result*/ "temporaryutr", /*query*/null);	
+		System.out.println("second mapreduce fini");
 		
 		map = "function()" +
 		"{" +

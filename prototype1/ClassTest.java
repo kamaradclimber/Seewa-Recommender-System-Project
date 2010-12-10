@@ -57,6 +57,8 @@ public class ClassTest {
 	}
 	}
 	Interprete.updateUTR(new ObjectId("bbe0004dff77067352000000"));
+	System.out.println("Fin du premie rtest");
+	Interprete.updateUTR();
 
 		}
 		}
