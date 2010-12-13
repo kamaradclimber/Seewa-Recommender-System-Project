@@ -220,9 +220,25 @@ static DB db;
 	}
 	
 
+	public static boolean updateUTR2() {
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject(); 
+		BasicDBObject fields = new BasicDBObject("_id", 1); // on ne veut que l'id
+		DBCursor results =  (DBCursor)users.find(query, fields);
+		
+		DBObject aResult; //stockage temporaire de lelement en cours dans la boucle
+		
+		while (results.hasNext()) // on rajoute tous les thèmes avec leur valeur d'UTR
+		{
+			aResult = results.next();		
+			ObjectId id  = (ObjectId) aResult.get("_id");
+			if (!Interprete.updateUTR(id)) { 
+				return false; // il faudrait lever une exception non ?
+			}
+		}
+		return true;
+	}
 
-
-	
 	public static boolean updateUTR(){
 		//recalculate the UTR of all users using Map-Reduce (twice)
 		
@@ -292,29 +308,37 @@ static DB db;
 				"return {nb : nbThemeAll};" +
 				"}";
 		// on a calcule lenombre total doccurence de theme parmi les updages pour chaque utilisateur
-		temporaryutr.mapReduce(map, reduce, /*collection de result*/ "temporaryutr2", /*query*/null);	
+		temporaryutr.mapReduce(map, reduce, /*collection de result*/ "temporaryutr", /*query*/null);	
 		System.out.println("Second mapreduce fini");
 		DBCollection temporaryutr2 = db.getCollection("temporaryutr2");
 		
-		map = "function()" +
-		"{" +
-			"var utr = this.value[0]/this.value[1];" + // utr= somme(pageRank)/nb pages
-					"emit( this.user , {this.theme : utr}  );" +
-				"});" +
-		"};";
+//		map = "function()" +
+//		"{" +
+//			"var userId = this.value['user'];" +
+////			"var nb=  db.temporary2.findOne({_id: userId}).value['nb'];" +
+//			"var nb=1;" +
+//			"var utr = this.value['PR']/ nb;" + // utr= somme(pageRank)/nb pages
+//					"emit( this.user , {this.theme : utr}  );" +
+//				"});" +
+//		"};";
 		
-		
-		reduce = "function( key , values )" +
-		"{" +
-			"var utrSet={};"+
-			"for (var i=0; i<values.length;i++){"+
-				"for(var name in values[i]){"+
-					"utrSet.push({name: values[i].get(name)});}} "+
-			"return utrSet;" +
-		"};";
+		map ="function() {" +
+		"emit(" +
+		"this.value['user'], {this.value['theme'] :this.value['nb']}" +
+		");" +
+		"}";
+		reduce = "function(key,values) {" +
+		"var utrs = {};" +
+		"for (var i=0; i<values.length;i++) {" +
+		"for (themeName in values[i]){" +
+			"utrs[themeName]= values[i][name];" +
+			"}" +
+			"}" +
+		"return utrs;" +
+		"}";
 		
 		DBCursor results= temporaryutr.mapReduce(map, reduce, /*coll de result*/ null, /*query*/null).results();
-		
+		System.out.println("bon on a depasse le troisemem faut verifier maitenant que les resultats corespondent a ce qunon attendait");
 		// on place les utr dans users
 		DBCollection users = db.getCollection("users");
 		DBObject aResult;
