@@ -15,6 +15,11 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	public AlgoLourdFlatClusterizationIneg(ArrayList<DataVector> newVectors) throws ExceptionRecoNotValid{
 		System.out.print("Lecture des clusters dans la base de données...");
 		clusters = Interprete.readClusters();
+		
+//		for (int i=0; i<clusters.size(); i++) {
+//			clusters.get(i).setId(i);
+//		}
+		
 		System.out.print("...[done]\n");
 		
 		this.nbClusters = clusters.size();
@@ -35,6 +40,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		clusters.get(0).addAll(newVectors); // on met tous les nouveaux vecteurs dans un cluster au pif.
 		for(DataCluster c : clusters) { // pour savoir où sont les vecteurs
 			for(DataVector vect :c) {
+				
 				whosMyCluster.put(vect, c.getArrayId());
 			}
 		}
@@ -59,6 +65,14 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		for (DataCluster c : clusters) {
 			vectors.addAll(c);
 		}
+		int id=0;
+		for (DataCluster c : clusters) {
+			for(DataVector vect : c) {
+				vect.setArrayId(id);
+				id++;
+			}
+		}
+		
 		
 		//initialisation des lowerBound et upperBound
 		for(DataVector x : vectors) {
@@ -76,7 +90,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 			upperBound[x.getArrayId()] = minDistance;
 		}
 
-		while ((  lastError - currentError) / lastError > 0.01 ) { //tant que ca bouge on continue la manoeuvre
+		while ((  lastError - currentError) / lastError > 0.0001 ) { //tant que ca bouge on continue la manoeuvre
 			//maj des distances inter Centroid
 			for(int i=0;i<this.nbClusters;i++) {
 				for(int j=i;j<this.nbClusters;j++) {
@@ -148,18 +162,15 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 					}
 				}
 			}
-			
+		
 			
 		}
+		System.out.print("Ecriture des clusters dans la base de données...");
+		Interprete.writeClusters(clusters);
+		System.out.println("[done]");
 	}
 
 
-//	private DataVector centroid(DataCluster c) {
-//		c.updateCentroid();
-//		return  c.getCentroid();
-//	}
-	
-	
 	static public double squaredDistance(DataVector v1, DataVector v2) {
 		HashSet<String> union = new HashSet<String>();
 		union.addAll(v1.keySet());

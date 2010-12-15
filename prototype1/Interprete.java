@@ -36,7 +36,7 @@ static DB db;
 	}
 	
 
-	static private DataVector db2DataVector(DBObject obj, Integer arrayId, ObjectId mongoID) {
+	static protected DataVector db2DataVector(DBObject obj, Integer arrayId, ObjectId mongoID) {
 		// prend un dbobject pour en creer un datavector
 		DataVector vector = null;
 		if (arrayId != null ) {
@@ -138,7 +138,7 @@ static DB db;
 				utrList.add(Interprete.db2DataVector((DBObject) utr.get("utrs"), null, mongoID));
 				query.clear();
 			}
-			clusters.add(new DataCluster(0, centroid, utrList, id));
+			clusters.add(new DataCluster(-1, centroid, utrList, id));
 			utrList.clear();
 		}
 		return clusters;

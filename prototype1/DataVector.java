@@ -30,6 +30,10 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 		return this.arrayId;
 	}
 	
+	public void setArrayId(int id) {
+		this.arrayId = id;
+	}
+	
 	public boolean equals(Object o) {
 		try {
 			DataVector v = (DataVector) o;

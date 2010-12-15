@@ -1,6 +1,15 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.bson.types.ObjectId;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 
 
@@ -98,7 +107,31 @@ public class ClassTest {
 		System.out.println("[failed]");
 		e.printStackTrace();
 	}
+	try {
+		DBCollection clusters= Interprete.db.getCollection("clusters");
+		clusters.drop();
+		ArrayList<DataCluster> cc= new ArrayList<DataCluster>();
+		for (int i=0; i<10; i++) {
+			cc.add(new DataCluster(17, new DataVector(false), new ArrayList<DataVector>() , new ObjectId()));
 		}
+		Interprete.writeClusters(cc);
+		
+	DBCollection users = Interprete.db.getCollection("users");
+	DBCursor cusr = users.find();
+		ArrayList<DataVector> userss= new ArrayList<DataVector>();
+		while(cusr.hasNext()) {
+			BasicDBObject user = (BasicDBObject) cusr.next();
+			BasicDBObject tmp =(BasicDBObject) ((BasicDBObject) user.get("utr")).get("utrs");
+			userss.add(Interprete.db2DataVector(tmp ,null,(ObjectId)user.get("_id")));
 		}
+
+		AlgoLourdFlatClusterizationIneg algo = new AlgoLourdFlatClusterizationIneg(userss);
+		algo.maj();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	
+		}
+	}
 
 

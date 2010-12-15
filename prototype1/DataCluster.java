@@ -13,7 +13,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	private static int idCount;//variable permettant d'initialiser les id : verifie que tt les id sont différents.
 	
 	static { 
-		idCount = 1;
+		idCount = 0;
 	}
 	
 	DataVector centroid = new DataVector(false);
@@ -33,8 +33,9 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	
 	public DataCluster() {
 		super();
-		id = idCount;
-		idCount++;
+		this.id=0;
+//		id = idCount;
+//		idCount++;
 		System.out.println("Je suis un cluster crée à partir de rien, es-tu sur de vouloir faire ca ?");
 	}
 	
@@ -43,13 +44,14 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		this.mongoID = mongoID;
 		this.addAll(UTRs);
 		this.centroid = centroid;
-		if (id!=0) {
-			this.id = id;
-			idCount = Math.max(idCount, id+1);
-		}else {
-			this.id=idCount;
-			idCount++;
-		}
+		this.id =id;
+//		if (id!=0) {
+//			this.id = id;
+//			idCount = Math.max(idCount, id+1);
+//		}else {
+//			this.id=idCount;
+//			idCount++;
+//		}
 	}
 	
 	public DataVector getCentroid() {
@@ -125,8 +127,8 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	}
 
 	public void setId(int i) { //impose l'id au cluster (pour bien le mettre dans les tableaux
-		if (i<= idCount )
-			System.out.println("tu es sur de vouloir specifier l'id ? Un autre Cluster a probablement déja cet id! Après tout tu dois savoir ce que tu fais. Modif effectuée.");
+		if (i< idCount )
+			System.out.println("tu es sur de vouloir specifier l'id ("+i + idCount +" ) ? Un autre Cluster a probablement déja cet id! Après tout tu dois savoir ce que tu fais. Modif effectuée.");
 
 		this.id = i;
 		idCount = Math.max(id+1,idCount);		
