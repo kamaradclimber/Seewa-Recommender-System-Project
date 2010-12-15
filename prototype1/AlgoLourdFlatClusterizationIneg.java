@@ -27,17 +27,30 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		for (DataCluster c : clusters) { this.nb_vectors += c.size(); } //on compte ausi les vecteurs deja presents
 		this.nb_vectors += newVectors.size();
 		
+//		for (int i=0; i<nbClusters; i++){
+//			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new ExceptionRecoNotValid(ExceptionRecoNotValid.NO_CLUSTER);
+//			DataCluster cluster = clusters.get(i);
+//			cluster.setId(i); //on impose l'id pour que ca matche bien la position dans le tableau
+//			if (cluster.isEmpty()) {
+//				cluster.add(newVectors.get(0));
+//				newVectors.remove(0);
+//			}
+//			cluster.updateCentroid(); // cette maj n'est pas forcement utile et un peu lourde je trouve alors qu'on pourrait peut etre la sortir de cette boucle et la faire a la fin FIXME
+//		}
+//		clusters.get(0).addAll(newVectors); // on met tous les nouveaux vecteurs dans un cluster au pif.
+		
 		for (int i=0; i<nbClusters; i++){
 			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new ExceptionRecoNotValid(ExceptionRecoNotValid.NO_CLUSTER);
 			DataCluster cluster = clusters.get(i);
 			cluster.setId(i); //on impose l'id pour que ca matche bien la position dans le tableau
-			if (cluster.isEmpty()) {
-				cluster.add(newVectors.get(0));
-				newVectors.remove(0);
-			}
-			cluster.updateCentroid(); // cette maj n'est pas forcement utile et un peu lourde je trouve alors qu'on pourrait peut etre la sortir de cette boucle et la faire a la fin FIXME
 		}
-		clusters.get(0).addAll(newVectors); // on met tous les nouveaux vecteurs dans un cluster au pif.
+		int cluster_to_be_served=0; // on va distribuer les nouveauix vecteurs commes des cartes a jouer
+		for(DataVector vect : newVectors) {
+			clusters.get(cluster_to_be_served).add(vect);
+			cluster_to_be_served = (cluster_to_be_served + 1) % nbClusters;
+			
+		}
+		
 		for(DataCluster c : clusters) { // pour savoir où sont les vecteurs
 			for(DataVector vect :c) {
 				
