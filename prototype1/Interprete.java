@@ -41,6 +41,10 @@ static DB db;
 		DataVector vector = null;
 		if (arrayId != null ) {
 			vector = new DataVector(arrayId, mongoID);
+		} else if (mongoID != null) {
+			{
+				vector = new DataVector(0, mongoID);
+			}
 		} else {
 			vector = new DataVector(false);	
 		}
@@ -61,6 +65,7 @@ static DB db;
 
 
 	static public ArrayList<DataCluster> readClustersCentroids() throws ExceptionRecoNotValid {
+		System.out.println("HEHO T SUR QUE CA AMRCHE COMME FONCTION");
 		//this function should be used only for getting centroid (for research use only)
 		// Un cluster en base de donn�e est stock� avec un champ centroid
 		//cette fonction est un peu optmisee pour la recherche quand on a besoin seulement des centroids
@@ -120,18 +125,21 @@ static DB db;
 			centroid = Interprete.db2DataVector(cent, null,null);
 			
 			//add the UTR vectors :
-			BasicDBList utrs = (BasicDBList) cluster.get("utr_ids");
+			BasicDBList usrs = (BasicDBList) cluster.get("usr_ids");
 			ArrayList<DataVector> utrList =  new ArrayList<DataVector>();
 			BasicDBObject query = new BasicDBObject();
-			for (Object arrayId : utrs) {
-				query.put("_id", arrayId);
-				DBObject user = userCollection.findOne(query, new BasicDBObject("utr",1)); //on reccupere seulement le champ utr
-				DBObject utr = (DBObject) user.get("utr");
+			ObjectId mongoId;
+			for (Object mongoId_ : usrs) {
+				mongoId = (ObjectId) mongoId_;
+				query.put("_id",(ObjectId) mongoId);
+				BasicDBObject user = (BasicDBObject) userCollection.findOne(query /*,new BasicDBObject("utr",1)*/); //on reccupere seulement le champ utr
+				BasicDBObject utr = (BasicDBObject) user.get("utr");
 				ObjectId mongoID =(ObjectId) user.get("_id");
-				utrList.add(Interprete.db2DataVector(utr, (Integer) arrayId, mongoID));
+				utrList.add(Interprete.db2DataVector((DBObject) utr.get("utrs"), null, mongoID));
 				query.clear();
 			}
 			clusters.add(new DataCluster(0, centroid, utrList, id));
+			utrList.clear();
 		}
 		return clusters;
 		}
@@ -147,14 +155,14 @@ static DB db;
 		try {
 		DBCollection clusterCollection = db.getCollection("clusters");
 		for (DataCluster cluster : clusters) {
-			BasicDBObject query = new BasicDBObject("_id",cluster.getArrayId());
+			BasicDBObject query = new BasicDBObject("_id",cluster.getMongoId());
 			BasicDBObject clusterr = new BasicDBObject();
 			clusterr.put("centroid", dataVector2db(cluster.getCentroid())); //on rajoute la centroid
 			BasicDBList idVector = new BasicDBList();
 			for (DataVector utr : cluster) {
 				idVector.add(utr.getMongoId()); //on ajoute l'id du user pour l'identifier 
 			}
-			clusterr.put("utr_ids", idVector);
+			clusterr.put("usr_ids", idVector);
 			clusterCollection.update(query, clusterr ,true,false);
 			
 			}
@@ -173,7 +181,7 @@ static DB db;
 		DBCollection users = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",mongoID); //preparation de la query
 		DBObject user = users.findOne(query,new BasicDBObject("utr",1));
-		DBObject utr =  (DBObject) user.get("utr"); //on caste TODO : faire un try..catch pour eviter les pblemes
+		DBObject utr =  (DBObject) ((BasicDBObject) user.get("utr")).get("utrs"); //on caste TODO : faire un try..catch pour eviter les pblemes
 		
 		return Interprete.db2DataVector(utr, null, mongoID); //this data matters so on lui passe l'id qui va bien
 		}
@@ -197,6 +205,7 @@ static DB db;
 		//usersByUCR.put(ucr, username);
 	}
 
+	
 	public static DataUser getUser(DataVector utr) throws ExceptionRecoNotValid{
 		try {
 		//renvoie l'utilisateur qui correspond à l'UTR passé en argument
@@ -207,13 +216,12 @@ static DB db;
 		
 		BasicDBObject user = (BasicDBObject) users.findOne(query, fields);
 		
-		//TODO L'user _id a une forme bizarre 8f00054cc....!=integer
-		//assert (utr.getArrayId() == (Integer) user.get("_id"));
 		assert (utr.getMongoId() == user.get("_id"));
-		
-		return new DataUser( user.get("name").toString(), utr,  utr.getMongoId());
+		return new DataUser( user.get("name").toString(), utr, utr.getMongoId() );
 		
 		} catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
 			System.out.println("Heho ! ya une erreur, de toute facon il va y avoir un pointeur null exception dici peu");
 			return null;
 		}
@@ -308,7 +316,7 @@ static DB db;
 				"return {nb : nbThemeAll};" +
 				"}";
 		// on a calcule lenombre total doccurence de theme parmi les updages pour chaque utilisateur
-		temporaryutr.mapReduce(map, reduce, /*collection de result*/ "temporaryutr", /*query*/null);	
+		temporaryutr.mapReduce(map, reduce, /*collection de result*/ "temporaryutr2", /*query*/null);	
 		System.out.println("Second mapreduce fini");
 		DBCollection temporaryutr2 = db.getCollection("temporaryutr2");
 		
@@ -409,8 +417,6 @@ static DB db;
 		}
 		anUTR.put("utrs", utrs);
 		
-		
-		System.out.println(anUTR);
 		DBCollection users = db.getCollection("users");
 		query.clear();
 		

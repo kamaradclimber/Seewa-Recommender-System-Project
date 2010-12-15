@@ -56,10 +56,48 @@ public class ClassTest {
 		e.printStackTrace();
 	}
 	}
-	Interprete.updateUTR(new ObjectId("bbe0004dff77067352000000"));
-	System.out.println("Fin du premie rtest");
-	Interprete.updateUTR2();
+	try {
+	System.out.print("Ecriture d'un cluster...");
+	DataCluster c=new DataCluster(17, new DataVector(false), new ArrayList<DataVector>() , new ObjectId());
+	c.add(Interprete.readUTR(new ObjectId("8dda084dd1ab871052000000")));
+//	System.out.println("on commence le boiyulot serieux");
+	c.updateCentroid();
+	ArrayList<DataCluster> clist = new ArrayList<DataCluster>();
+	clist.add(c);
+	Interprete.writeClusters(clist);
+	
+	System.out.println("[done]");
+	} catch (Exception e) {
+		System.out.println("[failed]");
+		e.printStackTrace();
+		
+	}
 
+	try {
+		System.out.print("Lecture d'une liste de cluster...");
+	ArrayList<DataCluster>  list = Interprete.readClusters();
+//	System.out.println(list);
+		System.out.println("[done]");
+		} catch (Exception e) {
+			System.out.println("[failed]");
+			e.printStackTrace();
+		}
+	
+	
+	System.out.print("Test de calcul d'un UTR (pour un user)...");
+//	Interprete.updateUTR(new ObjectId("8dda084dd1ab871052000000"));
+//	Interprete.updateUTR2();
+	System.out.println("[done]");
+	//Interprete.updateUTR();
+	try {
+		System.out.print("Test de recommendation.....");
+	Site s= new Site();
+	System.out.println(s.requestReco(new Request("USER 8dda084dd1ab871052000000")));
+	System.out.println("[done]");
+	} catch (Exception e) {
+		System.out.println("[failed]");
+		e.printStackTrace();
+	}
 		}
 		}
 

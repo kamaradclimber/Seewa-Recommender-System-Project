@@ -94,7 +94,6 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	
 	public DataVector getRandomElement() {
 		//get an element contained in the cluster
-		
 		int random = (int) Math.floor( Math.random() * this.size()) ; //entre 0 et size()-1
 		
 		return this.get(random);

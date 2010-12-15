@@ -18,7 +18,7 @@ public DispatcherAlgoLeger() {
 		
 		if (req.getTypeOfRequest()=="USER") {
 			Request reqBis = new Request(req.get().substring(5));
-			if(algos_to_do==null) System.out.print("es");
+			if(algos_to_do==null) System.out.print("On essaye avec un agloLegerUserCluster");
 			algos_to_do.put(new AlgoLegerUserCluster(), reqBis);
 		}
 				

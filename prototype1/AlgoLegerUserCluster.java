@@ -10,16 +10,7 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	public AlgoLegerUserCluster() throws ExceptionRecoNotValid
 	{	
 		
-		clusters = Interprete.readClustersCentroids(); // on reccupère la liste des clusters TODO : remplacer par readLCustersCentroids
-		
-		/* Ce qui suit ne parait plus n�cessaire avec la gestion d'exceptions, � confirmer
-		 * 
-		 * 
-		if (clusters==null) {
-			//System.out.println("Le chargement des clusters depuis la base de données a échoué, je met une liste de cluster vide à la place");
-			//clusters = new ArrayList<DataCluster>();
-		}
-		*/
+		clusters = Interprete.readClusters(); //TODO remplacer par clusterCentroids une fois que ca marchera
 	}
 		
 	public AlgoLegerUserCluster(ArrayList<DataCluster> clusters)
@@ -27,18 +18,6 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 		this.clusters=clusters;
 	}
 	
-	public AlgoLegerUserCluster(AlgoLourdFlatClusterizationIneg anAlgo)
-	//TODO vas-t-on jamais l'utiliser
-	{
-		if (anAlgo.clusters==null)
-			try {
-				anAlgo.maj();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		this.clusters=anAlgo.clusters;
-	}
 	
 	
 	
@@ -71,9 +50,10 @@ public class AlgoLegerUserCluster extends AlgoLeger {
 	{
 		
 		DataCluster hisCluster = findCluster(user);
-		DataUser choice= Interprete.getUser(hisCluster.getRandomElement());
+		DataVector newBuddy = hisCluster.getRandomElement();
+		DataUser choice= Interprete.getUser(newBuddy);
 		if (!hisCluster.contains(user)) hisCluster.add(user);//on ajoute après avoir choisit un élément pour éviter qu'on ne le recommande à lui-même
-		Interprete.writeClusters(clusters); // THINK : maybe this is not optimal to write clusters in eqch reco process (le gqin est fqible en terme dinfo)
+		//Interprete.writeClusters(clusters); //TODO est-ce qu'on le fait ?  // THINK : maybe this is not optimal to write clusters in eqch reco process (le gqin est fqible en terme dinfo)
 		return choice;
 		
 		
