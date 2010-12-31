@@ -13,7 +13,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	private int nb_vectors = 0;
 	
 	public AlgoLourdFlatClusterizationIneg(ArrayList<DataVector> newVectors) throws ExceptionRecoNotValid{
-		System.out.print("Lecture des clusters dans la base de données...");
+		System.out.print("Lecture des clusters dans la base de donnï¿½es...");
 		clusters = Interprete.readClusters();
 		
 //		for (int i=0; i<clusters.size(); i++) {
@@ -22,7 +22,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		
 		System.out.print("...[done]\n");
 		
-		this.nbClusters = clusters.size();
+		this.nbClusters = clusters.size(); 
 		
 		for (DataCluster c : clusters) { this.nb_vectors += c.size(); } //on compte ausi les vecteurs deja presents
 		this.nb_vectors += newVectors.size();
@@ -40,7 +40,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 //		clusters.get(0).addAll(newVectors); // on met tous les nouveaux vecteurs dans un cluster au pif.
 		
 		for (int i=0; i<nbClusters; i++){
-			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new ExceptionRecoNotValid(ExceptionRecoNotValid.NO_CLUSTER);
+			if (newVectors.isEmpty() && clusters.get(i).isEmpty()) throw new ExceptionRecoNotValid(ExceptionRecoNotValid.NO_CLUSTER); //pas assez de vecteurs pour remplir les clusters
 			DataCluster cluster = clusters.get(i);
 			cluster.setId(i); //on impose l'id pour que ca matche bien la position dans le tableau
 		}
@@ -51,7 +51,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 			
 		}
 		
-		for(DataCluster c : clusters) { // pour savoir où sont les vecteurs
+		for(DataCluster c : clusters) { // pour savoir oï¿½ sont les vecteurs
 			for(DataVector vect :c) {
 				
 				whosMyCluster.put(vect, c.getArrayId());
@@ -124,8 +124,13 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 			
 			lastError = currentError;
 			currentError = 0;
+			ArrayList<DataVector> preserved_vectors = new ArrayList<DataVector>();
 			for (DataCluster c : clusters) {
-				c.clear(); // on vide le cluster pour pouvoir y ajouter ensuite ses nouveaux membres
+				DataVector preserved_vector  = c.clear_preserve(); // on vide le cluster pour pouvoir y ajouter ensuite ses nouveaux membres // EDIT : on ne supprime pas tous les vecteurs pour Ã©viter de se retrouver avec des clusters co:plÃ¨tetmetn vides
+				if (preserved_vector != null) {
+					vectors.remove(preserved_vector); //ici on supprime les vecteurs preservÃ©s pour ne pas les rajouter ensuite dans les clusters (eviter le doublons), on les rerajoute juste aprÃ¨s
+					preserved_vectors.add(preserved_vector);
+				}
 			}
 			for (DataVector vect : vectors) {
 				if (upperBound[vect.getArrayId()] <= s[whosMyCluster.get(vect)]) {
@@ -157,6 +162,10 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 				bestCandidate.add(vect);
 				whosMyCluster.put(vect, bestCandidate.getArrayId());
 			}
+			
+			vectors.addAll(preserved_vectors); // voilÃ  on rerajoute les vecteurs pour Ã©viter de gÃ©ner les autres opÃ©rations
+			
+			
 			Hashtable<Integer, DataVector> lastCentroid= new Hashtable<Integer, DataVector>();
 			for (DataCluster c : clusters) {
 				lastCentroid.put(c.getArrayId(),(DataVector) c.getCentroid().clone());
@@ -178,7 +187,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		
 			
 		}
-		System.out.print("Ecriture des clusters dans la base de données...");
+		System.out.print("Ecriture des clusters dans la base de donnï¿½es...");
 		Interprete.writeClusters(clusters);
 		System.out.println("[done]");
 	}
@@ -187,10 +196,10 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 	static public double squaredDistance(DataVector v1, DataVector v2) {
 		HashSet<String> union = new HashSet<String>();
 		union.addAll(v1.keySet());
-		union.addAll(v2.keySet());// on a calculé l'union des clés sur lesquelles on calcule la distance
+		union.addAll(v2.keySet());// on a calculï¿½ l'union des clï¿½s sur lesquelles on calcule la distance
 		double dist=0;
 		for (String key : union){
-			dist += Math.pow((v1.getOrZero(key)- v2.getOrZero(key)), 2); // on prend la diférence ( les valeurs dont les clés sont non contenues dans un des deux vecteurs sont renvoyées à zéro
+			dist += Math.pow((v1.getOrZero(key)- v2.getOrZero(key)), 2); // on prend la difï¿½rence ( les valeurs dont les clï¿½s sont non contenues dans un des deux vecteurs sont renvoyï¿½es ï¿½ zï¿½ro
 		}
 		return dist;
 	}
@@ -199,7 +208,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		return Math.sqrt(squaredDistance(v1, v2));
 	}
 	
-	private double distance2(DataVector v1, DataVector v2) { //on utilise un coefficient jaccard pour pondérer la distance habituelle
+	private double distance2(DataVector v1, DataVector v2) { //on utilise un coefficient jaccard pour pondï¿½rer la distance habituelle
 		//on calcule les unions/intersections
 		Set<String> union = v1.keySet();
 		Set<String> intersection = v1.keySet();
@@ -209,7 +218,7 @@ public class AlgoLourdFlatClusterizationIneg extends AlgoLourd {
 		double jaccard = intersection.size() / union.size()  ; //calcul de la distance de Jaccard
 		
 		double dist=0;
-		for (String key : intersection){  // on calcule la distance uniquement sur les clés communes
+		for (String key : intersection){  // on calcule la distance uniquement sur les clï¿½s communes
 			dist += Math.pow((v1.get(key)- v2.get(key)), 2); 
 		}
 		return (dist / (0.00001 + jaccard)); // on malusifie les jaccards un peu faiblards

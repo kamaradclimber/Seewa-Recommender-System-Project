@@ -20,11 +20,10 @@ public class ClassTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
 	try {
 		Interprete.writeClusters(new ArrayList<DataCluster>());
 	} catch (Exception e) {
-		System.out.println("Ba oui ya un probleme, va falloir le gérer Johnny");
+		System.out.println("Ba oui ya un probleme, va falloir le gï¿½rer Johnny");
 		e.printStackTrace();
 	}
 	if (false) {
@@ -33,7 +32,7 @@ public class ClassTest {
 		ArrayList<DataCluster>   clusters= Interprete.readClustersCentroids();
 		if (clusters.size()==0) {
 			System.out.println("[failed]");
-			System.out.println("  -> La liste des lcusters est vide (peut etre qu'il n'y a rien dans la base de données...");
+			System.out.println("  -> La liste des lcusters est vide (peut etre qu'il n'y a rien dans la base de donnï¿½es...");
 		} else {
 			for (DataCluster c : clusters) {
 				System.out.println("un cluster :");
@@ -52,7 +51,7 @@ public class ClassTest {
 		ArrayList<DataCluster>   clusters= Interprete.readClusters();
 		if (clusters.size()==0) {
 			System.out.println("[failed]");
-			System.out.println("  -> La liste des lcusters est vide (peut etre qu'il n'y a rien dans la base de données...");
+			System.out.println("  -> La liste des lcusters est vide (peut etre qu'il n'y a rien dans la base de donnï¿½es...");
 		} else {
 			for (DataCluster c : clusters) {
 				System.out.println("un cluster :");
@@ -65,6 +64,7 @@ public class ClassTest {
 		e.printStackTrace();
 	}
 	}
+	if (false) {
 	try {
 	System.out.print("Ecriture d'un cluster...");
 	DataCluster c=new DataCluster(17, new DataVector(false), new ArrayList<DataVector>() , new ObjectId());
@@ -107,7 +107,9 @@ public class ClassTest {
 		System.out.println("[failed]");
 		e.printStackTrace();
 	}
+	}
 	try {
+		System.out.print("Test de maj des clusters....");
 		DBCollection clusters= Interprete.db.getCollection("clusters");
 		clusters.drop();
 		ArrayList<DataCluster> cc= new ArrayList<DataCluster>();
@@ -126,7 +128,9 @@ public class ClassTest {
 		}
 
 		AlgoLourdFlatClusterizationIneg algo = new AlgoLourdFlatClusterizationIneg(userss);
+		//AlgoLourdFlatClusterization algo = new AlgoLourdFlatClusterization(userss);
 		algo.maj();
+		System.out.println("[done]");
 	} catch (Exception e) {
 		e.printStackTrace();
 	}
