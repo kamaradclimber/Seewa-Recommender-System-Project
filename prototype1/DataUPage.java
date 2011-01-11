@@ -6,6 +6,7 @@ public final class DataUPage implements Data {
 	private ObjectId id;
 	double pageRank;
 	//Time Stamp?
+	String url;
 	
 	public DataUPage( ObjectId id, double pageRank)
 	{

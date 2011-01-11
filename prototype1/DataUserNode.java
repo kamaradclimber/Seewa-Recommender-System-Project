@@ -6,8 +6,8 @@ import org.bson.types.ObjectId;
 public class DataUserNode implements Data {
 	private ObjectId id; //l'id qui est dans mongo
 	private String name;
-	private ArrayList<UserRelation> friends;
-	private ArrayList<DataUPage> uPages;
+	public ArrayList<UserRelation> friends;
+	public ArrayList<DataUPage> uPages;
 	double uPageMean; //moyenne des page rank des UPages.
 
 	
