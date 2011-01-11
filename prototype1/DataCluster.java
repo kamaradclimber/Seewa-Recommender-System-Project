@@ -7,10 +7,10 @@ import org.bson.types.ObjectId;
 public class DataCluster extends ArrayList<DataVector> implements Data  {
 
 	/**
-	 * le truc qui suit permet d'enlever un warning génant : TOUNDERSTAND 
+	 * le truc qui suit permet d'enlever un warning gï¿½nant : TOUNDERSTAND 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static int idCount;//variable permettant d'initialiser les id : verifie que tt les id sont différents.
+	private static int idCount;//variable permettant d'initialiser les id : verifie que tt les id sont diffï¿½rents.
 	
 	static { 
 		idCount = 0;
@@ -26,7 +26,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 	}
 	
 	public int hashCode() {
-		//test pour essayer d'accélerer les requtees dans les hastables
+		//test pour essayer d'accï¿½lerer les requtees dans les hastables
 		//est-ce encore utile ? FIXME
 		return (int) this.id;
 	}
@@ -36,7 +36,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		this.id=0;
 //		id = idCount;
 //		idCount++;
-		System.out.println("Je suis un cluster crée à partir de rien, es-tu sur de vouloir faire ca ?");
+		System.out.println("Je suis un cluster crï¿½e ï¿½ partir de rien, es-tu sur de vouloir faire ca ?");
 	}
 	
 	public DataCluster(int id, DataVector centroid, ArrayList<DataVector> UTRs, ObjectId mongoID) {
@@ -107,8 +107,8 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		this.centroid.clear();
 		Hashtable<String, Integer> counters = new Hashtable<String,Integer>(); 
 		for (DataVector vect : this) { //on parcourt tous les utilsiateurs contenus dans le cluster
-			for (String key : vect.keySet()) { // on parcourt ensuite toutes les catégories/dimensions de chacun des utlisateurs
-				if (!this.centroid.containsKey(key)) { // on créé ce quil faut
+			for (String key : vect.keySet()) { // on parcourt ensuite toutes les catï¿½gories/dimensions de chacun des utlisateurs
+				if (!this.centroid.containsKey(key)) { // on crï¿½ï¿½ ce quil faut
 					this.centroid.put(key, (float)0);
 					counters.put(key, 0);
 				}
@@ -116,7 +116,7 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 				counters.put(key, counters.get(key)+1);
 			}
 		}
-		for (String key : this.centroid.keySet()) { // on finit par diviser par le bon nombre  d'utilisateurs pour chaque catégorie
+		for (String key : this.centroid.keySet()) { // on finit par diviser par le bon nombre  d'utilisateurs pour chaque catï¿½gorie
 			this.centroid.put(key, this.centroid.get(key)/ counters.get(key));
 		}
 	}
@@ -126,9 +126,19 @@ public class DataCluster extends ArrayList<DataVector> implements Data  {
 		return this.mongoID;
 	}
 
+	
+	public DataVector clear_preserve() {
+		DataVector to_preserve = this.get((int)(Math.round(Math.random() * (this.size()-1))));
+		super.clear();
+		if (to_preserve != null) {
+			this.add(to_preserve);
+		}
+		return to_preserve;
+	}
+	
 	public void setId(int i) { //impose l'id au cluster (pour bien le mettre dans les tableaux
 		if (i< idCount )
-			System.out.println("tu es sur de vouloir specifier l'id ("+i + idCount +" ) ? Un autre Cluster a probablement déja cet id! Après tout tu dois savoir ce que tu fais. Modif effectuée.");
+			System.out.println("tu es sur de vouloir specifier l'id ("+i + idCount +" ) ? Un autre Cluster a probablement dï¿½ja cet id! Aprï¿½s tout tu dois savoir ce que tu fais. Modif effectuï¿½e.");
 
 		this.id = i;
 		idCount = Math.max(id+1,idCount);		
