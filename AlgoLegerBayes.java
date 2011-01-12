@@ -16,14 +16,6 @@ public class AlgoLegerBayes extends AlgoLeger {
 	public Recommendation answers(Request req) throws ExceptionRecoNotValid {
 		DataUserNode user = Interprete.getUserNode(req.user); // on reccupere l'utilisateur qui fait sa requete
 		
-		//on va construire la liste des pages de ses amis
-		
-//		HashMap<ObjectId, HashMap<ObjectId,DataUPage>> pages =new HashMap<DataUserNode,HashMap<ObjectId, DataUPage>>(); //on met une relation friend-> pages de cet ami
-//		for (UserRelation edge : user.friends) {
-//			HashMap<ObjectId,DataUPage> pageOfThisUser = new HashMap<ObjectId, DataUPage>();
-//			for (DataUPage page: edge.friend.pages) { pageOfThisUser.put(page.id, page); } //on ajoute toutes les pages et les hashe par leurs id pour les retrouver plus vite (la comparaison ensemblistes devrait etre plus rapide)
-//			pages.put(edge.friend.id, pageOfThisUser);
-//		} 
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
 		for (UserRelation edge : user.friends) {
 			for (DataUPage page: edge.friend.uPages) { //on parcourt toutes les pages des recommendeurs
@@ -35,7 +27,7 @@ public class AlgoLegerBayes extends AlgoLeger {
 					pages.put(page.url,copie);
 				} else {
 					ArrayList<Composite> tmp= new ArrayList<Composite>();
-					tmp.add(new Composite(edge.friend, page, edge.proba));
+					tmp.add(new Composite(edge.friend, page, edge.crossProbability));
 					pages.put(page.url, tmp);
 				}
 			}
@@ -52,7 +44,7 @@ public class AlgoLegerBayes extends AlgoLeger {
 		//on va ensuite calculer toutes les probabilités 
 		for (ArrayList<Composite> c : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			
-			double proba = c.proba / c.user.uPageMean * c.page.pageRank;
+			double proba = c.crossProbability / c.user.uPageMean * c.page.pageRank;
 			bestsReco.put(proba, c.page.url);
 			bestsReco.remove(bestsReco.firstKey()); //on maintient au 3 meilleures
 		}
@@ -65,12 +57,12 @@ public class AlgoLegerBayes extends AlgoLeger {
 	public class Composite {
 		DataUserNode user;
 		DataUPage page;
-		double proba;
+		double crossProbabilitya;
 		
 		public Composite(DataUserNode user, DataUPage page , double proba) {
 			this.user=user;
 			this.page =page;
-			this.proba = proba; //la proba P(A inter B)
+			this.crossProbability = proba; //la proba P(A inter B)
 		}
 	}
 
