@@ -7,6 +7,7 @@ public final class DataUPage implements Data {
 	double pageRank;
 	private String url; //on stock pour connaitre les pages qui sont partagées par 2 users
 	//Time Stamp?
+	String url;
 	
 	public DataUPage( ObjectId id, double pageRank, String url)
 	{
