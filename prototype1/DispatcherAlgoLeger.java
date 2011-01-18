@@ -16,11 +16,18 @@ public DispatcherAlgoLeger() {
 	public List<Recommendation> dispatches(Request req) throws ExceptionRecoNotValid {
 
 		
-		if (req.getTypeOfRequest()=="USER") {
-			Request reqBis = new Request(req.get().substring(5));
-			if(algos_to_do==null) System.out.print("On essaye avec un agloLegerUserCluster");
-			algos_to_do.put(new AlgoLegerUserCluster(), reqBis);
+//		if (req.getTypeOfRequest()=="USER") {
+//			Request reqBis = new Request(req.get().substring(5));
+//			if(algos_to_do==null) System.out.print("On essaye avec un agloLegerUserCluster");
+//			algos_to_do.put(new AlgoLegerUserCluster(), reqBis);
+//		}
+		
+		if (req.getTypeOfRequest()=="PAGES") {
+			Request reqBis = req;
+			if(algos_to_do==null) System.out.print("On essaye avec un algoLegerBayes");
+			algos_to_do.put(new AlgoLegerBayes(), reqBis);
 		}
+		
 				
 		
 		//on execute tous les algos avec la requete qui convient et on rassemble les recommendations 
@@ -31,4 +38,5 @@ public DispatcherAlgoLeger() {
 		return recos;
 		}
 }
+
 

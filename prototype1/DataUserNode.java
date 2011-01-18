@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 public class DataUserNode implements Data {
 	private ObjectId id; //l'id qui est dans mongo
 	private String name;
-	private ArrayList<UserRelation> friends; //TODO : changer en recommenders
+	private ArrayList<DataUserRelation> friends; //TODO : changer en recommenders
 	private ArrayList<DataUPage> uPages;
 	double uPageMean; //moyenne des page rank des UPages.
 
@@ -17,7 +17,7 @@ public class DataUserNode implements Data {
 		this.uPages = dataupages;
 	}
 	
-	public DataUserNode(String name, ObjectId id, ArrayList<UserRelation> friends, ArrayList<DataUPage> uPages)
+	public DataUserNode(String name, ObjectId id, ArrayList<DataUserRelation> friends, ArrayList<DataUPage> uPages)
 	{
 		this.id = id;
 		this.name=name;
@@ -46,14 +46,14 @@ public class DataUserNode implements Data {
 		return this.id;
 	}
 	
-	public void setFriends(ArrayList<UserRelation> userrelations) {
+	public void setFriends(ArrayList<DataUserRelation> userrelations) {
 		this.friends = userrelations;
 	}
 	
 	public boolean updateProbabilities()
 	{
 		boolean change= false;
-		for (UserRelation userR : friends)
+		for (DataUserRelation userR : friends)
 		{
 			change= change || userR.updateProbability(this);
 		}
