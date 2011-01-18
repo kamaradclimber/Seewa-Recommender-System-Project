@@ -119,7 +119,7 @@ static DB db;
 		newUser.put("_id",user.getId());
 		newUser.put("name","Francis");
 		
-		BasicDBList recommenders = new BasicDBList();
+		BasicDBObject recommenders = new BasicDBObject();
 		
 		for (DataUserRelation relation : user.getFriends()) {
 			BasicDBObject recommender = new BasicDBObject();
@@ -129,8 +129,7 @@ static DB db;
 			recommenderData.put("posFeedback", relation.getNegFeedback());
 			recommenderData.put("negFeedback", relation.getPosFeedback());
 			
-			recommender.put(relation.getFriend().getId().toString(),recommenderData);
-			recommenders.add(recommender);
+			recommenders.put(relation.getFriend().getId().toString(),recommenderData);
 		}
 		
 		newUser.put("recommenders",recommenders);
@@ -160,6 +159,30 @@ static DB db;
 		return results;
 			
 	
+	}
+
+
+
+	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id,
+			double crossProbability) {
+
+		DBCollection coll = db.getCollection("users");
+		
+
+		BasicDBObject fields = new BasicDBObject();
+		fields.put("recommenders", 1);
+		
+		BasicDBObject query = new BasicDBObject();
+		query.put("_id", user_Id);
+		
+		BasicDBObject user = (BasicDBObject)coll.findOne(query,fields);
+		System.out.println(user);
+		
+		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
+		
+		System.out.println(user);
+		coll.findAndModify(query, user);
+		
 	}
 }
 	

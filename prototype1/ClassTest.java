@@ -1,16 +1,8 @@
-﻿import java.sql.DatabaseMetaData;
-import java.util.ArrayList;
-import java.util.Iterator;
+﻿import java.util.ArrayList;
 
 import org.bson.types.ObjectId;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 
 
 
@@ -32,6 +24,9 @@ public class ClassTest {
 		DataUserNode user1 = new DataUserNode(userrelation,new ObjectId("8dda084dd1ab871050000000"));
 
 		Interprete.DataUserNode2db(user1);
+		
+		
+		Interprete.setCrossProbability(new ObjectId("8dda084dd1ab871050000000"), new ObjectId("8dda084dd1ab871053000000"), 13);
 		
 		}
 	}
