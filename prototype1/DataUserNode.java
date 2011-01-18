@@ -6,12 +6,15 @@ import org.bson.types.ObjectId;
 public class DataUserNode implements Data {
 	private ObjectId id; //l'id qui est dans mongo
 	private String name;
-	private ArrayList<UserRelation> friends;
+	private ArrayList<UserRelation> friends; //TODO : changer en recommenders
 	private ArrayList<DataUPage> uPages;
 	double uPageMean; //moyenne des page rank des UPages.
 
 	
-	
+	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataupages) {
+		this.id = id;
+		this.uPages = dataupages;
+	}
 	
 	public DataUserNode(String name, ObjectId id, ArrayList<UserRelation> friends, ArrayList<DataUPage> uPages)
 	{
@@ -37,11 +40,16 @@ public class DataUserNode implements Data {
 		return this.id;
 	}
 	
+	public void setFriends(ArrayList<UserRelation> userrelations) {
+		this.friends = userrelations;
+	}
+	
 	private class UserRelation{
 		DataUserNode friend;
 		double crossProbability; // P(A inter B) = proba that both like a page
 		int posFeedback;
 		int negFeedback;
+
 		
 	}
 
