@@ -40,7 +40,7 @@ static DB db;
 		BasicDBObject query = new BasicDBObject("_id",mongoID);
 		DBObject user = coll.findOne(query);
 		
-		String name = ((DBObject) user.get("name")).toString();
+		
 		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
 		ArrayList<UserRelation> recommenders = new ArrayList<UserRelation>();
 		
@@ -49,8 +49,12 @@ static DB db;
 		for (Object recommender : recommendersMongo) {
 			BasicDBObject recommender2 = (BasicDBObject) recommender;
 			ObjectId _id = (ObjectId) recommender2.get("_id");
+			double crossProbability = (Double) recommender2.get("crossProbability");
+			int posFeedback = (Integer) recommender2.get("posFeedback");
+			int negFeedback = (Integer) recommender2.get("negFeedback");
+			
 			DataUserNode usernode = db2DataUserNodeSimple(_id);
-			UserRelation userrelation = new UserRelation(usernode);
+			UserRelation userrelation = new UserRelation(usernode,crossProbability,posFeedback,negFeedback);
 			recommenders.add(userrelation);
 		}
 		
@@ -85,7 +89,9 @@ static DB db;
 	}
 	
 	
-	
+	static protected void DataUserNode2db(DataUserNode user) {
+		
+	}
 	
 
 	static protected DataVector db2DataVector(DBObject obj, Integer arrayId, ObjectId mongoID) {
