@@ -42,7 +42,7 @@ static DB db;
 		
 		
 		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
-		ArrayList<UserRelation> recommenders = new ArrayList<UserRelation>();
+		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
 		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
 		
@@ -54,7 +54,7 @@ static DB db;
 			int negFeedback = (Integer) recommender2.get("negFeedback");
 			
 			DataUserNode usernode = db2DataUserNodeSimple(_id);
-			UserRelation userrelation = new UserRelation(usernode,crossProbability,posFeedback,negFeedback);
+			DataUserRelation userrelation = new DataUserRelation(usernode,crossProbability,posFeedback,negFeedback);
 			recommenders.add(userrelation);
 		}
 		
@@ -90,7 +90,17 @@ static DB db;
 	
 	
 	static protected void DataUserNode2db(DataUserNode user) {
+		DBCollection coll = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",user.getId());
+		DBObject usermongo = coll.findOne(query);
+		BasicDBList recommendersMongo = (BasicDBList) usermongo.get("recommenders");
 		
+		for (Object recommender : recommendersMongo) {
+			BasicDBObject recommender2 = (BasicDBObject) recommender;
+					
+		}
+			
+	
 	}
 	
 

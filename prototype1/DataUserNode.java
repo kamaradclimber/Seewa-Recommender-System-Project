@@ -64,6 +64,14 @@ public class DataUserNode implements Data {
 	public ArrayList<DataUPage> getUPages() {
 		return this.uPages;
 	}
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 	
 	
 	
