@@ -1,6 +1,7 @@
 import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.TreeMap;
 
 import org.bson.types.ObjectId;
@@ -31,7 +32,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		if (req.getUrl()=="test" ) 
 		{
 			//géné des Upages
-			DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
+			//DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
 			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(), 0.8, "www.lefigaro.fr");
 			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.léquipe.fr");
 			DataUPage jeanMichLinux= new DataUPage(new ObjectId(), 0.1, "www.linux.org");
@@ -39,22 +40,24 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			DataUPage leGeekLinux= new DataUPage(new ObjectId(), 0.8, "www.linux.org");
 			DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(), 0.95, "www.techcrunch.com");
 			DataUPage leGeekOpLib= new DataUPage(new ObjectId(), 0.6, "www.opinionlibre.fr");
+			DataUPage leGeekLeMonde= new DataUPage(new ObjectId(), 0.01, "www.lemonde.fr");
 			
 			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(), 0.5, "www.lemonde.fr");
 			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(), 0.3, "www.lefigaro.fr");
 			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.léquipe.fr");
-			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.1, "www.lhumanité.fr");
+			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.9, "www.lhumanité.fr");
 			
 			ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
 			jeanMichUPage.add(jeanMichLinux);
 			jeanMichUPage.add(jeanMichLeFigaro);
-			jeanMichUPage.add(jeanMichLeMonde);
+			//jeanMichUPage.add(jeanMichLeMonde);
 			jeanMichUPage.add(jeanMichLEquipe);
 			
 			ArrayList<DataUPage> leGeekUPage= new ArrayList<DataUPage>();
 			leGeekUPage.add(leGeekLinux);
 			leGeekUPage.add(leGeekOpLib);
 			leGeekUPage.add(leGeekTechCrunch);
+			leGeekUPage.add(leGeekLeMonde);
 			
 			ArrayList<DataUPage> jeanJauresUPage= new ArrayList<DataUPage>();
 			jeanJauresUPage.add(jeanJauresLeFigaro);
@@ -85,7 +88,6 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			
 			
 			user = jeanMich;
-			System.out.println(user);
 		}
 		else {
 			user = Interprete.db2DataUserNodeHard(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
@@ -94,12 +96,9 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
 		for (DataUserRelation edge : user.getFriends()) {
 			for (DataUPage page: edge.friend.getUPages()) { //on parcourt toutes les pages des recommendeurs
-				if (pages.containsKey(page.getUrl())) {  // pour les stocker en hashant grace a l'url de la page
-					ArrayList<Composite> copie =(ArrayList<Composite>) (pages.get(page.getUrl())).clone(); //petit test pour savoir si les objets reccuperes avec get puis mdofiie sont effectivement modifies dans la hashmap
-					(pages.get(page.getUrl())).add(new Composite(edge.friend, page, edge.crossProbability));
-					copie.add(new Composite(edge.friend, page, edge.crossProbability));
-					if (copie!= pages.get(page.getUrl())) {System.out.println("ca marche enfin on est pas oblige de faire la copie"); }
-					pages.put(page.getUrl(),copie);
+				if (pages.containsKey(page.getUrl())) { 
+					// pour les stocker en hashant grace a l'url de la page
+					pages.get(page.getUrl()).add(new Composite(edge.friend, page, edge.crossProbability));
 				} else {
 					ArrayList<Composite> tmp= new ArrayList<Composite>();
 					tmp.add(new Composite(edge.friend, page, edge.crossProbability));
@@ -114,19 +113,36 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		}
 		
 		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
-		for(int i=0;i<3;i++){bestsReco.put((double)0, "");} //on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
+		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
+		//on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
+		//TODO : en faite non, on écrase toujours la même clé.
 		
 		//on va ensuite calculer toutes les probabilitÃ©s 
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
 				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-				bestsReco.put(proba, c.page.getUrl());
+				System.out.println( c.page.getUrl()+" : " + proba);
+				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
 				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
 			}
 		}
 		
+		double sum=0;	
+		for ( double proba : bestsReco.descendingKeySet())
+		{
+			System.out.println( bestsReco.get( proba)+" : " + proba);
+			sum += proba;
+		}
+		double var= Math.random() * sum;
+		Iterator<Double> probs = bestsReco.descendingKeySet().iterator();
+		double bestKey = probs.next(); 
+		while (probs.hasNext() && var-bestKey >0 )
+		{
+			bestKey = probs.next();
+			var-=bestKey;
+		}		
 		
-		return new Recommendation(bestsReco.lastEntry().getValue());
+		return new Recommendation(bestsReco.get(bestKey));
 	}
 	
 	
@@ -141,5 +157,19 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			this.crossProbability = proba; //la proba P(A inter B)
 		}
 	}
+	
+	//TODO: implementer cette classe et créer une PriorityQueue<DoubleStringDuet>, pour avoir un ensemble ordonné de <Double,String> acceptant les doublons
+	private class DoubleStringDuet implements Comparable<DoubleStringDuet>{
 
+		@Override
+		public int compareTo(DoubleStringDuet o) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		
+		
+	}
+	
+	
 }
