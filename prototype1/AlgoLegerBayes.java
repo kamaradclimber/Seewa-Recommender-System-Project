@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 
 
 public class AlgoLegerBayes extends AlgoLeger {
-
+//test
 	public AlgoLegerBayes() {
 		// TODO Auto-generated constructor stub
 	}
