@@ -35,6 +35,58 @@ static DB db;
 		}
 	}
 	
+	static protected DataUserNode db2DataUserNodeHard(ObjectId mongoID) {
+		DBCollection coll = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",mongoID);
+		DBObject user = coll.findOne(query);
+		
+		String name = ((DBObject) user.get("name")).toString();
+		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
+		ArrayList<UserRelation> recommenders = new ArrayList<UserRelation>();
+		
+		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
+		
+		for (Object recommender : recommendersMongo) {
+			BasicDBObject recommender2 = (BasicDBObject) recommender;
+			ObjectId _id = (ObjectId) recommender2.get("_id");
+			DataUserNode usernode = db2DataUserNodeSimple(_id);
+			UserRelation userrelation = new UserRelation(usernode);
+			recommenders.add(userrelation);
+		}
+		
+		DataUserNode usernode = db2DataUserNodeSimple(mongoID);
+		usernode.setFriends(recommenders);
+		
+		return usernode;
+	}
+	
+	static protected DataUserNode db2DataUserNodeSimple(ObjectId mongoID) {
+		
+		
+		DBCollection upages = db.getCollection("upages");
+		BasicDBObject query = new BasicDBObject("user",mongoID);
+		DBCursor pageviewedbyuser = upages.find(query);
+
+		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
+		
+		/* Création des DataUPages */
+		
+		while (pageviewedbyuser.hasNext()) {
+			DBObject upage = pageviewedbyuser.next();
+			double pagerank = (Double) upage.get("pageRank");
+			ObjectId id = (ObjectId) upage.get("_id");
+			
+			DataUPage dataupage = new DataUPage(id,pagerank);
+			userupages.add(dataupage);
+		}
+		
+		DataUserNode usernode = new DataUserNode(mongoID,userupages);
+		return usernode;
+	}
+	
+	
+	
+	
 
 	static protected DataVector db2DataVector(DBObject obj, Integer arrayId, ObjectId mongoID) {
 		// prend un dbobject pour en creer un datavector

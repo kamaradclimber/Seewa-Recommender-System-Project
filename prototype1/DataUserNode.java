@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import org.bson.types.ObjectId;
 
@@ -7,10 +6,15 @@ import org.bson.types.ObjectId;
 public class DataUserNode implements Data {
 	private ObjectId id; //l'id qui est dans mongo
 	private String name;
-	public ArrayList<UserRelation> friends;
-	public ArrayList<DataUPage> uPages;
+	private ArrayList<UserRelation> friends; //TODO : changer en recommenders
+	private ArrayList<DataUPage> uPages;
 	double uPageMean; //moyenne des page rank des UPages.
 
+	
+	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataupages) {
+		this.id = id;
+		this.uPages = dataupages;
+	}
 	
 	public DataUserNode(String name, ObjectId id, ArrayList<UserRelation> friends, ArrayList<DataUPage> uPages)
 	{
@@ -26,8 +30,6 @@ public class DataUserNode implements Data {
 		uPageMean= uPageMean/uPages.size();
 		
 	}
-	
-	
 
 	public String getName() {
 		return this.name;
@@ -38,8 +40,8 @@ public class DataUserNode implements Data {
 		return this.id;
 	}
 	
-	public ArrayList<DataUPage> getUpages() {
-		return uPages;
+	public void setFriends(ArrayList<UserRelation> userrelations) {
+		this.friends = userrelations;
 	}
 	
 	public boolean updatePorbabilities()
@@ -60,7 +62,7 @@ public class DataUserNode implements Data {
 		double crossProbability; // P(A inter B) = proba that both like a page
 		int posFeedback;
 		int negFeedback;
-		
+
 		public UserRelation( DataUserNode friend, double crossProbability)
 		{
 			this.friend=friend;
@@ -90,7 +92,7 @@ public class DataUserNode implements Data {
 			this.posFeedback=posFeedback;
 			this.negFeedback=negFeedback;
 		}
-		
+
 		public boolean updateProbability(DataUserNode owner) //crée la proba, renvoie true si valeur a été modifiée
 		{
 			ArrayList<DataUPage> friendUPages=friend.getUpages();
