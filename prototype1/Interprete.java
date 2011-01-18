@@ -44,7 +44,7 @@ static DB db;
 		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
 		ArrayList<UserRelation> recommenders = new ArrayList<UserRelation>();
 		
-		//TODO : la suite peut ptet etre am�lior� en regroupant tout dans une requ�te
+		//TODO : la suite peut ptet etre amŽliorŽ en regroupant tout dans une requ�te
 		
 		for (Object recommender : recommendersMongo) {
 			BasicDBObject recommender2 = (BasicDBObject) recommender;
@@ -70,7 +70,7 @@ static DB db;
 
 		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
 		
-		/* Cr�ation des DataUPages */
+		/* CrŽation des DataUPages */
 		
 		while (pageviewedbyuser.hasNext()) {
 			DBObject upage = pageviewedbyuser.next();
@@ -120,7 +120,7 @@ static DB db;
 	static public ArrayList<DataCluster> readClustersCentroids() throws ExceptionRecoNotValid {
 		System.out.println("HEHO T SUR QUE CA AMRCHE COMME FONCTION");
 		//this function should be used only for getting centroid (for research use only)
-		// Un cluster en base de donn�e est stock� avec un champ centroid
+		// Un cluster en base de donnï¿½e est stockï¿½ avec un champ centroid
 		//cette fonction est un peu optmisee pour la recherche quand on a besoin seulement des centroids
 		try {
 		DBCollection coll = db.getCollection("clusters");
@@ -138,7 +138,7 @@ static DB db;
 			centroid = Interprete.db2DataVector(cent, null,null);
 			
 //			//TODO : on doit aussi charger les userId pour trouver une personne a recommender!
-//			//=>fait. On ne fait pas d'appel suppl�mentaire � la BDD.
+//			//=>fait. On ne fait pas d'appel supplï¿½mentaire ï¿½ la BDD.
 //			BasicDBList utrs = (BasicDBList) cluster.get("utr_ids");
 //			ArrayList<DataVector> utrList =  new ArrayList<DataVector>();
 //			
@@ -161,7 +161,7 @@ static DB db;
 
 
 	static public ArrayList<DataCluster> readClusters() throws ExceptionRecoNotValid {
-		// Un cluster en base de donn�e est stock� avec un champ centroid et des liens vers les UTR
+		// Un cluster en base de donnï¿½e est stockï¿½ avec un champ centroid et des liens vers les UTR
 		try {
 		DBCollection clusterCollection = db.getCollection("clusters");
 		DBCollection userCollection = db.getCollection("users");
@@ -202,9 +202,9 @@ static DB db;
 	} 
 
 	public static boolean writeClusters(ArrayList<DataCluster> clusters) throws ExceptionRecoNotValid {
-		//renvoie j'ai r�ussi ou pas 
+		//renvoie j'ai rï¿½ussi ou pas 
 		//Interprete.clusters=clusters; // a quoi sert cette ligne ? FIXME
-		//=> cf ligne 13 static: les donn�es �taient enrgistr�es dans la classe. En effet, cela ne sert plus a rien
+		//=> cf ligne 13 static: les donnï¿½es ï¿½taient enrgistrï¿½es dans la classe. En effet, cela ne sert plus a rien
 		try {
 		DBCollection clusterCollection = db.getCollection("clusters");
 		for (DataCluster cluster : clusters) {
@@ -228,8 +228,8 @@ static DB db;
 		}
 	}
 
-	public static DataVector readUTR(ObjectId mongoID) throws ExceptionRecoNotValid { //TODO mettre un type un peu plus pr�cis pour l �d
-		//renvoie l'UTR d'un user � partir d'un id de l'user
+	public static DataVector readUTR(ObjectId mongoID) throws ExceptionRecoNotValid { //TODO mettre un type un peu plus prï¿½cis pour l ï¿½d
+		//renvoie l'UTR d'un user ï¿½ partir d'un id de l'user
 		try {
 		DBCollection users = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",mongoID); //preparation de la query
@@ -261,7 +261,7 @@ static DB db;
 	
 	public static DataUser getUser(DataVector utr) throws ExceptionRecoNotValid{
 		try {
-		//renvoie l'utilisateur qui correspond à l'UTR passé en argument
+		//renvoie l'utilisateur qui correspond Ã  l'UTR passÃ© en argument
 		DBCollection users = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",utr.getMongoId()); //preparation de la query
 		BasicDBObject fields = new BasicDBObject("_id", 1);
@@ -289,7 +289,7 @@ static DB db;
 		
 		DBObject aResult; //stockage temporaire de lelement en cours dans la boucle
 		
-		while (results.hasNext()) // on rajoute tous les th�mes avec leur valeur d'UTR
+		while (results.hasNext()) // on rajoute tous les thèmes avec leur valeur d'UTR
 		{
 			aResult = results.next();		
 			ObjectId id  = (ObjectId) aResult.get("_id");
@@ -455,7 +455,7 @@ static DB db;
 
 		anUTR.put("utrs", new BasicDBObject()); // on rajoute une entre UTR
 		int nbThemeAll =0;
-		while (results.hasNext()) // on rajoute tous les th�mes avec leur valeur d'UTR
+		while (results.hasNext()) // on rajoute tous les thï¿½mes avec leur valeur d'UTR
 		{
 			aResult = results.next();
 //			System.out.println(aResult);		
