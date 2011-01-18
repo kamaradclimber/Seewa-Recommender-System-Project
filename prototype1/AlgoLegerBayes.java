@@ -9,7 +9,7 @@ import org.bson.types.ObjectId;
 public class AlgoLegerBayes extends AlgoLeger {
 //test
 	public AlgoLegerBayes() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class AlgoLegerBayes extends AlgoLeger {
 		}
 		
  		//on va supprimer toutes les pages qu'il a deja vu
-		for (DataUPage page : user.uPages) {
+		for (DataUPage page : user.getUPages()) {
 			pages.remove(page.getUrl());
 		}
 		
