@@ -8,7 +8,6 @@ public final class DataUPage implements Data {
 	private String url; //on stock pour connaitre les pages qui sont partag�es par 2 users
 	//Time Stamp?
 	
-	
 	public DataUPage(ObjectId id, double pageRank) {
 		this.id = id;
 		this.pageRank=pageRank;
@@ -26,6 +25,13 @@ public final class DataUPage implements Data {
 	}
 	
 	
+	@Override
+	public String toString() {
+		return "DataUPage [id=" + id + ", pageRank=" + pageRank + ", url="
+				+ url + "]";
+	}
+
+
 	@Override
 	public ObjectId getMongoId() {
 		

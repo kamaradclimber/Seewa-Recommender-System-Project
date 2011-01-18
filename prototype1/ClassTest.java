@@ -13,7 +13,17 @@ public class ClassTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
+		Recommendation result;
+		try {
+			result= AlgoLegerBayes.getAlgo().answers(new Request(null, "test", null, null));
+			System.out.println(result);
+			
+		} catch (ExceptionRecoNotValid e) {
+			e.printStackTrace();
+		}
 		
+
 		DataUserNode user2 = new DataUserNode(new ObjectId("8dda084dd1ab871053000000"));
 
 		DataUserRelation user2user1 = new DataUserRelation(user2,0.5,1,1);
