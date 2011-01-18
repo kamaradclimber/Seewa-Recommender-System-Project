@@ -73,4 +73,36 @@ public class DataUserRelation{
 			this.crossProbability = sum/nInter;
 			return this.crossProbability == oldValue;
 			}
+
+		public DataUserNode getFriend() {
+			return friend;
+		}
+
+		public void setFriend(DataUserNode friend) {
+			this.friend = friend;
+		}
+
+		public double getCrossProbability() {
+			return crossProbability;
+		}
+
+		public void setCrossProbability(double crossProbability) {
+			this.crossProbability = crossProbability;
+		}
+
+		public int getPosFeedback() {
+			return posFeedback;
+		}
+
+		public void setPosFeedback(int posFeedback) {
+			this.posFeedback = posFeedback;
+		}
+
+		public int getNegFeedback() {
+			return negFeedback;
+		}
+
+		public void setNegFeedback(int negFeedback) {
+			this.negFeedback = negFeedback;
+		}
 	}
