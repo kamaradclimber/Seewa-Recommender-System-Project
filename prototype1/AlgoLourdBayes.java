@@ -10,7 +10,7 @@ import com.mongodb.*;
 
 
 
-public class AlgoLoursBayes extends AlgoLourd {
+public class AlgoLourdBayes extends AlgoLourd {
 
 	
 	public void maj() throws Exception {
