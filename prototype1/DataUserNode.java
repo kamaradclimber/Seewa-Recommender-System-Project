@@ -31,6 +31,11 @@ public class DataUserNode implements Data {
 		
 	}
 
+	public ArrayList<DataUserRelation> getFriends() {
+		return this.friends;
+	}
+	
+	
 	public String getName() {
 		return this.name;
 	}
@@ -44,7 +49,7 @@ public class DataUserNode implements Data {
 		this.friends = userrelations;
 	}
 	
-	public boolean updatePorbabilities()
+	public boolean updateProbabilities()
 	{
 		boolean change= false;
 		for (UserRelation userR : friends)
@@ -53,6 +58,10 @@ public class DataUserNode implements Data {
 		}
 		
 		return change;
+	}
+	
+	public ArrayList<DataUPage> getUPages() {
+		return this.uPages;
 	}
 	
 	
@@ -93,7 +102,7 @@ public class DataUserNode implements Data {
 			this.negFeedback=negFeedback;
 		}
 
-		public boolean updateProbability(DataUserNode owner) //crée la proba, renvoie true si valeur a été modifiée
+		public boolean updateProbability(DataUserNode owner) //crï¿½e la proba, renvoie true si valeur a ï¿½tï¿½ modifiï¿½e
 		{
 			ArrayList<DataUPage> friendUPages=friend.getUpages();
 			ArrayList<DataUPage> ownerUPages=owner.getUpages();
