@@ -40,7 +40,7 @@ static DB db;
 		BasicDBObject query = new BasicDBObject("_id",mongoID);
 		DBObject user = coll.findOne(query);
 		
-		String name = ((DBObject) user.get("name")).toString();
+		
 		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
 		ArrayList<UserRelation> recommenders = new ArrayList<UserRelation>();
 		
@@ -49,6 +49,7 @@ static DB db;
 		for (Object recommender : recommendersMongo) {
 			BasicDBObject recommender2 = (BasicDBObject) recommender;
 			ObjectId _id = (ObjectId) recommender2.get("_id");
+			
 			DataUserNode usernode = db2DataUserNodeSimple(_id);
 			UserRelation userrelation = new UserRelation(usernode);
 			recommenders.add(userrelation);

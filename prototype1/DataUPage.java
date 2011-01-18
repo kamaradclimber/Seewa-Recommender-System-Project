@@ -9,10 +9,15 @@ public final class DataUPage implements Data {
 	//Time Stamp?
 	String url;
 	
-	public DataUPage( ObjectId id, double pageRank, String url)
-	{
+	public DataUPage(ObjectId id, double pageRank) {
 		this.id = id;
 		this.pageRank=pageRank;
+	}
+	
+	
+	public DataUPage( ObjectId id, double pageRank, String url)
+	{
+		this(id,pageRank);
 		this.url=url;
 	}
 	
