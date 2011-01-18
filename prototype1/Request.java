@@ -3,32 +3,31 @@ import org.bson.types.ObjectId;
 
 public class Request {
 
+	private ObjectId userId;
+	private String url;
+	private ObjectId category; //eventuellement pour affiner les recos.
+	private TypeOfRequest type;
+	
+	public String toString() {
+		return "userId: "+this.userId + " url:"+this.url + " (category: "+category+")";
+	}
+	
+	public TypeOfRequest getTypeOfRequest() throws ExceptionRecoNotValid {
+		return this.type;
+	}
+	
 
-	private String request="";
-	
-	public Request(String req) {
-		this.request = req;
+	public ObjectId getUserId() {
+		return this.userId;
 	}
-	
-	public ObjectId getUser() {
-		System.out.println("On fait bien de la reco d'utilisateur ?");
-		return new ObjectId(this.request);
+
+
+	public String getUrl() {
+		return this.url;
 	}
-	
-	
-	public String get() {
-		return this.request;
+
+	public ObjectId getCategory() {
+		return this.category;
 	}
-	
-	public String getTypeOfRequest() throws ExceptionRecoNotValid {
-		if (this.request.contains("USER")) {
-			return "USER";
-		} else if (this.request.contains("PAGE")) {
-			return "PAGE";
-		} else {
-			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_UNKNOWN_REQUEST);
-		}
-	}
-	
 	
 }
