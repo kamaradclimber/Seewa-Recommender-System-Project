@@ -116,6 +116,7 @@ static DB db;
 		DBCollection coll = db.getCollection("users");
 		BasicDBObject newUser = new BasicDBObject();
 		newUser.put("_id",user.getId());
+		newUser.put("name","Francis");
 		
 		BasicDBList recommenders = new BasicDBList();
 		
@@ -131,9 +132,10 @@ static DB db;
 			recommenders.add(recommender);
 		}
 		
+		newUser.put("recommenders",recommenders);
 		
 		BasicDBObject query = new BasicDBObject("_id", user.getId());
-		coll.update(query, newUser, true, false);
+		coll.findAndModify(query, newUser);
 		
 	
 	}
