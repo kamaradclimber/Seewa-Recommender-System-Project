@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import org.bson.BasicBSONObject;
 import org.bson.types.ObjectId;
 
 
@@ -46,12 +47,12 @@ static DB db;
 		
 		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
 		
-		for (Object recommender : recommendersMongo) {
-			BasicDBObject recommender2 = (BasicDBObject) recommender;
-			ObjectId _id = (ObjectId) recommender2.get("_id");
-			double crossProbability = (Double) recommender2.get("crossProbability");
-			int posFeedback = (Integer) recommender2.get("posFeedback");
-			int negFeedback = (Integer) recommender2.get("negFeedback");
+		for (String recommender : recommendersMongo.keySet()) {
+			//BasicDBObject recommender2 = (BasicDBObject) recommender;
+			ObjectId _id = (ObjectId) ((BasicBSONObject) recommendersMongo.get(recommender)).get("_id");
+			double crossProbability = (Double) ((BasicBSONObject) recommendersMongo.get(recommender)).get("crossProbability");
+			int posFeedback = (Integer) ((BasicBSONObject) recommendersMongo.get(recommender)).get("posFeedback");
+			int negFeedback = (Integer) ((BasicBSONObject) recommendersMongo.get(recommender)).get("negFeedback");
 			
 			DataUserNode usernode = db2DataUserNodeSimple(_id);
 			DataUserRelation userrelation = new DataUserRelation(usernode,crossProbability,posFeedback,negFeedback);
@@ -63,6 +64,8 @@ static DB db;
 		
 		return usernode;
 	}
+	
+	
 	
 	static protected DataUserNode db2DataUserNodeSimple(ObjectId mongoID) {
 		
@@ -88,20 +91,57 @@ static DB db;
 		return usernode;
 	}
 	
+	static protected void modifyFeedback(ObjectId recommender_id , ObjectId receiver_id , boolean feedback) {
+		DBCollection coll = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id", receiver_id);
+		DBObject user = coll.findOne(query);
+		
+		BasicDBList recommenders = (BasicDBList) user.get("recommenders");
+		BasicDBObject recommender = (BasicDBObject) recommenders.get(recommender_id.toString());
+		
+		if (feedback == true) {
+			int posFeedback = (Integer) recommender.get("posFeedback");
+			recommender.put("posFeedback",posFeedback+1);
+		}
+		
+		else {
+			int negFeedback = (Integer) recommender.get("negFeedback");
+			recommender.put("negFeedback",negFeedback-1);
+		}
+	}
+	
 	
 	static protected void DataUserNode2db(DataUserNode user) {
-		DBCollection coll = db.getCollection("users");
-		BasicDBObject query = new BasicDBObject("_id",user.getId());
-		DBObject usermongo = coll.findOne(query);
-		BasicDBList recommendersMongo = (BasicDBList) usermongo.get("recommenders");
 		
-		for (Object recommender : recommendersMongo) {
-			BasicDBObject recommender2 = (BasicDBObject) recommender;
-					
-		}
+		DBCollection coll = db.getCollection("users");
+		BasicDBObject newUser = new BasicDBObject();
+		newUser.put("_id",user.getId());
+		newUser.put("name","Francis");
+		
+		BasicDBList recommenders = new BasicDBList();
+		
+		for (DataUserRelation relation : user.getFriends()) {
+			BasicDBObject recommender = new BasicDBObject();
+			BasicDBObject recommenderData = new BasicDBObject();
+			recommenderData.put("_id", relation.getFriend().getId());
+			recommenderData.put("crossProbability", relation.getCrossProbability());
+			recommenderData.put("posFeedback", relation.getNegFeedback());
+			recommenderData.put("negFeedback", relation.getPosFeedback());
 			
+			recommender.put(relation.getFriend().getId().toString(),recommenderData);
+			recommenders.add(recommender);
+		}
+		
+		newUser.put("recommenders",recommenders);
+		
+		BasicDBObject query = new BasicDBObject("_id", user.getId());
+		coll.findAndModify(query, newUser);
+		
 	
 	}
+			
+	
+	
 	
 
 	static protected DataVector db2DataVector(DBObject obj, Integer arrayId, ObjectId mongoID) {

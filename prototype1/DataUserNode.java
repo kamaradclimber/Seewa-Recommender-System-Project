@@ -12,7 +12,11 @@ public class DataUserNode implements Data {
 	double uPageMean; //moyenne des page rank des UPages.
 
 	
-	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataUpages) {
+	public DataUserNode(ObjectId id) {
+		this.id = id;
+	}
+	
+	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataupages) {
 		this.id = id;
 		this.uPages = dataUpages;
 		this.friends= new ArrayList<DataUserRelation>();
@@ -23,6 +27,11 @@ public class DataUserNode implements Data {
 		}
 		if (uPages.size()!=0)
 			uPageMean= uPageMean/uPages.size();
+	}
+	
+	public DataUserNode(ArrayList<DataUserRelation> friend,ObjectId id) {
+		this.id = id;
+		this.friends = friend;
 	}
 	
 	public DataUserNode(String name, ObjectId id, ArrayList<DataUserRelation> friends, ArrayList<DataUPage> uPages)
@@ -74,7 +83,7 @@ public class DataUserNode implements Data {
 	}
 
 	public ObjectId getId() {
-		return id;
+		return this.getMongoId();
 	}
 
 	public void setId(ObjectId id) {
