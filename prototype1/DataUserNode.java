@@ -66,7 +66,7 @@ public class DataUserNode implements Data {
 	}
 
 	public ObjectId getId() {
-		return id;
+		return this.getMongoId();
 	}
 
 	public void setId(ObjectId id) {
