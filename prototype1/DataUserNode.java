@@ -32,6 +32,11 @@ public class DataUserNode implements Data {
 		
 	}
 
+	public ArrayList<DataUserRelation> getFriends() {
+		return this.friends;
+	}
+	
+	
 	public String getName() {
 		return this.name;
 	}
@@ -45,7 +50,7 @@ public class DataUserNode implements Data {
 		this.friends = userrelations;
 	}
 	
-	public boolean updatePorbabilities()
+	public boolean updateProbabilities()
 	{
 		boolean change= false;
 		for (UserRelation userR : friends)
@@ -56,9 +61,8 @@ public class DataUserNode implements Data {
 		return change;
 	}
 	
-	public ArrayList<DataUPage> getUpages() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<DataUPage> getUPages() {
+		return this.uPages;
 	}
 	
 	
