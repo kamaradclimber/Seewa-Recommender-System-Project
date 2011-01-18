@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 
-public class UserRelation{
+public class DataUserRelation{
 		DataUserNode friend;
 		double crossProbability; // P(A inter B) = proba that both like a page
 		int posFeedback;
 		int negFeedback;
 
-		public UserRelation( DataUserNode friend, double crossProbability)
+		public DataUserRelation( DataUserNode friend, double crossProbability)
 		{
 			this.friend=friend;
 			this.crossProbability=crossProbability;
@@ -16,14 +16,14 @@ public class UserRelation{
 			negFeedback=0;
 		}
 		
-		public UserRelation( DataUserNode friend, double crossProbability, int posFeedback, int negFeedback)
+		public DataUserRelation( DataUserNode friend, double crossProbability, int posFeedback, int negFeedback)
 		{
 			this(friend, crossProbability);
 			this.posFeedback=posFeedback;
 			this.negFeedback=negFeedback;
 		}
 		
-		public UserRelation( DataUserNode friend)
+		public DataUserRelation( DataUserNode friend)
 		{
 			this.friend=friend;
 			this.crossProbability=0;
@@ -31,17 +31,17 @@ public class UserRelation{
 			this.negFeedback=0;
 		}
 		
-		public UserRelation( DataUserNode friend,int posFeedback, int negFeedback)
+		public DataUserRelation( DataUserNode friend,int posFeedback, int negFeedback)
 		{
 			this( friend);
 			this.posFeedback=posFeedback;
 			this.negFeedback=negFeedback;
 		}
 
-		public boolean updateProbability(DataUserNode owner) //crée la proba, renvoie true si valeur a été modifiée
+		public boolean updateProbability(DataUserNode owner) //crï¿½e la proba, renvoie true si valeur a ï¿½tï¿½ modifiï¿½e
 		{
-			ArrayList<DataUPage> friendUPages=friend.getUpages();
-			ArrayList<DataUPage> ownerUPages=owner.getUpages();
+			ArrayList<DataUPage> friendUPages=friend.getUPages();
+			ArrayList<DataUPage> ownerUPages=owner.getUPages();
 			
 			int nInter=0; //intersection
 			double sum=0;
@@ -49,14 +49,14 @@ public class UserRelation{
 			Hashtable<String, DataUPage> url_PR = new Hashtable<String, DataUPage>();
 			for (DataUPage myUPage: ownerUPages)
 			{
-				url_PR.put(myUPage.getURL(), myUPage);
+				url_PR.put(myUPage.getUrl(), myUPage);
 			}
 			
 			for (DataUPage hisUPage: friendUPages)
 			{
-				if ( url_PR.containsKey(hisUPage.getURL()))
+				if ( url_PR.containsKey(hisUPage.getUrl()))
 				{
-					double myPR= url_PR.get(hisUPage.getURL()).getPR();
+					double myPR= url_PR.get(hisUPage.getUrl()).getPR();
 					double hisPR= hisUPage.getPR();
 					//2*PRa*PRb / (PRa^2+PRb^2)
 					sum+= 2*myPR*hisPR/ (Math.pow(myPR,2) + Math.pow(hisPR,2));

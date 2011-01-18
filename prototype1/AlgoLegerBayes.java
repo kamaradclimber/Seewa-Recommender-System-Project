@@ -18,11 +18,11 @@ public class AlgoLegerBayes extends AlgoLeger {
 		
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
 		for (DataUserRelation edge : user.getFriends()) {
-			for (DataUPage page: edge.friend.uPages) { //on parcourt toutes les pages des recommendeurs
+			for (DataUPage page: edge.friend.getUPages()) { //on parcourt toutes les pages des recommendeurs
 				if (pages.containsKey(page.getUrl())) {  // pour les stocker en hashant grace a l'url de la page
 					ArrayList<Composite> copie =(ArrayList<Composite>) (pages.get(page.getUrl())).clone(); //petit test pour savoir si les objets reccuperes avec get puis mdofiie sont effectivement modifies dans la hashmap
-					(pages.get(page.getUrl())).add(new Composite(edge.friend, page));
-					copie.add(new Composite(edge.friend, page));
+					(pages.get(page.getUrl())).add(new Composite(edge.friend, page, page.pageRank));
+					copie.add(new Composite(edge.friend, page, page.pageRank));
 					if (copie!= pages.get(page.getUrl())) {System.out.println("ca marche enfin on est pas oblige de faire la copie"); }
 					pages.put(page.getUrl(),copie);
 				} else {
