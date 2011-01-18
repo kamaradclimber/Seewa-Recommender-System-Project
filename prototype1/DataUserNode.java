@@ -12,9 +12,17 @@ public class DataUserNode implements Data {
 	double uPageMean; //moyenne des page rank des UPages.
 
 	
-	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataupages) {
+	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataUpages) {
 		this.id = id;
-		this.uPages = dataupages;
+		this.uPages = dataUpages;
+		this.friends= new ArrayList<DataUserRelation>();
+		double uPageMean=0;
+		for (DataUPage uPage:uPages)
+		{
+			uPageMean+= uPage.pageRank;
+		}
+		if (uPages.size()!=0)
+			uPageMean= uPageMean/uPages.size();
 	}
 	
 	public DataUserNode(String name, ObjectId id, ArrayList<DataUserRelation> friends, ArrayList<DataUPage> uPages)
@@ -23,13 +31,13 @@ public class DataUserNode implements Data {
 		this.name=name;
 		this.friends=friends;
 		this.uPages=uPages;
-		double uPageMean=0;
+		uPageMean=0;
 		for (DataUPage uPage:uPages)
 		{
 			uPageMean+= uPage.pageRank;
 		}
-		uPageMean= uPageMean/uPages.size();
-		
+		if (uPages.size()!=0)
+			uPageMean= uPageMean/uPages.size();
 	}
 
 	public ArrayList<DataUserRelation> getFriends() {
@@ -71,6 +79,27 @@ public class DataUserNode implements Data {
 
 	public void setId(ObjectId id) {
 		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		String uPagesList = "";
+		
+		for (DataUPage uPage : uPages)
+		{
+			uPagesList += uPage.toString()+ "\n";
+		}
+		
+		String friendsList = "";
+		
+		for (DataUserRelation friend : friends)
+		{
+			friendsList += friend+ "\n";
+		}
+		
+		return "DataUserNode [id=" + id + ", name=" + name + ", friends="
+				+ friendsList + ", uPages=" + uPagesList + ", uPageMean=" + uPageMean
+				+ "]";
 	}
 	
 	

@@ -6,15 +6,90 @@ import java.util.TreeMap;
 import org.bson.types.ObjectId;
 
 
-public class AlgoLegerBayes extends AlgoLeger {
+public final class AlgoLegerBayes extends AlgoLeger {
 //test
-	public AlgoLegerBayes() {
+	private static AlgoLegerBayes singleton;
+	
+	private AlgoLegerBayes() {
 		super();
+		singleton= this ;
+	}
+	
+	public static AlgoLeger getAlgo(){
+		
+		if (singleton==null)
+		{
+			return new AlgoLegerBayes();
+		}
+		
+		return singleton;
 	}
 
 	@Override
 	public Recommendation answers(Request req) throws ExceptionRecoNotValid {
-		DataUserNode user = Interprete.getUserNode(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
+		DataUserNode user;
+		if (req.getUrl()=="test" ) 
+		{
+			//géné des Upages
+			DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
+			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(), 0.8, "www.lefigaro.fr");
+			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.léquipe.fr");
+			DataUPage jeanMichLinux= new DataUPage(new ObjectId(), 0.1, "www.linux.org");
+			
+			DataUPage leGeekLinux= new DataUPage(new ObjectId(), 0.8, "www.linux.org");
+			DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(), 0.95, "www.techcrunch.com");
+			DataUPage leGeekOpLib= new DataUPage(new ObjectId(), 0.6, "www.opinionlibre.fr");
+			
+			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(), 0.5, "www.lemonde.fr");
+			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(), 0.3, "www.lefigaro.fr");
+			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.léquipe.fr");
+			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.1, "www.lhumanité.fr");
+			
+			ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
+			jeanMichUPage.add(jeanMichLinux);
+			jeanMichUPage.add(jeanMichLeFigaro);
+			jeanMichUPage.add(jeanMichLeMonde);
+			jeanMichUPage.add(jeanMichLEquipe);
+			
+			ArrayList<DataUPage> leGeekUPage= new ArrayList<DataUPage>();
+			leGeekUPage.add(leGeekLinux);
+			leGeekUPage.add(leGeekOpLib);
+			leGeekUPage.add(leGeekTechCrunch);
+			
+			ArrayList<DataUPage> jeanJauresUPage= new ArrayList<DataUPage>();
+			jeanJauresUPage.add(jeanJauresLeFigaro);
+			jeanJauresUPage.add(jeanJauresLeMonde);
+			jeanJauresUPage.add(jeanJauresLEquipe);
+			jeanJauresUPage.add(jeanJauresLHuma);
+			
+			//on crée les persos
+			DataUserNode jeanMich = new DataUserNode("jeanMich", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanMichUPage);
+			DataUserNode leGeek = new DataUserNode("leGeek", new ObjectId(), new ArrayList<DataUserRelation>()  , leGeekUPage);
+			DataUserNode jeanJaures = new DataUserNode("JeanJaures", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanJauresUPage);
+			//on implémente les liens d'amitié
+			DataUserRelation jmfriends = new DataUserRelation(leGeek);
+			DataUserRelation lgfriends = new DataUserRelation(jeanMich);
+			
+			ArrayList<DataUserRelation> jmUserRelations = new ArrayList<DataUserRelation>();
+			jmUserRelations.add(jmfriends);
+			jmUserRelations.add(new DataUserRelation(jeanJaures));
+			jeanMich.setFriends(jmUserRelations);
+			ArrayList<DataUserRelation> lgUserRelations = new ArrayList<DataUserRelation>();
+			lgUserRelations.add(lgfriends);
+			leGeek.setFriends(lgUserRelations);
+			
+			//on calcule les probas 
+			jeanMich.updateProbabilities();
+			leGeek.updateProbabilities();
+			
+			
+			
+			user = jeanMich;
+			System.out.println(user);
+		}
+		else {
+			user = Interprete.db2DataUserNodeHard(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
+		}
 		
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
 		for (DataUserRelation edge : user.getFriends()) {

@@ -20,7 +20,17 @@ public class ClassTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//test du git dans eclipse
+		Recommendation result;
+		try {
+			result= AlgoLegerBayes.getAlgo().answers(new Request(null, "test", null, null));
+			System.out.println(result);
+			
+		} catch (ExceptionRecoNotValid e) {
+			e.printStackTrace();
+		}
+		
+		
+		
 		}
 	}
 

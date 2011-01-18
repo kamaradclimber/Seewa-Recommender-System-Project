@@ -37,6 +37,13 @@ public class DataUserRelation{
 			this.posFeedback=posFeedback;
 			this.negFeedback=negFeedback;
 		}
+		
+		@Override
+		public String toString() {
+			return "DataUserRelation [friend=" + friend.getName() + ", crossProbability="
+					+ crossProbability + ", posFeedback=" + posFeedback
+					+ ", negFeedback=" + negFeedback + "]";
+		}
 
 		public boolean updateProbability(DataUserNode owner) //cr�e la proba, renvoie true si valeur a �t� modifi�e
 		{
@@ -73,4 +80,6 @@ public class DataUserRelation{
 			this.crossProbability = sum/nInter;
 			return this.crossProbability == oldValue;
 			}
+		
+		
 	}
