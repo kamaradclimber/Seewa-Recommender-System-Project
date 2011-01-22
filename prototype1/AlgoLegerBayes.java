@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.bson.types.ObjectId;
 
@@ -112,41 +113,56 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			pages.remove(page.getUrl());
 		}
 		
-		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
-		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
-		//on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
-		//TODO : en faite non, on écrase toujours la même clé.
+		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les trois meilleurs proba  
+		int nbReco=Math.min(10, pages.size());
+		
+		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,-1));
 		
 		//on va ensuite calculer toutes les probabilitÃ©s 
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
-				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-				System.out.println( c.page.getUrl()+" : " + proba);
-				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
-				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
+				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
+				System.out.println( c.page.getUrl()+" : " + c.crossProbability);
+				bestReco.add(c);//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
+				bestReco.remove(bestReco.first());
 			}
 		}
+//		
+//		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
+//		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
+//		//on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
+//		//TODO : en faite non, on écrase toujours la même clé.
+//		
+//		//on va ensuite calculer toutes les probabilitÃ©s 
+//		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
+//			for(Composite c :cc) {
+//				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
+//				System.out.println( c.page.getUrl()+" : " + proba);
+//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
+//				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
+//			}
+//		}
 		
-		double sum=0;	
-		for ( double proba : bestsReco.descendingKeySet())
-		{
-			System.out.println( bestsReco.get( proba)+" : " + proba);
-			sum += proba;
-		}
-		double var= Math.random() * sum;
-		Iterator<Double> probs = bestsReco.descendingKeySet().iterator();
-		double bestKey = probs.next(); 
-		while (probs.hasNext() && var-bestKey >0 )
-		{
-			bestKey = probs.next();
-			var-=bestKey;
-		}		
-		
-		return new Recommendation(bestsReco.get(bestKey));
+//		double sum=0;	
+//		for ( double proba : bestReco.descendingKeySet())
+//		{
+//			System.out.println( bestReco.get( proba)+" : " + proba);
+//			sum += proba;
+//		}
+//		double var= Math.random() * sum;
+//		Iterator<Double> probs = bestsReco.descendingKeySet().iterator();
+//		double bestKey = probs.next(); 
+//		while (probs.hasNext() && var-bestKey >0 )
+//		{
+//			bestKey = probs.next();
+//			var-=bestKey;
+//		}		
+//		
+		return new Recommendation(bestReco.last().toString());
 	}
 	
 	
-	public class Composite {
+	public class Composite implements Comparable<Composite> {
 		DataUserNode user;
 		DataUPage page;
 		double crossProbability;
@@ -156,20 +172,30 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			this.page =page;
 			this.crossProbability = proba; //la proba P(A inter B)
 		}
-	}
-	
-	//TODO: implementer cette classe et créer une PriorityQueue<DoubleStringDuet>, pour avoir un ensemble ordonné de <Double,String> acceptant les doublons
-	private class DoubleStringDuet implements Comparable<DoubleStringDuet>{
 
 		@Override
-		public int compareTo(DoubleStringDuet o) {
-			// TODO Auto-generated method stub
-			return 0;
+		public boolean equals(Object obj) {
+			try {
+				Composite c = (Composite) obj;
+				return ( this.page.getMongoId()==c.page.getMongoId() && this.user.getMongoId()==c.user.getMongoId());
+			
+			}catch(Exception e){ return false;}
+			
 		}
 
-		
-		
+		@Override
+		public int compareTo(Composite arg0) {
+			if (this.crossProbability < arg0.crossProbability) return -1;
+			if (this.crossProbability > arg0.crossProbability) return 1;
+			//same proba;
+			return this.page.getUrl().compareTo(arg0.page.getUrl());
+		}
+
+		private AlgoLegerBayes getOuterType() {
+			return AlgoLegerBayes.this;
+		}
 	}
+	
 	
 	
 }
