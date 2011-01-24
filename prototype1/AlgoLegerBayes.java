@@ -183,7 +183,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			
 		}
 
-		@Override
+		
 		public int compareTo(Composite arg0) {
 			if (this.crossProbability < arg0.crossProbability) return -1;
 			if (this.crossProbability > arg0.crossProbability) return 1;

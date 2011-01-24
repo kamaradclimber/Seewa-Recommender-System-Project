@@ -175,7 +175,6 @@ static DB db;
 		BasicDBObject recommenders = new BasicDBObject();
 		
 		for (DataUserRelation relation : user.getFriends()) {
-			BasicDBObject recommender = new BasicDBObject();
 			BasicDBObject recommenderData = new BasicDBObject();
 			recommenderData.put("_id", relation.getFriend().getId());
 			recommenderData.put("crossProbability", relation.getCrossProbability());
