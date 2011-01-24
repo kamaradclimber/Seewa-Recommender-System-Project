@@ -116,7 +116,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les trois meilleurs proba  
 		int nbReco=Math.min(10, pages.size());
 		
-		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,-1));
+		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,-j-1));
 		
 		//on va ensuite calculer toutes les probabilitÃ©s 
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
@@ -124,7 +124,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
 				System.out.println( c.page.getUrl()+" : " + c.crossProbability);
 				bestReco.add(c);//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
-				bestReco.remove(bestReco.first());
+				bestReco.remove(bestReco.last());
 			}
 		}
 //		
@@ -143,21 +143,21 @@ public final class AlgoLegerBayes extends AlgoLeger {
 //			}
 //		}
 		
-//		double sum=0;	
-//		for ( double proba : bestReco.descendingKeySet())
-//		{
-//			System.out.println( bestReco.get( proba)+" : " + proba);
-//			sum += proba;
-//		}
-//		double var= Math.random() * sum;
-//		Iterator<Double> probs = bestsReco.descendingKeySet().iterator();
-//		double bestKey = probs.next(); 
-//		while (probs.hasNext() && var-bestKey >0 )
-//		{
-//			bestKey = probs.next();
-//			var-=bestKey;
-//		}		
-//		
+		double sum=0;	
+		for ( Composite comp : bestReco)
+		{
+			System.out.println(comp.crossProbability+" : " + comp.page);
+			sum += comp.crossProbability;
+		}
+		double var= Math.random() * sum;
+		Iterator<Composite> probs = bestReco.iterator();
+		double bestKey = probs.next().crossProbability; 
+		while (probs.hasNext() && var-bestKey >0 )
+		{
+			var-=bestKey;
+			bestKey = probs.next().crossProbability;
+		}		
+		
 		return new Recommendation(bestReco.last().toString());
 	}
 	
@@ -187,8 +187,10 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		public int compareTo(Composite arg0) {
 			if (this.crossProbability < arg0.crossProbability) return -1;
 			if (this.crossProbability > arg0.crossProbability) return 1;
-			//same proba;
-			return this.page.getUrl().compareTo(arg0.page.getUrl());
+			if (this.page==null) return -1;
+			if (arg0.page==null) return 1;
+			else
+				return this.page.getUrl().compareTo(arg0.page.getUrl());
 		}
 
 		private AlgoLegerBayes getOuterType() {
