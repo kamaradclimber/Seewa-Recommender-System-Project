@@ -18,7 +18,7 @@ public class DataUserNode implements Data {
 	
 	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataupages) {
 		this.id = id;
-		this.uPages = dataUpages;
+		this.uPages = dataupages;
 		this.friends= new ArrayList<DataUserRelation>();
 		double uPageMean=0;
 		for (DataUPage uPage:uPages)
@@ -50,15 +50,19 @@ public class DataUserNode implements Data {
 	}
 
 	public ArrayList<DataUserRelation> getFriends() {
-		return this.friends;
+		if (this.friends == null) {
+			return new ArrayList<DataUserRelation>();
+		}
+		else return this.friends;
 	}
+	
 	
 	
 	public String getName() {
 		return this.name;
 	}
 	
-	@Override
+	
 	public ObjectId getMongoId() {
 		return this.id;
 	}
@@ -110,6 +114,12 @@ public class DataUserNode implements Data {
 				+ friendsList + ", uPages=" + uPagesList + ", uPageMean=" + uPageMean
 				+ "]";
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	
 	
 	
 	

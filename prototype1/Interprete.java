@@ -42,7 +42,8 @@ static DB db;
 		DBObject user = coll.findOne(query);
 		
 		
-		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
+		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
+		System.out.println(recommendersMongo);
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
 		//TODO : la suite peut ptet etre amï¿½liorï¿½ en regroupant tout dans une requï¿½te
@@ -62,6 +63,8 @@ static DB db;
 		DataUserNode usernode = db2DataUserNodeSimple(mongoID);
 		usernode.setFriends(recommenders);
 		
+		System.out.println(recommenders.get(0).toString());
+		
 		return usernode;
 	}
 	
@@ -69,14 +72,16 @@ static DB db;
 	
 	static protected DataUserNode db2DataUserNodeSimple(ObjectId mongoID) {
 		
-		
+		/*
+		 * en attente de la rŽponse du bugtracker
+		 * 
 		DBCollection upages = db.getCollection("upages");
 		BasicDBObject query = new BasicDBObject("user",mongoID);
-		DBCursor pageviewedbyuser = upages.find(query);
+		DBCursor pageviewedbyuser = upages.find();
 
 		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
 		
-		/* Crï¿½ation des DataUPages */
+		
 		
 		while (pageviewedbyuser.hasNext()) {
 			DBObject upage = pageviewedbyuser.next();
@@ -86,28 +91,76 @@ static DB db;
 			DataUPage dataupage = new DataUPage(id,pagerank);
 			userupages.add(dataupage);
 		}
+		*/
+		
+		DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(), 0.8, "www.lefigaro.fr");
+		DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.lï¿½quipe.fr");
+		DataUPage jeanMichLinux= new DataUPage(new ObjectId(), 0.1, "www.linux.org");
+		
+		DataUPage leGeekLinux= new DataUPage(new ObjectId(), 0.8, "www.linux.org");
+		DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(), 0.95, "www.techcrunch.com");
+		DataUPage leGeekOpLib= new DataUPage(new ObjectId(), 0.6, "www.opinionlibre.fr");
+		DataUPage leGeekLeMonde= new DataUPage(new ObjectId(), 0.01, "www.lemonde.fr");
+		
+		DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(), 0.5, "www.lemonde.fr");
+		DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(), 0.3, "www.lefigaro.fr");
+		DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.lï¿½quipe.fr");
+		DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.9, "www.lhumanitï¿½.fr");
+		
+		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
+		
+		ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
+		jeanMichUPage.add(jeanMichLinux);
+		jeanMichUPage.add(jeanMichLeFigaro);
+		//jeanMichUPage.add(jeanMichLeMonde);
+		jeanMichUPage.add(jeanMichLEquipe);
+		
+		ArrayList<DataUPage> leGeekUPage= new ArrayList<DataUPage>();
+		leGeekUPage.add(leGeekLinux);
+		leGeekUPage.add(leGeekOpLib);
+		leGeekUPage.add(leGeekTechCrunch);
+		leGeekUPage.add(leGeekLeMonde);
+		
+		ArrayList<DataUPage> jeanJauresUPage= new ArrayList<DataUPage>();
+		jeanJauresUPage.add(jeanJauresLeFigaro);
+		jeanJauresUPage.add(jeanJauresLeMonde);
+		jeanJauresUPage.add(jeanJauresLEquipe);
+		jeanJauresUPage.add(jeanJauresLHuma);
+		
+		userupages.addAll(jeanJauresUPage);
+		userupages.addAll(leGeekUPage);
+		userupages.addAll(jeanMichUPage);
 		
 		DataUserNode usernode = new DataUserNode(mongoID,userupages);
+		usernode.setName("Bob");
 		return usernode;
 	}
 	
 	static protected void modifyFeedback(ObjectId recommender_id , ObjectId receiver_id , boolean feedback) {
 		DBCollection coll = db.getCollection("users");
-		BasicDBObject query = new BasicDBObject("_id", receiver_id);
+		BasicDBObject query = new BasicDBObject("name", "Francis");
 		DBObject user = coll.findOne(query);
 		
-		BasicDBList recommenders = (BasicDBList) user.get("recommenders");
+		BasicDBObject recommenders = (BasicDBObject) user.get("recommenders");
 		BasicDBObject recommender = (BasicDBObject) recommenders.get(recommender_id.toString());
+		System.out.println(recommender);
 		
 		if (feedback == true) {
 			int posFeedback = (Integer) recommender.get("posFeedback");
+			System.out.println(posFeedback);
 			recommender.put("posFeedback",posFeedback+1);
 		}
 		
 		else {
 			int negFeedback = (Integer) recommender.get("negFeedback");
-			recommender.put("negFeedback",negFeedback-1);
+			System.out.println(negFeedback);
+			recommender.put("negFeedback",negFeedback+1);
 		}
+		recommenders.put(recommender_id.toString(), recommender);
+		user.put("recommenders",recommenders);
+		BasicDBObject query2 = new BasicDBObject("_id", receiver_id);
+		coll.findAndModify(query2, user);
+		
 	}
 	
 	
@@ -185,4 +238,4 @@ static DB db;
 }
 	
 
-	}
+	
