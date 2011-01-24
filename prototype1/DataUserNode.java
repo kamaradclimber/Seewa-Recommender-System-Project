@@ -6,7 +6,6 @@ import org.bson.types.ObjectId;
 
 public class DataUserNode implements Data {
 	private ObjectId id; //l'id qui est dans mongo
-	private String name;
 	private ArrayList<DataUserRelation> friends; //TODO : changer en recommenders
 	private ArrayList<DataUPage> uPages;
 	double uPageMean; //moyenne des page rank des UPages.
@@ -34,10 +33,9 @@ public class DataUserNode implements Data {
 		this.friends = friend;
 	}
 	
-	public DataUserNode(String name, ObjectId id, ArrayList<DataUserRelation> friends, ArrayList<DataUPage> uPages)
+	public DataUserNode(ObjectId id, ArrayList<DataUserRelation> friends, ArrayList<DataUPage> uPages)
 	{
 		this.id = id;
-		this.name=name;
 		this.friends=friends;
 		this.uPages=uPages;
 		uPageMean=0;
@@ -56,11 +54,6 @@ public class DataUserNode implements Data {
 		else return this.friends;
 	}
 	
-	
-	
-	public String getName() {
-		return this.name;
-	}
 	
 	
 	public ObjectId getMongoId() {
@@ -118,14 +111,11 @@ public class DataUserNode implements Data {
 			friendsList += friend+ "\n";
 		}
 		
-		return "DataUserNode [id=" + id + ", name=" + name + ", friends="
+		return "DataUserNode [id=" + id + " friends="
 				+ friendsList + ", uPages=" + uPagesList + ", uPageMean=" + uPageMean
 				+ "]";
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	
 	
