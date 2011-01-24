@@ -62,7 +62,7 @@ static DB db;
 		DataUserNode usernode = db2DataUserNodeSimple(mongoID);
 		usernode.setFriends(recommenders);
 		
-		System.out.println(recommenders.get(0).toString());
+		//System.out.println(recommenders.get(0).toString());
 		
 		return usernode;
 	}
@@ -126,7 +126,6 @@ static DB db;
 		DBCollection coll = db.getCollection("users");
 		BasicDBObject newUser = new BasicDBObject();
 		newUser.put("_id",user.getId());
-		newUser.put("name","Francis");
 		
 		BasicDBObject recommenders = new BasicDBObject();
 		
