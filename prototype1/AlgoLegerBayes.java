@@ -1,30 +1,105 @@
 import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.bson.types.ObjectId;
 
 
-public class AlgoLegerBayes extends AlgoLeger {
+public final class AlgoLegerBayes extends AlgoLeger {
 //test
-	public AlgoLegerBayes() {
+	private static AlgoLegerBayes singleton;
+	
+	private AlgoLegerBayes() {
 		super();
+		singleton= this ;
+	}
+	
+	public static AlgoLeger getAlgo(){
+		
+		if (singleton==null)
+		{
+			return new AlgoLegerBayes();
+		}
+		
+		return singleton;
 	}
 
 	@Override
 	public Recommendation answers(Request req) throws ExceptionRecoNotValid {
-		DataUserNode user = Interprete.getUserNode(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
+		DataUserNode user;
+		if (req.getUrl()=="test" ) 
+		{
+			//gï¿½nï¿½ des Upages
+			//DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
+			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(), 0.8, "www.lefigaro.fr");
+			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.lï¿½quipe.fr");
+			DataUPage jeanMichLinux= new DataUPage(new ObjectId(), 0.1, "www.linux.org");
+			
+			DataUPage leGeekLinux= new DataUPage(new ObjectId(), 0.8, "www.linux.org");
+			DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(), 0.95, "www.techcrunch.com");
+			DataUPage leGeekOpLib= new DataUPage(new ObjectId(), 0.6, "www.opinionlibre.fr");
+			DataUPage leGeekLeMonde= new DataUPage(new ObjectId(), 0.01, "www.lemonde.fr");
+			
+			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(), 0.5, "www.lemonde.fr");
+			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(), 0.3, "www.lefigaro.fr");
+			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.lï¿½quipe.fr");
+			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.9, "www.lhumanitï¿½.fr");
+			
+			ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
+			jeanMichUPage.add(jeanMichLinux);
+			jeanMichUPage.add(jeanMichLeFigaro);
+			//jeanMichUPage.add(jeanMichLeMonde);
+			jeanMichUPage.add(jeanMichLEquipe);
+			
+			ArrayList<DataUPage> leGeekUPage= new ArrayList<DataUPage>();
+			leGeekUPage.add(leGeekLinux);
+			leGeekUPage.add(leGeekOpLib);
+			leGeekUPage.add(leGeekTechCrunch);
+			leGeekUPage.add(leGeekLeMonde);
+			
+			ArrayList<DataUPage> jeanJauresUPage= new ArrayList<DataUPage>();
+			jeanJauresUPage.add(jeanJauresLeFigaro);
+			jeanJauresUPage.add(jeanJauresLeMonde);
+			jeanJauresUPage.add(jeanJauresLEquipe);
+			jeanJauresUPage.add(jeanJauresLHuma);
+			
+			//on crï¿½e les persos
+			DataUserNode jeanMich = new DataUserNode("jeanMich", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanMichUPage);
+			DataUserNode leGeek = new DataUserNode("leGeek", new ObjectId(), new ArrayList<DataUserRelation>()  , leGeekUPage);
+			DataUserNode jeanJaures = new DataUserNode("JeanJaures", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanJauresUPage);
+			//on implï¿½mente les liens d'amitiï¿½
+			DataUserRelation jmfriends = new DataUserRelation(leGeek);
+			DataUserRelation lgfriends = new DataUserRelation(jeanMich);
+			
+			ArrayList<DataUserRelation> jmUserRelations = new ArrayList<DataUserRelation>();
+			jmUserRelations.add(jmfriends);
+			jmUserRelations.add(new DataUserRelation(jeanJaures));
+			jeanMich.setFriends(jmUserRelations);
+			ArrayList<DataUserRelation> lgUserRelations = new ArrayList<DataUserRelation>();
+			lgUserRelations.add(lgfriends);
+			leGeek.setFriends(lgUserRelations);
+			
+			//on calcule les probas 
+			jeanMich.updateProbabilities();
+			leGeek.updateProbabilities();
+			
+			
+			
+			user = jeanMich;
+		}
+		else {
+			user = Interprete.db2DataUserNodeHard(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
+		}
 		
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
 		for (DataUserRelation edge : user.getFriends()) {
 			for (DataUPage page: edge.friend.getUPages()) { //on parcourt toutes les pages des recommendeurs
-				if (pages.containsKey(page.getUrl())) {  // pour les stocker en hashant grace a l'url de la page
-					ArrayList<Composite> copie =(ArrayList<Composite>) (pages.get(page.getUrl())).clone(); //petit test pour savoir si les objets reccuperes avec get puis mdofiie sont effectivement modifies dans la hashmap
-					(pages.get(page.getUrl())).add(new Composite(edge.friend, page, edge.crossProbability));
-					copie.add(new Composite(edge.friend, page, edge.crossProbability));
-					if (copie!= pages.get(page.getUrl())) {System.out.println("ca marche enfin on est pas oblige de faire la copie"); }
-					pages.put(page.getUrl(),copie);
+				if (pages.containsKey(page.getUrl())) { 
+					// pour les stocker en hashant grace a l'url de la page
+					pages.get(page.getUrl()).add(new Composite(edge.friend, page, edge.crossProbability));
 				} else {
 					ArrayList<Composite> tmp= new ArrayList<Composite>();
 					tmp.add(new Composite(edge.friend, page, edge.crossProbability));
@@ -38,24 +113,56 @@ public class AlgoLegerBayes extends AlgoLeger {
 			pages.remove(page.getUrl());
 		}
 		
-		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
-		for(int i=0;i<3;i++){bestsReco.put((double)0, "");} //on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
+		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les trois meilleurs proba  
+		int nbReco=Math.min(10, pages.size());
+		
+		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,Integer.MIN_VALUE));
 		
 		//on va ensuite calculer toutes les probabilitÃ©s 
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
-				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-				bestsReco.put(proba, c.page.getUrl());
-				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
+				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
+				System.out.println( c.page.getUrl()+" : " + c.crossProbability);
+				bestReco.add(c);//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
+				bestReco.remove(bestReco.last());
 			}
 		}
+//		
+//		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
+//		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
+//		//on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
+//		//TODO : en faite non, on écrase toujours la même clé.
+//		
+//		//on va ensuite calculer toutes les probabilitÃ©s 
+//		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
+//			for(Composite c :cc) {
+//				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
+//				System.out.println( c.page.getUrl()+" : " + proba);
+//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
+//				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
+//			}
+//		}
 		
+		double sum=0;	
+		for ( Composite comp : bestReco)
+		{
+			System.out.println(comp.crossProbability+" : " + comp.page);
+			sum += comp.crossProbability;
+		}
+		double var= Math.random() * sum;
+		Iterator<Composite> probs = bestReco.iterator();
+		double bestKey = probs.next().crossProbability; 
+		while (probs.hasNext() && var-bestKey >0 )
+		{
+			var-=bestKey;
+			bestKey = probs.next().crossProbability;
+		}		
 		
-		return new Recommendation(bestsReco.lastEntry().getValue());
+		return new Recommendation(bestReco.last().toString());
 	}
 	
 	
-	public class Composite {
+	public class Composite implements Comparable<Composite> {
 		DataUserNode user;
 		DataUPage page;
 		double crossProbability;
@@ -65,6 +172,34 @@ public class AlgoLegerBayes extends AlgoLeger {
 			this.page =page;
 			this.crossProbability = proba; //la proba P(A inter B)
 		}
-	}
 
+		@Override
+		public boolean equals(Object obj) {
+			try {
+				Composite c = (Composite) obj;
+				return ( this.page.getMongoId()==c.page.getMongoId() && this.user.getMongoId()==c.user.getMongoId());
+			
+			}catch(Exception e){ return false;}
+			
+		}
+
+		@Override
+		public int compareTo(Composite arg0) {
+			if (this.crossProbability < arg0.crossProbability) return -1;
+			if (this.crossProbability > arg0.crossProbability) return 1;
+			//same proba;
+			System.out.println(this.page);
+			System.out.println(arg0.page);
+			if (this.page==null && arg0.page==null) return 0;
+			assert (this.page !=null && arg0.page!=null);
+			return this.page.getUrl().compareTo(arg0.page.getUrl());
+		}
+
+//		private AlgoLegerBayes getOuterType() {
+//			return AlgoLegerBayes.this;
+//		}
+	}
+	
+	
+	
 }

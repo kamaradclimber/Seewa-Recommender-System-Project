@@ -18,7 +18,15 @@ public class DataUserNode implements Data {
 	
 	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataupages) {
 		this.id = id;
-		this.uPages = dataupages;
+		this.uPages = dataUpages;
+		this.friends= new ArrayList<DataUserRelation>();
+		double uPageMean=0;
+		for (DataUPage uPage:uPages)
+		{
+			uPageMean+= uPage.pageRank;
+		}
+		if (uPages.size()!=0)
+			uPageMean= uPageMean/uPages.size();
 	}
 	
 	public DataUserNode(ArrayList<DataUserRelation> friend,ObjectId id) {
@@ -32,13 +40,13 @@ public class DataUserNode implements Data {
 		this.name=name;
 		this.friends=friends;
 		this.uPages=uPages;
-		double uPageMean=0;
+		uPageMean=0;
 		for (DataUPage uPage:uPages)
 		{
 			uPageMean+= uPage.pageRank;
 		}
-		uPageMean= uPageMean/uPages.size();
-		
+		if (uPages.size()!=0)
+			uPageMean= uPageMean/uPages.size();
 	}
 
 	public ArrayList<DataUserRelation> getFriends() {
@@ -50,6 +58,7 @@ public class DataUserNode implements Data {
 		return this.name;
 	}
 	
+	@Override
 	public ObjectId getMongoId() {
 		return this.id;
 	}
@@ -63,7 +72,7 @@ public class DataUserNode implements Data {
 		boolean change= false;
 		for (DataUserRelation userR : friends)
 		{
-			change= change || userR.updateProbability(this);
+			change= userR.updateProbability(this) || change ; //attention à l'evaluation paresseuse !
 		}
 		
 		return change;
@@ -79,6 +88,27 @@ public class DataUserNode implements Data {
 
 	public void setId(ObjectId id) {
 		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		String uPagesList = "";
+		
+		for (DataUPage uPage : uPages)
+		{
+			uPagesList += uPage.toString()+ "\n";
+		}
+		
+		String friendsList = "";
+		
+		for (DataUserRelation friend : friends)
+		{
+			friendsList += friend+ "\n";
+		}
+		
+		return "DataUserNode [id=" + id + ", name=" + name + ", friends="
+				+ friendsList + ", uPages=" + uPagesList + ", uPageMean=" + uPageMean
+				+ "]";
 	}
 	
 	
