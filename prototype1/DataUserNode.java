@@ -71,6 +71,7 @@ public class DataUserNode implements Data {
 		this.friends = userrelations;
 	}
 	
+	
 	public boolean updateProbabilities()
 	{
 		boolean change= false;
