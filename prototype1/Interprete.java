@@ -67,28 +67,28 @@ static DB db;
 	
 	
 	
-	static protected DataUserNode db2DataUserNodeSimple(ObjectId mongoID) {
+	static protected DataUserNode db2DataUserNodeSimple(ObjectId userId) {
 		
 		
 		DBCollection upages = db.getCollection("upages");
-		BasicDBObject query = new BasicDBObject("user",mongoID);
+		BasicDBObject query = new BasicDBObject("user",userId);
 		DBCursor pageviewedbyuser = upages.find(query);
 
 		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
 		
 		/* Cr�ation des DataUPages */
+		//System.out.println("Attention je ne vais pas chercher les upages pour eviter le bug");
 		
-		for(DBObject upage : pageviewedbyuser) {
-		//while (pageviewedbyuser.hasNext()) {
-			//DBObject upage = pageviewedbyuser.next();
+		while (pageviewedbyuser.hasNext()) {
+			DBObject upage = pageviewedbyuser.next();
 			double pagerank = (Double) upage.get("pageRank");
 			ObjectId id = (ObjectId) upage.get("_id");
-			
-			DataUPage dataupage = new DataUPage(id,pagerank);
+			String url =(String) upage.get("url");
+			DataUPage dataupage = new DataUPage(id, userId, pagerank,url);
 			userupages.add(dataupage);
 		}
 		
-		DataUserNode usernode = new DataUserNode(mongoID,userupages);
+		DataUserNode usernode = new DataUserNode(userId,userupages);
 		return usernode;
 	}
 	
@@ -123,7 +123,7 @@ static DB db;
 		BasicDBObject recommenders = new BasicDBObject();
 		
 		for (DataUserRelation relation : user.getFriends()) {
-			BasicDBObject recommender = new BasicDBObject();
+			BasicDBObject recommender = new BasicDBObject();  //TODO : is it really useless ?
 			BasicDBObject recommenderData = new BasicDBObject();
 			recommenderData.put("_id", relation.getFriend().getId());
 			recommenderData.put("crossProbability", relation.getCrossProbability());
@@ -145,14 +145,14 @@ static DB db;
 
 	public static ArrayList<ObjectId> getUserList() {
 		DBCollection coll = db.getCollection("users");
-		
+		BasicDBObject keys = new BasicDBObject("_id",1);
 		
 		DBCursor cursor = coll.find(new BasicDBObject(), keys);
 		ArrayList<ObjectId> results = new ArrayList<ObjectId>();
 		DBObject user= null;
 		while(cursor.hasNext()) {
 			user = cursor.next();
-			System.out.println(user);
+			//System.out.println(user);
 			results.add((ObjectId)user.get("_id") );
 		}
 		return results;
@@ -183,5 +183,26 @@ static DB db;
 		coll.findAndModify(query, user);
 		
 	}
+	
+	public static void DataUPage2db(DataUPage p) {
+		DBCollection coll = db.getCollection("upages");
+		BasicDBObject o = new BasicDBObject();
+		o.put("_id", p.getMongoId());
+		o.put("pageRank", p.pageRank);
+		System.out.println(p.getUrl());
+		o.put("url", p.getUrl());
+		o.put("user", p.getUserId());
+		DBObject obj = new BasicDBObject();
+		obj.put("_id", p.getMongoId());
+		
+		coll.update(
+				obj,
+				(DBObject)o, 
+				true, /* i want to create the object if it doesnt exist*/
+				false /* do i want to update multiple items : no */
+				);
+	}
+	
+	
 }
 	
