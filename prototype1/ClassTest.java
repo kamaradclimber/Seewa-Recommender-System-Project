@@ -1,4 +1,5 @@
 ﻿import java.util.ArrayList;
+import java.util.TreeMap;
 
 import org.bson.types.ObjectId;
 
@@ -16,8 +17,21 @@ public class ClassTest {
 
 		Recommendation result;
 		try {
+			TreeMap<String,Integer> probas= new TreeMap<String, Integer>();
+			int nbTest=10000;
+			for (int i=0; i<nbTest; i++)
+			{
 			result= AlgoLegerBayes.getAlgo().answers(new Request(null, "test", null, null));
-			System.out.println(result);
+			if (probas.containsKey(result.description))
+			{
+				Integer prob= probas.get(result.description);
+				probas.put(result.description, prob+1);}
+			else
+				probas.put(result.description,1);
+			}
+			System.out.println("----resultat des courses------------------------------------");
+			for (String url: probas.keySet())
+				System.out.println(probas.get(url)*100.0/nbTest +"%  "+ url);
 			
 		} catch (ExceptionRecoNotValid e) {
 			e.printStackTrace();
