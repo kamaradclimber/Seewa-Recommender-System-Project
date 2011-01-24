@@ -33,9 +33,9 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		if (req.getUrl()=="test" ) 
 		{
 			//on crï¿½e les persos
-			DataUserNode jeanMich = new DataUserNode("jeanMich", new ObjectId(), null  , null);
-			DataUserNode leGeek = new DataUserNode("leGeek", new ObjectId(), null , null);
-			DataUserNode jeanJaures = new DataUserNode("JeanJaures", new ObjectId(), null  , null);
+			DataUserNode jeanMich = new DataUserNode( new ObjectId(), null  , null);
+			DataUserNode leGeek = new DataUserNode( new ObjectId(), null , null);
+			DataUserNode jeanJaures = new DataUserNode( new ObjectId(), null  , null);
 			
 			ObjectId jeanMichId= jeanMich.getId();
 			ObjectId leGeekId= leGeek.getId();
@@ -141,14 +141,14 @@ public final class AlgoLegerBayes extends AlgoLeger {
 //		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
 //		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
 //		//on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
-//		//TODO : en faite non, on écrase toujours la même clé.
+//		//TODO : en faite non, on ï¿½crase toujours la mï¿½me clï¿½.
 //		
 //		//on va ensuite calculer toutes les probabilitÃ©s 
 //		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 //			for(Composite c :cc) {
 //				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
 //				System.out.println( c.page.getUrl()+" : " + proba);
-//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
+//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la mï¿½me proba, on les ï¿½crase!!!
 //				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
 //			}
 //		}
