@@ -31,8 +31,10 @@ public class AlgoLourdBayes extends AlgoLourd {
 		for (ObjectId guy : feedbackers) {
 			DataUserNode user = Interprete.db2DataUserNodeHard(guy);
 			
+			boolean hasChanged= false;
 			for (DataUserRelation relation: user.getFriends()) {
 				if (relation.posFeedback - relation.negFeedback < -3) {
+					hasChanged = true;
 					user.getFriends().remove(relation);
 					int var = (int) Math.floor(Math.random()* userList.size());
 					user.getFriends().add( new DataUserRelation(Interprete.db2DataUserNodeSimple(userList.get(var))));
@@ -40,6 +42,7 @@ public class AlgoLourdBayes extends AlgoLourd {
 					//We don't need to calculate the proba as it will be done later.
 				}
 			}
+			if (hasChanged) {Interprete.DataUserNode2db(user);}
 		}
 		
 		//on va ensuite recalculer les crossProbabiltes
