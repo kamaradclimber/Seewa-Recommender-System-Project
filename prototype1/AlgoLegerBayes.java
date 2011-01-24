@@ -88,7 +88,6 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			jeanJaures.updateProbabilities();
 			
 			
-			
 			user = jeanMich;
 		}
 		else {
@@ -117,21 +116,17 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les trois meilleurs proba  
 		int nbReco=Math.min(10, pages.size());
 		
-		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,Integer.MIN_VALUE));
+		//System.out.println(pages.size() + "/"+ nbReco);
+		
+		// we initialize the tree with nbReco different values (need to or would erase each other)
+		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,-j));
 		
 		//on va ensuite calculer toutes les probabilitÃ©s 
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
-				System.out.println("debut");
-				System.out.println(c.page.getUrl());
-				System.out.println(c.user.getName());
-				System.out.println(c.crossProbability);
-				System.out.println(c.user.uPageMean);
-				System.out.println(c.page.pageRank);
-				System.out.println("fin");
 				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-				System.out.println( c.page.getUrl()+" : " + c.crossProbability);
-				bestReco.add(c);//TODO : IMPORTANT si deux pages ont la mï¿½me proba, on les ï¿½crase!!!
+				//System.out.println( c.page.getUrl()+" : " + c.crossProbability);
+				bestReco.add(c);//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
 				bestReco.remove(bestReco.first());
 			}
 		}
@@ -139,34 +134,47 @@ public final class AlgoLegerBayes extends AlgoLeger {
 //		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
 //		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
 //		//on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
-//		//TODO : en faite non, on ï¿½crase toujours la mï¿½me clï¿½.
+//		//TODO : en faite non, on écrase toujours la même clé.
 //		
 //		//on va ensuite calculer toutes les probabilitÃ©s 
 //		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 //			for(Composite c :cc) {
 //				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
 //				System.out.println( c.page.getUrl()+" : " + proba);
-//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la mï¿½me proba, on les ï¿½crase!!!
+//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
 //				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
 //			}
 //		}
+		//System.out.println(bestReco.size());
 		
+		//This part is used to pick a recommendation randomly among the nbReco best results.
+		//TODO: à mettre dans le dispatcher à mon avis, quite à lui passer une liste de reco - score?
 		double sum=0;	
 		for ( Composite comp : bestReco)
 		{
-			System.out.println(comp.crossProbability+" : " + comp.page);
+			//System.out.println(comp.crossProbability+" : " + comp.page);
 			sum += comp.crossProbability;
 		}
 		double var= Math.random() * sum;
-		Iterator<Composite> probs = bestReco.iterator();
-		double bestKey = probs.next().crossProbability; 
-		while (probs.hasNext() && var-bestKey >0 )
+		Iterator<Composite> it = bestReco.iterator();
+		Composite current= it.next();
+		double bestProb = current.crossProbability;
+		var-=bestProb;
+		while (it.hasNext() && var>0 )
 		{
-			var-=bestKey;
-			bestKey = probs.next().crossProbability;
+			current=it.next();
+			bestProb = current.crossProbability;
+			var-=bestProb;
 		}		
 		
-		return new Recommendation(bestReco.last().toString());
+		
+		/*//TODO: a supprimer
+		for ( Composite comp : bestReco)
+		{
+			System.out.println(comp.crossProbability/sum*100+"%: " + comp.page);
+		}*/
+		
+		return new Recommendation(current.page.getUrl());
 	}
 	
 	
@@ -202,6 +210,14 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			assert (this.page !=null && arg0.page!=null);
 			return this.page.getUrl().compareTo(arg0.page.getUrl());
 		}
+
+		@Override
+		public String toString() {
+			return "Composite [user=" + user + "\n, page=" + page
+					+ "\n, crossProbability=" + crossProbability + "]";
+		}
+		
+		
 
 //		private AlgoLegerBayes getOuterType() {
 //			return AlgoLegerBayes.this;
