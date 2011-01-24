@@ -49,6 +49,19 @@ public class DataUserNode implements Data {
 			uPageMean= uPageMean/uPages.size();
 	}
 
+	
+	
+	void setUPages(ArrayList<DataUPage> uPages) {
+		this.uPages = uPages;
+		uPageMean=0;
+		for (DataUPage uPage:uPages)
+		{
+			uPageMean+= uPage.pageRank;
+		}
+		if (uPages.size()!=0)
+			uPageMean= uPageMean/uPages.size();
+	}
+
 	public ArrayList<DataUserRelation> getFriends() {
 		if (this.friends == null) {
 			return new ArrayList<DataUserRelation>();

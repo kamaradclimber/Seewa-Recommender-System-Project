@@ -32,21 +32,30 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		DataUserNode user;
 		if (req.getUrl()=="test" ) 
 		{
+			//on cr�e les persos
+			DataUserNode jeanMich = new DataUserNode("jeanMich", new ObjectId(), null  , null);
+			DataUserNode leGeek = new DataUserNode("leGeek", new ObjectId(), null , null);
+			DataUserNode jeanJaures = new DataUserNode("JeanJaures", new ObjectId(), null  , null);
+			
+			ObjectId jeanMichId= jeanMich.getId();
+			ObjectId leGeekId= leGeek.getId();
+			ObjectId jeanJauresId= jeanJaures.getId();
+			
 			//g�n� des Upages
 			//DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
-			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(), 0.8, "www.lefigaro.fr");
-			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.l�quipe.fr");
-			DataUPage jeanMichLinux= new DataUPage(new ObjectId(), 0.1, "www.linux.org");
+			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(),jeanMichId, 0.8, "www.lefigaro.fr");
+			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(),jeanMichId, 0.5, "www.l�quipe.fr");
+			DataUPage jeanMichLinux= new DataUPage(new ObjectId(),jeanMichId, 0.1, "www.linux.org");
 			
-			DataUPage leGeekLinux= new DataUPage(new ObjectId(), 0.8, "www.linux.org");
-			DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(), 0.95, "www.techcrunch.com");
-			DataUPage leGeekOpLib= new DataUPage(new ObjectId(), 0.6, "www.opinionlibre.fr");
-			DataUPage leGeekLeMonde= new DataUPage(new ObjectId(), 0.01, "www.lemonde.fr");
+			DataUPage leGeekLinux= new DataUPage(new ObjectId(),leGeekId, 0.8, "www.linux.org");
+			DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(),leGeekId, 0.95, "www.techcrunch.com");
+			DataUPage leGeekOpLib= new DataUPage(new ObjectId(),leGeekId, 0.6, "www.opinionlibre.fr");
+			DataUPage leGeekLeMonde= new DataUPage(new ObjectId(),leGeekId, 0.01, "www.lemonde.fr");
 			
-			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(), 0.5, "www.lemonde.fr");
-			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(), 0.3, "www.lefigaro.fr");
-			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.l�quipe.fr");
-			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.9, "www.lhumanit�.fr");
+			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(),jeanJauresId, 0.5, "www.lemonde.fr");
+			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(),jeanJauresId, 0.3, "www.lefigaro.fr");
+			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(),jeanJauresId, 0.6, "www.l�quipe.fr");
+			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(),jeanJauresId, 0.9, "www.lhumanit�.fr");
 			
 			ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
 			jeanMichUPage.add(jeanMichLinux);
@@ -66,10 +75,11 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			jeanJauresUPage.add(jeanJauresLEquipe);
 			jeanJauresUPage.add(jeanJauresLHuma);
 			
-			//on cr�e les persos
-			DataUserNode jeanMich = new DataUserNode("jeanMich", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanMichUPage);
-			DataUserNode leGeek = new DataUserNode("leGeek", new ObjectId(), new ArrayList<DataUserRelation>()  , leGeekUPage);
-			DataUserNode jeanJaures = new DataUserNode("JeanJaures", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanJauresUPage);
+			jeanMich.setUPages(jeanMichUPage);
+			leGeek.setUPages(leGeekUPage);
+			jeanJaures.setUPages(jeanJauresUPage);
+			
+			
 			//on impl�mente les liens d'amiti�
 			DataUserRelation jmfriends = new DataUserRelation(leGeek);
 			DataUserRelation lgfriends = new DataUserRelation(jeanMich);
