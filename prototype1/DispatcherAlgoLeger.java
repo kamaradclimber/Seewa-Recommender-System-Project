@@ -20,7 +20,7 @@ public DispatcherAlgoLeger() {
 		if (req.getTypeOfRequest()==TypeOfRequest.RECOPAGE) {
 			Request reqBis = req;
 			if(algos_to_do==null) System.out.print("On essaye avec un algoLegerBayes");
-			algos_to_do.put(new AlgoLegerBayes(), reqBis);
+			algos_to_do.put(AlgoLegerBayes.getAlgo(), reqBis);
 		}
 		
 				

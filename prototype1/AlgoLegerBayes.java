@@ -32,10 +32,10 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		DataUserNode user;
 		if (req.getUrl()=="test" ) 
 		{
-			//géné des Upages
+			//gï¿½nï¿½ des Upages
 			//DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
 			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(), 0.8, "www.lefigaro.fr");
-			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.léquipe.fr");
+			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.lï¿½quipe.fr");
 			DataUPage jeanMichLinux= new DataUPage(new ObjectId(), 0.1, "www.linux.org");
 			
 			DataUPage leGeekLinux= new DataUPage(new ObjectId(), 0.8, "www.linux.org");
@@ -45,8 +45,8 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			
 			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(), 0.5, "www.lemonde.fr");
 			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(), 0.3, "www.lefigaro.fr");
-			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.léquipe.fr");
-			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.9, "www.lhumanité.fr");
+			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.lï¿½quipe.fr");
+			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.9, "www.lhumanitï¿½.fr");
 			
 			ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
 			jeanMichUPage.add(jeanMichLinux);
@@ -66,11 +66,11 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			jeanJauresUPage.add(jeanJauresLEquipe);
 			jeanJauresUPage.add(jeanJauresLHuma);
 			
-			//on crée les persos
+			//on crï¿½e les persos
 			DataUserNode jeanMich = new DataUserNode("jeanMich", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanMichUPage);
 			DataUserNode leGeek = new DataUserNode("leGeek", new ObjectId(), new ArrayList<DataUserRelation>()  , leGeekUPage);
 			DataUserNode jeanJaures = new DataUserNode("JeanJaures", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanJauresUPage);
-			//on implémente les liens d'amitié
+			//on implï¿½mente les liens d'amitiï¿½
 			DataUserRelation jmfriends = new DataUserRelation(leGeek);
 			DataUserRelation lgfriends = new DataUserRelation(jeanMich);
 			
@@ -116,7 +116,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les trois meilleurs proba  
 		int nbReco=Math.min(10, pages.size());
 		
-		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,-j-1));
+		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,Integer.MIN_VALUE));
 		
 		//on va ensuite calculer toutes les probabilitÃ©s 
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
@@ -187,15 +187,17 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		public int compareTo(Composite arg0) {
 			if (this.crossProbability < arg0.crossProbability) return -1;
 			if (this.crossProbability > arg0.crossProbability) return 1;
-			if (this.page==null) return -1;
-			if (arg0.page==null) return 1;
-			else
-				return this.page.getUrl().compareTo(arg0.page.getUrl());
+			//same proba;
+			System.out.println(this.page);
+			System.out.println(arg0.page);
+			if (this.page==null && arg0.page==null) return 0;
+			assert (this.page !=null && arg0.page!=null);
+			return this.page.getUrl().compareTo(arg0.page.getUrl());
 		}
 
-		private AlgoLegerBayes getOuterType() {
-			return AlgoLegerBayes.this;
-		}
+//		private AlgoLegerBayes getOuterType() {
+//			return AlgoLegerBayes.this;
+//		}
 	}
 	
 	
