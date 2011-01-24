@@ -127,37 +127,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 				bestReco.remove(bestReco.first());
 			}
 		}
-//		
-//		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
-//		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
-//		//on initialise à 3 meilleures reco, nombre qu'on maintient ensuite
-//		//TODO : en faite non, on �crase toujours la m�me cl�.
-//		
-//		//on va ensuite calculer toutes les probabilités 
-//		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
-//			for(Composite c :cc) {
-//				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-//				System.out.println( c.page.getUrl()+" : " + proba);
-//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la m�me proba, on les �crase!!!
-//				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
-//			}
-//		}
-		
-//		double sum=0;	
-//		for ( double proba : bestReco.descendingKeySet())
-//		{
-//			System.out.println( bestReco.get( proba)+" : " + proba);
-//			sum += proba;
-//		}
-//		double var= Math.random() * sum;
-//		Iterator<Double> probs = bestsReco.descendingKeySet().iterator();
-//		double bestKey = probs.next(); 
-//		while (probs.hasNext() && var-bestKey >0 )
-//		{
-//			bestKey = probs.next();
-//			var-=bestKey;
-//		}		
-//		
+
 		return new Recommendation(bestReco.last().toString());
 	}
 	
@@ -195,9 +165,9 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			return this.page.getUrl().compareTo(arg0.page.getUrl());
 		}
 
-		private AlgoLegerBayes getOuterType() {
-			return AlgoLegerBayes.this;
-		}
+//		private AlgoLegerBayes getOuterType() {
+//			return AlgoLegerBayes.this;
+//		}
 	}
 	
 	
