@@ -85,6 +85,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			//on calcule les probas 
 			jeanMich.updateProbabilities();
 			leGeek.updateProbabilities();
+			jeanJaures.updateProbabilities();
 			
 			
 			
@@ -121,24 +122,31 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		//on va ensuite calculer toutes les probabilitÃ©s 
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
+				System.out.println("debut");
+				System.out.println(c.page.getUrl());
+				System.out.println(c.user.getName());
+				System.out.println(c.crossProbability);
+				System.out.println(c.user.uPageMean);
+				System.out.println(c.page.pageRank);
+				System.out.println("fin");
 				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
 				System.out.println( c.page.getUrl()+" : " + c.crossProbability);
-				bestReco.add(c);//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
-				bestReco.remove(bestReco.last());
+				bestReco.add(c);//TODO : IMPORTANT si deux pages ont la mï¿½me proba, on les ï¿½crase!!!
+				bestReco.remove(bestReco.first());
 			}
 		}
 //		
 //		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
 //		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
 //		//on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
-//		//TODO : en faite non, on écrase toujours la même clé.
+//		//TODO : en faite non, on ï¿½crase toujours la mï¿½me clï¿½.
 //		
 //		//on va ensuite calculer toutes les probabilitÃ©s 
 //		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 //			for(Composite c :cc) {
 //				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
 //				System.out.println( c.page.getUrl()+" : " + proba);
-//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
+//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la mï¿½me proba, on les ï¿½crase!!!
 //				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
 //			}
 //		}
@@ -188,8 +196,8 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			if (this.crossProbability < arg0.crossProbability) return -1;
 			if (this.crossProbability > arg0.crossProbability) return 1;
 			//same proba;
-			System.out.println(this.page);
-			System.out.println(arg0.page);
+			System.out.println(this.crossProbability);
+			System.out.println(arg0.crossProbability);
 			if (this.page==null && arg0.page==null) return 0;
 			assert (this.page !=null && arg0.page!=null);
 			return this.page.getUrl().compareTo(arg0.page.getUrl());

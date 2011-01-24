@@ -1,7 +1,7 @@
 
 public class Site {
 	
-	public Recommendation requestReco(Request req) {
+	private Recommendation requestReco(Request req) {
 		try {
 		Recommendeur reco = new Recommendeur();
 		Recommendation recommendation =  reco.recommendMeSomeThing(req);
@@ -11,4 +11,23 @@ public class Site {
 			return null;
 		}
 	}
+	
+	private void maj(Request req) {
+		try{
+			AlgoLourdBayes b = new AlgoLourdBayes();
+			b.maj();
+		} catch (Exception e) {
+			System.out.println("Erreur :"+e);
+		}
+	}
+	
+	private void getFeedback(Request req) {
+		try{
+			Interprete.setFeedback(req);
+			
+		} catch (Exception e) {
+			System.out.println("Erreur : "+e);
+		}
+	}
+	
 }
