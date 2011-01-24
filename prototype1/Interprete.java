@@ -45,7 +45,7 @@ static DB db;
 		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
-		//TODO : la suite peut ptet etre amÔøΩliorÔøΩ en regroupant tout dans une requÔøΩte
+		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
 		
 		for (String recommender : recommendersMongo.keySet()) {
 			//BasicDBObject recommender2 = (BasicDBObject) recommender;
@@ -76,7 +76,7 @@ static DB db;
 
 		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
 		
-		/* CrÔøΩation des DataUPages */
+		/* Création des DataUPages */
 		
 		while (pageviewedbyuser.hasNext()) {
 			DBObject upage = pageviewedbyuser.next();
@@ -111,7 +111,6 @@ static DB db;
 	}
 	
 	
-	
 	static protected void DataUserNode2db(DataUserNode user) {
 		
 		DBCollection coll = db.getCollection("users");
@@ -139,52 +138,186 @@ static DB db;
 		
 	
 	}
-
-
-
-	public static ArrayList<ObjectId> getUserList() {
-		DBCollection coll = db.getCollection("users");
-		
-		BasicDBObject keys = new BasicDBObject();
-		keys.put("_id", 1);
-		
-		DBCursor cursor = coll.find(new BasicDBObject(), keys);
-		ArrayList<ObjectId> results = new ArrayList<ObjectId>();
-		DBObject user= null;
-		while(cursor.hasNext()) {
-			user = cursor.next();
-			System.out.println(user);
-			results.add((ObjectId)user.get("_id") );
-		}
-		return results;
 			
 	
+	
+	
+
+	static protected DataVector db2DataVector(DBObject obj, Integer arrayId, ObjectId mongoID) {
+		// prend un dbobject pour en creer un datavector
+		DataVector vector = null;
+		if (arrayId != null ) {
+			vector = new DataVector(arrayId, mongoID);
+		} else if (mongoID != null) {
+			{
+				vector = new DataVector(0, mongoID);
+			}
+		} else {
+			vector = new DataVector(false);	
+		}
+		return vector;
+
+	}
+
+	static private BasicDBObject dataVector2db(DataVector vect){
+		BasicDBObject obj = new BasicDBObject();
+		for (String key : vect.keySet()) {
+			obj.put(key, vect.get(key));
+		}
+		return obj;
+	}
+
+
+	static public ArrayList<DataCluster> readClustersCentroids() throws ExceptionRecoNotValid {
+		System.out.println("HEHO T SUR QUE CA AMRCHE COMME FONCTION");
+		//this function should be used only for getting centroid (for research use only)
+		// Un cluster en base de donnÔøΩe est stockÔøΩ avec un champ centroid
+		//cette fonction est un peu optmisee pour la recherche quand on a besoin seulement des centroids
+		try {
+		DBCollection coll = db.getCollection("clusters");
+		DBCursor cursor = coll.find();
+		ArrayList<DataCluster> clusters = new ArrayList<DataCluster>();
+		
+		
+		DBObject cluster= null;
+		while(cursor.hasNext()) {
+			cluster = cursor.next();
+			//init de la centroid :
+			DataVector centroid = new DataVector(false);
+			DBObject cent = (DBObject) cluster.get("centroid");
+			ObjectId mongoID   =  (ObjectId) cluster.get("_id");
+			centroid = Interprete.db2DataVector(cent, null,null);
+			
+//			//TODO : on doit aussi charger les userId pour trouver une personne a recommender!
+//			//=>fait. On ne fait pas d'appel supplÔøΩmentaire ÔøΩ la BDD.
+//			BasicDBList utrs = (BasicDBList) cluster.get("utr_ids");
+//			ArrayList<DataVector> utrList =  new ArrayList<DataVector>();
+//			
+//			//Load user but without the data (only id)
+//			for (ObjectId arrayId : utrs) {
+//				
+//				DataVector utr = new DataVector(0, arrayId);
+//				utrList.add(utr);
+//			}
+			
+			clusters.add(new DataCluster(0, centroid, new ArrayList<DataVector>(), mongoID));
+		}
+		return clusters;
+		}
+		catch (MongoException ex) {
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_DB_READING_CLUSTER);
+		}
 	}
 
 
 
-	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id,
-			double crossProbability) {
+	static public ArrayList<DataCluster> readClusters() throws ExceptionRecoNotValid {
+		// Un cluster en base de donnÔøΩe est stockÔøΩ avec un champ centroid et des liens vers les UTR
+		try {
+		DBCollection clusterCollection = db.getCollection("clusters");
+		DBCollection userCollection = db.getCollection("users");
+		DBCursor cursor = clusterCollection.find();
+		ArrayList<DataCluster> clusters = new ArrayList<DataCluster>();
 
-		DBCollection coll = db.getCollection("users");
-		
+			DataVector centroid = new DataVector(false);
+			DBObject cent = (DBObject) cluster.get("centroid");
+			ObjectId id   =  (ObjectId) cluster.get("_id");
+			centroid = Interprete.db2DataVector(cent, null,null);
+			
+			//add the UTR vectors :
+			BasicDBList usrs = (BasicDBList) cluster.get("usr_ids");
+			ArrayList<DataVector> utrList =  new ArrayList<DataVector>();
+			BasicDBObject query = new BasicDBObject();
+				query.put("_id",(ObjectId) mongoId);
+				BasicDBObject user = (BasicDBObject) userCollection.findOne(query /*,new BasicDBObject("utr",1)*/); //on reccupere seulement le champ utr
+				BasicDBObject utr = (BasicDBObject) user.get("utr");
+				ObjectId mongoID =(ObjectId) user.get("_id");
+				utrList.add(Interprete.db2DataVector((DBObject) utr.get("utrs"), null, mongoID));
+				query.clear();
+			}
+			clusters.add(new DataCluster(-1, centroid, utrList, id));
+			utrList.clear();
+		}
+		return clusters;
+		}
+		catch (MongoException ex) {
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_DB_READING_CLUSTER);
+		}
+	} 
 
-		BasicDBObject fields = new BasicDBObject();
-		fields.put("recommenders", 1);
-		
-		BasicDBObject query = new BasicDBObject();
-		query.put("_id", user_Id);
-		
-		BasicDBObject user = (BasicDBObject)coll.findOne(query,fields);
-		System.out.println(user);
-		
-		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
-		
-		System.out.println(user);
-		coll.findAndModify(query, user);
-		
+	public static boolean writeClusters(ArrayList<DataCluster> clusters) throws ExceptionRecoNotValid {
+		//renvoie j'ai rÔøΩussi ou pas 
+		//Interprete.clusters=clusters; // a quoi sert cette ligne ? FIXME
+		//=> cf ligne 13 static: les donnÔøΩes ÔøΩtaient enrgistrÔøΩes dans la classe. En effet, cela ne sert plus a rien
+		try {
+		DBCollection clusterCollection = db.getCollection("clusters");
+		for (DataCluster cluster : clusters) {
+			BasicDBObject query = new BasicDBObject("_id",cluster.getMongoId());
+			BasicDBObject clusterr = new BasicDBObject();
+			clusterr.put("centroid", dataVector2db(cluster.getCentroid())); //on rajoute la centroid
+			BasicDBList idVector = new BasicDBList();
+			for (DataVector utr : cluster) {
+				idVector.add(utr.getMongoId()); //on ajoute l'id du user pour l'identifier 
+			}
+			clusterr.put("usr_ids", idVector);
+			clusterCollection.update(query, clusterr ,true,false);
+			
+			}
+
+
+			return true;
+		}
+		catch (MongoException ex) {
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_WRITING_CLUSTER);
+		}
 	}
-}
+
+	public static DataVector readUTR(ObjectId mongoID) throws ExceptionRecoNotValid { //TODO mettre un type un peu plus prÔøΩcis pour l ÔøΩd
+		//renvoie l'UTR d'un user ÔøΩ partir d'un id de l'user
+		try {
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",mongoID); //preparation de la query
+		DBObject user = users.findOne(query,new BasicDBObject("utr",1));
+		DBObject utr =  (DBObject) ((BasicDBObject) user.get("utr")).get("utrs"); //on caste TODO : faire un try..catch pour eviter les pblemes
+		
+		return Interprete.db2DataVector(utr, null, mongoID); //this data matters so on lui passe l'id qui va bien
+		}
+		catch (MongoException ex) {
+			throw new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_DB_READING_UTR);
+		}
+	}
+
+
+	public static void writeUTR(Object id, DataVector utr) {
+		//TODO : gestion de l'exception
+
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",id); //preparation de la query
+		BasicDBObject user = new BasicDBObject();
+		user.put("_id", id);
+		user.put("utr", Interprete.dataVector2db(utr));
+
+		users.update(query, user  ,true,false);
+		//usersByNames.put(username,ucr);
+		//usersByUCR.put(ucr, username);
+	}
+
+	
+	public static DataUser getUser(DataVector utr) throws ExceptionRecoNotValid{
+		try {
+		//renvoie l'utilisateur qui correspond √† l'UTR pass√© en argument
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",utr.getMongoId()); //preparation de la query
+		BasicDBObject fields = new BasicDBObject("_id", 1);
+		fields.put("name", 1);
+		
+		BasicDBObject user = (BasicDBObject) users.findOne(query, fields);
+		
+		assert (utr.getMongoId() == user.get("_id"));
+		return new DataUser( user.get("name").toString(), utr, utr.getMongoId() );
+		
+		}
+	}
 	
 
 //	static protected DataVector db2DataVector(DBObject obj, Integer arrayId, ObjectId mongoID) {
