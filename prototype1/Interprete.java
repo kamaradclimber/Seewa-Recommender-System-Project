@@ -45,7 +45,7 @@ static DB db;
 		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
-		//TODO : la suite peut ptet etre am�lior� en regroupant tout dans une requ�te
+		//TODO : la suite peut ptet etre amï¿½liorï¿½ en regroupant tout dans une requï¿½te
 		
 		for (String recommender : recommendersMongo.keySet()) {
 			//BasicDBObject recommender2 = (BasicDBObject) recommender;
@@ -62,6 +62,8 @@ static DB db;
 		DataUserNode usernode = db2DataUserNodeSimple(mongoID);
 		usernode.setFriends(recommenders);
 		
+		System.out.println(recommenders.get(0).toString());
+		
 		return usernode;
 	}
 	
@@ -76,8 +78,6 @@ static DB db;
 
 		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
 		
-		/* Cr�ation des DataUPages */
-		//System.out.println("Attention je ne vais pas chercher les upages pour eviter le bug");
 		
 		while (pageviewedbyuser.hasNext()) {
 			DBObject upage = pageviewedbyuser.next();
@@ -97,18 +97,26 @@ static DB db;
 		BasicDBObject query = new BasicDBObject("_id", receiver_id);
 		DBObject user = coll.findOne(query);
 		
-		BasicDBList recommenders = (BasicDBList) user.get("recommenders");
+		BasicDBObject recommenders = (BasicDBObject) user.get("recommenders");
 		BasicDBObject recommender = (BasicDBObject) recommenders.get(recommender_id.toString());
+		System.out.println(recommender);
 		
 		if (feedback == true) {
 			int posFeedback = (Integer) recommender.get("posFeedback");
+			System.out.println(posFeedback);
 			recommender.put("posFeedback",posFeedback+1);
 		}
 		
 		else {
 			int negFeedback = (Integer) recommender.get("negFeedback");
-			recommender.put("negFeedback",negFeedback-1);
+			System.out.println(negFeedback);
+			recommender.put("negFeedback",negFeedback+1);
 		}
+		recommenders.put(recommender_id.toString(), recommender);
+		user.put("recommenders",recommenders);
+		BasicDBObject query2 = new BasicDBObject("_id", receiver_id);
+		coll.findAndModify(query2, user);
+		
 	}
 	
 	
