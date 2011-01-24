@@ -83,6 +83,7 @@ static DB db;
 		
 		
 		
+		for(DBObject upage : pageviewedbyuser) {
 		while (pageviewedbyuser.hasNext()) {
 			DBObject upage = pageviewedbyuser.next();
 			double pagerank = (Double) upage.get("pageRank");
@@ -138,7 +139,7 @@ static DB db;
 	
 	static protected void modifyFeedback(ObjectId recommender_id , ObjectId receiver_id , boolean feedback) {
 		DBCollection coll = db.getCollection("users");
-		BasicDBObject query = new BasicDBObject("name", "Francis");
+		BasicDBObject query = new BasicDBObject("_id", receiver_id);
 		DBObject user = coll.findOne(query);
 		
 		BasicDBObject recommenders = (BasicDBObject) user.get("recommenders");
@@ -235,6 +236,4 @@ static DB db;
 		
 	}
 }
-	
-
 	

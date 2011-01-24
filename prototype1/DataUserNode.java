@@ -20,7 +20,7 @@ public class DataUserNode implements Data {
 		this.id = id;
 		this.uPages = dataupages;
 		this.friends= new ArrayList<DataUserRelation>();
-		double uPageMean=0;
+		double uPageMean=1;
 		for (DataUPage uPage:uPages)
 		{
 			uPageMean+= uPage.pageRank;
@@ -78,6 +78,14 @@ public class DataUserNode implements Data {
 		{
 			change= userR.updateProbability(this) || change ; //attention à l'evaluation paresseuse !
 		}
+		
+		uPageMean=0;
+		for (DataUPage uPage:uPages)
+		{
+			uPageMean+= uPage.pageRank;
+		}
+		if (uPages.size()!=0)
+			uPageMean= uPageMean/uPages.size();
 		
 		return change;
 	}
