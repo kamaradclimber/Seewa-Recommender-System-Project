@@ -39,12 +39,14 @@ public class DataUserNode implements Data {
 		this.friends=friends;
 		this.uPages=uPages;
 		uPageMean=0;
-		for (DataUPage uPage:uPages)
-		{
-			uPageMean+= uPage.pageRank;
+		if(uPages != null) {
+			for (DataUPage uPage:uPages)
+			{
+				uPageMean+= uPage.pageRank;
+			}
+			if (uPages.size()!=0)
+				uPageMean= uPageMean/uPages.size();
 		}
-		if (uPages.size()!=0)
-			uPageMean= uPageMean/uPages.size();
 	}
 
 	

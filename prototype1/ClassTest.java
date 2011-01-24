@@ -57,13 +57,18 @@ public class ClassTest {
 //		DataUserNode test = Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871050000000"));
 //		System.out.println(test);
 		
-		ArrayList<ObjectId> users= Interprete.getUserList();
-		for (ObjectId id : users) {
-			System.out.println(id);
+		AlgoLeger b =AlgoLegerBayes.getAlgo();
+		try {
+			b.answers(new Request(null, "test", null, TypeOfRequest.RECOPAGE));
+		} catch (ExceptionRecoNotValid e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		//System.out.println(Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871052000000")));
+		Interprete.setCrossProbability(new ObjectId("4d3da490c2ad6bfc01000000"),new ObjectId("4d3da490c2ad6bfc02000000"),0.3);
 	
-		System.out.println(Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871052000000")));
-		}
+	
 	}
+}
 
 

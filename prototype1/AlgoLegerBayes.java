@@ -1,5 +1,6 @@
 import java.awt.List;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -33,9 +34,10 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		if (req.getUrl()=="test" ) 
 		{
 			//on cr�e les persos
-			DataUserNode jeanMich = new DataUserNode( new ObjectId(), null  , null);
-			DataUserNode leGeek = new DataUserNode( new ObjectId(), null , null);
-			DataUserNode jeanJaures = new DataUserNode( new ObjectId(), null  , null);
+			Date t = new Date();
+			DataUserNode jeanMich = new DataUserNode( new ObjectId(t,1), null  , null);
+			DataUserNode leGeek = new DataUserNode( new ObjectId(t,2), null , null);
+			DataUserNode jeanJaures = new DataUserNode( new ObjectId(t,3), null  , null);
 			
 			ObjectId jeanMichId= jeanMich.getId();
 			ObjectId leGeekId= leGeek.getId();
@@ -43,8 +45,8 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			
 			//g�n� des Upages
 			//DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
-			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(),jeanMichId, 0.8, "www.lefigaro.fr");
-			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(),jeanMichId, 0.5, "www.l�quipe.fr");
+			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(t,1),jeanMichId, 0.8, "www.lefigaro.fr");
+			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(t,2),jeanMichId, 0.5, "www.l�quipe.fr");
 			DataUPage jeanMichLinux= new DataUPage(new ObjectId(),jeanMichId, 0.1, "www.linux.org");
 			
 			DataUPage leGeekLinux= new DataUPage(new ObjectId(),leGeekId, 0.8, "www.linux.org");
@@ -82,6 +84,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			
 			//on impl�mente les liens d'amiti�
 			DataUserRelation jmfriends = new DataUserRelation(leGeek);
+			
 			DataUserRelation lgfriends = new DataUserRelation(jeanMich);
 			
 			ArrayList<DataUserRelation> jmUserRelations = new ArrayList<DataUserRelation>();
@@ -95,7 +98,8 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			//on calcule les probas 
 			jeanMich.updateProbabilities();
 			leGeek.updateProbabilities();
-			
+
+			Interprete.DataUserNode2db(jeanMich);
 			
 			
 			user = jeanMich;

@@ -143,7 +143,8 @@ static DB db;
 		newUser.put("recommenders",recommenders);
 		
 		BasicDBObject query = new BasicDBObject("_id", user.getId());
-		coll.findAndModify(query, newUser);
+		coll.update(query, newUser, true, false);
+		System.out.println("done");
 		
 	
 	}
@@ -181,17 +182,16 @@ static DB db;
 		BasicDBObject query = new BasicDBObject();
 		query.put("_id", user_Id);
 		
-		BasicDBObject user = (BasicDBObject)coll.findOne(query,fields);
-		System.out.println(user);
-		
+		BasicDBObject user = (BasicDBObject)coll.findOne(query/*,fields*/);
+		if (user==null) {System.out.println("Something went wrong ! le user est null");}
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
-		
-		System.out.println(user);
-		coll.findAndModify(query, user);
+		coll.update(query, user,true,false);
+		System.out.println("on ecrase les donnes deja existantes ? attention !");
 		
 	}
 	
 	public static void DataUPage2db(DataUPage p) {
+		System.out.println("Attention : on ecrase les pages deja existantes ?");
 		DBCollection coll = db.getCollection("upages");
 		BasicDBObject o = new BasicDBObject();
 		o.put("_id", p.getMongoId());

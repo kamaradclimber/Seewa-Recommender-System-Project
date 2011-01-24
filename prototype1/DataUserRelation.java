@@ -40,7 +40,7 @@ public class DataUserRelation{
 		
 		@Override
 		public String toString() {
-			return "DataUserRelation [friend=" + friend.getName() + ", crossProbability="
+			return "DataUserRelation [friend=" + friend.getMongoId() + ", crossProbability="
 					+ crossProbability + ", posFeedback=" + posFeedback
 					+ ", negFeedback=" + negFeedback + "]";
 		}
