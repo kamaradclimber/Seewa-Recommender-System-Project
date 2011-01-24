@@ -11,4 +11,25 @@ public class Site {
 			return null;
 		}
 	}
+	
+	public void maj(Request req) {
+		try{
+			AlgoLourdBayes b = new AlgoLourdBayes();
+			b.maj();
+		} catch (Exception e) {
+			System.out.println("Erreur :"+e);
+		}
+	}
+	
+	public void getFeedback(Request req) {
+		try{
+			Interprete.setFeedback(req);
+			
+		} catch (Exception e) {
+			System.out.println("Erreur : "+e);
+		}
+	}
+	
+	
+	
 }

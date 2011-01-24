@@ -72,7 +72,7 @@ public class DataUserNode implements Data {
 		boolean change= false;
 		for (DataUserRelation userR : friends)
 		{
-			change= userR.updateProbability(this) || change;
+			change= userR.updateProbability(this) || change ; //attention à l'evaluation paresseuse !
 		}
 		
 		uPageMean=0;

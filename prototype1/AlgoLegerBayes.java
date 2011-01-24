@@ -27,9 +27,6 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		return singleton;
 	}
 
-	/* (non-Javadoc)
-	 * @see AlgoLeger#answers(Request)
-	 */
 	@Override
 	public Recommendation answers(Request req) throws ExceptionRecoNotValid {
 		DataUserNode user;
@@ -207,8 +204,8 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			if (this.crossProbability < arg0.crossProbability) return -1;
 			if (this.crossProbability > arg0.crossProbability) return 1;
 			//same proba;
-			//System.out.println(this.page);
-			//System.out.println(arg0.page);
+			System.out.println(this.crossProbability);
+			System.out.println(arg0.crossProbability);
 			if (this.page==null && arg0.page==null) return 0;
 			assert (this.page !=null && arg0.page!=null);
 			return this.page.getUrl().compareTo(arg0.page.getUrl());

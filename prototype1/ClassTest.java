@@ -49,9 +49,8 @@ public class ClassTest {
 
 		Interprete.DataUserNode2db(user1);
 		
-		
-		Interprete.setCrossProbability(new ObjectId("8dda084dd1ab871050000000"), new ObjectId("8dda084dd1ab871053000000"), 13);
-		
+		DataUserNode test = Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871052000000"));
+	
 		}
 	}
 
