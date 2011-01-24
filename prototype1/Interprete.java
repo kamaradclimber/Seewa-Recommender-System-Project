@@ -42,8 +42,13 @@ static DB db;
 		DBObject user = coll.findOne(query);
 		
 		
-		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
+		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
+		System.out.println(recommendersMongo);
+		
+		String name = (String) user.get("name");
+		System.out.println(name);
+
 		
 		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
 		
@@ -71,9 +76,12 @@ static DB db;
 		
 		
 		DBCollection upages = db.getCollection("upages");
-		BasicDBObject query = new BasicDBObject("user",mongoID);
-		DBCursor pageviewedbyuser = upages.find(query);
-
+		BasicDBObject query = new BasicDBObject();
+		query.put("user",mongoID);
+		DBCursor pageviewedbyuser = upages.find();
+		
+		System.out.println(pageviewedbyuser);
+		
 		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
 		
 		/* Création des DataUPages */
@@ -86,7 +94,7 @@ static DB db;
 			DataUPage dataupage = new DataUPage(id,pagerank);
 			userupages.add(dataupage);
 		}
-		
+		 
 		DataUserNode usernode = new DataUserNode(mongoID,userupages);
 		return usernode;
 	}
@@ -118,18 +126,17 @@ static DB db;
 		newUser.put("_id",user.getId());
 		newUser.put("name","Francis");
 		
-		BasicDBList recommenders = new BasicDBList();
+		BasicDBObject recommenders = new BasicDBObject();
 		
 		for (DataUserRelation relation : user.getFriends()) {
-			BasicDBObject recommender = new BasicDBObject();
 			BasicDBObject recommenderData = new BasicDBObject();
 			recommenderData.put("_id", relation.getFriend().getId());
 			recommenderData.put("crossProbability", relation.getCrossProbability());
 			recommenderData.put("posFeedback", relation.getNegFeedback());
 			recommenderData.put("negFeedback", relation.getPosFeedback());
 			
-			recommender.put(relation.getFriend().getId().toString(),recommenderData);
-			recommenders.add(recommender);
+			
+			recommenders.put(relation.getFriend().getId().toString(),recommenderData);
 		}
 		
 		newUser.put("recommenders",recommenders);

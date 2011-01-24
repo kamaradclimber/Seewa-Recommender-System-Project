@@ -31,8 +31,17 @@ public class ClassTest {
 		
 		DataUserNode user1 = new DataUserNode(userrelation,new ObjectId("8dda084dd1ab871050000000"));
 
-		Interprete.DataUserNode2db(user1);
+		//Interprete.DataUserNode2db(user1);
+		/*
+		DataUserNode test = Interprete.db2DataUserNodeHard(user1.getId());
+		System.out.println(test.getId().toString());
+		System.out.println(test.getFriends().get(0).getCrossProbability());
+		System.out.println(test.getFriends().get(0).getNegFeedback());
+		System.out.println(test.getFriends().get(0).getPosFeedback());
+		*/
 		
+		DataUserNode test = Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871052000000"));
+	
 		}
 	}
 
