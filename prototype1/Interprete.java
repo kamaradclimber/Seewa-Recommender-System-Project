@@ -145,8 +145,6 @@ static DB db;
 	public static ArrayList<ObjectId> getUserList() {
 		DBCollection coll = db.getCollection("users");
 		
-		BasicDBObject keys = new BasicDBObject();
-		keys.put("_id", 1);
 		
 		DBCursor cursor = coll.find(new BasicDBObject(), keys);
 		ArrayList<ObjectId> results = new ArrayList<ObjectId>();
