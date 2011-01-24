@@ -18,7 +18,7 @@ public class DataUserNode implements Data {
 	
 	public DataUserNode(ObjectId id, ArrayList<DataUPage> dataupages) {
 		this.id = id;
-		this.uPages = dataUpages;
+		this.uPages = dataupages;
 		this.friends= new ArrayList<DataUserRelation>();
 		double uPageMean=0;
 		for (DataUPage uPage:uPages)

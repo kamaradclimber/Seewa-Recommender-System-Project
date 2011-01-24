@@ -78,8 +78,9 @@ static DB db;
 		
 		/* Cr�ation des DataUPages */
 		
-		while (pageviewedbyuser.hasNext()) {
-			DBObject upage = pageviewedbyuser.next();
+		for(DBObject upage : pageviewedbyuser) {
+		//while (pageviewedbyuser.hasNext()) {
+			//DBObject upage = pageviewedbyuser.next();
 			double pagerank = (Double) upage.get("pageRank");
 			ObjectId id = (ObjectId) upage.get("_id");
 			
@@ -184,5 +185,3 @@ static DB db;
 	}
 }
 	
-
-	}
