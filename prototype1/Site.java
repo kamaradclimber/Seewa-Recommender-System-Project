@@ -1,7 +1,7 @@
 
 public class Site {
 	
-	private Recommendation requestReco(Request req) {
+	public Recommendation requestReco(Request req) {
 		try {
 		Recommendeur reco = new Recommendeur();
 		Recommendation recommendation =  reco.recommendMeSomeThing(req);
@@ -12,7 +12,7 @@ public class Site {
 		}
 	}
 	
-	private void maj(Request req) {
+	public void maj(Request req) {
 		try{
 			AlgoLourdBayes b = new AlgoLourdBayes();
 			b.maj();
@@ -21,7 +21,7 @@ public class Site {
 		}
 	}
 	
-	private void getFeedback(Request req) {
+	public void getFeedback(Request req) {
 		try{
 			Interprete.setFeedback(req);
 			
@@ -29,5 +29,7 @@ public class Site {
 			System.out.println("Erreur : "+e);
 		}
 	}
+	
+	
 	
 }
