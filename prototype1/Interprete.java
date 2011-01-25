@@ -42,11 +42,10 @@ static DB db;
 		DBObject user = coll.findOne(query);
 		
 		
-		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
-		System.out.println(recommendersMongo);
+		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
-		//TODO : la suite peut ptet etre am�lior� en regroupant tout dans une requ�te
+		//TODO : la suite peut ptet etre amï¿½liorï¿½ en regroupant tout dans une requï¿½te
 		
 		for (String recommender : recommendersMongo.keySet()) {
 			//BasicDBObject recommender2 = (BasicDBObject) recommender;
@@ -63,77 +62,33 @@ static DB db;
 		DataUserNode usernode = db2DataUserNodeSimple(mongoID);
 		usernode.setFriends(recommenders);
 		
-		System.out.println(recommenders.get(0).toString());
+		//System.out.println(recommenders.get(0).toString());
 		
 		return usernode;
 	}
 	
 	
 	
-	static protected DataUserNode db2DataUserNodeSimple(ObjectId mongoID) {
+	static protected DataUserNode db2DataUserNodeSimple(ObjectId userId) {
 		
-		/*
-		 * en attente de la r�ponse du bugtracker
-		 * 
+		
 		DBCollection upages = db.getCollection("upages");
-		BasicDBObject query = new BasicDBObject("user",mongoID);
-		DBCursor pageviewedbyuser = upages.find();
+		BasicDBObject query = new BasicDBObject("user",userId);
+		DBCursor pageviewedbyuser = upages.find(query);
 
 		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
 		
 		
-		
-		for(DBObject upage : pageviewedbyuser) {
 		while (pageviewedbyuser.hasNext()) {
 			DBObject upage = pageviewedbyuser.next();
 			double pagerank = (Double) upage.get("pageRank");
 			ObjectId id = (ObjectId) upage.get("_id");
-			
-			DataUPage dataupage = new DataUPage(id,pagerank);
+			String url =(String) upage.get("url");
+			DataUPage dataupage = new DataUPage(id, userId, pagerank,url);
 			userupages.add(dataupage);
 		}
-		*/
 		
-		DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(), 0.8, "www.lefigaro.fr");
-		DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.l�quipe.fr");
-		DataUPage jeanMichLinux= new DataUPage(new ObjectId(), 0.1, "www.linux.org");
-		
-		DataUPage leGeekLinux= new DataUPage(new ObjectId(), 0.8, "www.linux.org");
-		DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(), 0.95, "www.techcrunch.com");
-		DataUPage leGeekOpLib= new DataUPage(new ObjectId(), 0.6, "www.opinionlibre.fr");
-		DataUPage leGeekLeMonde= new DataUPage(new ObjectId(), 0.01, "www.lemonde.fr");
-		
-		DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(), 0.5, "www.lemonde.fr");
-		DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(), 0.3, "www.lefigaro.fr");
-		DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.l�quipe.fr");
-		DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.9, "www.lhumanit�.fr");
-		
-		ArrayList<DataUPage> userupages = new ArrayList<DataUPage>();
-		
-		ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
-		jeanMichUPage.add(jeanMichLinux);
-		jeanMichUPage.add(jeanMichLeFigaro);
-		//jeanMichUPage.add(jeanMichLeMonde);
-		jeanMichUPage.add(jeanMichLEquipe);
-		
-		ArrayList<DataUPage> leGeekUPage= new ArrayList<DataUPage>();
-		leGeekUPage.add(leGeekLinux);
-		leGeekUPage.add(leGeekOpLib);
-		leGeekUPage.add(leGeekTechCrunch);
-		leGeekUPage.add(leGeekLeMonde);
-		
-		ArrayList<DataUPage> jeanJauresUPage= new ArrayList<DataUPage>();
-		jeanJauresUPage.add(jeanJauresLeFigaro);
-		jeanJauresUPage.add(jeanJauresLeMonde);
-		jeanJauresUPage.add(jeanJauresLEquipe);
-		jeanJauresUPage.add(jeanJauresLHuma);
-		
-		userupages.addAll(jeanJauresUPage);
-		userupages.addAll(leGeekUPage);
-		userupages.addAll(jeanMichUPage);
-		
-		DataUserNode usernode = new DataUserNode(mongoID,userupages);
-		usernode.setName("Bob");
+		DataUserNode usernode = new DataUserNode(userId,userupages);
 		return usernode;
 	}
 	
@@ -175,6 +130,7 @@ static DB db;
 		BasicDBObject recommenders = new BasicDBObject();
 		
 		for (DataUserRelation relation : user.getFriends()) {
+			BasicDBObject recommender = new BasicDBObject();  //TODO : is it really useless ?
 			BasicDBObject recommenderData = new BasicDBObject();
 			recommenderData.put("_id", relation.getFriend().getId());
 			recommenderData.put("crossProbability", relation.getCrossProbability());
@@ -188,7 +144,12 @@ static DB db;
 		//newUser.markAsPartialObject();
 		
 		BasicDBObject query = new BasicDBObject("_id", user.getId());
+<<<<<<< HEAD
 		coll.update(query, newUser);
+=======
+		coll.update(query, newUser, true, false);
+		System.out.println("done");
+>>>>>>> 133fec90c3749b2968e03a3618959a234bc92342
 		
 	
 	}
@@ -215,14 +176,14 @@ static DB db;
 
 	public static ArrayList<ObjectId> getUserList() {
 		DBCollection coll = db.getCollection("users");
-		
+		BasicDBObject keys = new BasicDBObject("_id",1);
 		
 		DBCursor cursor = coll.find(new BasicDBObject(), keys);
 		ArrayList<ObjectId> results = new ArrayList<ObjectId>();
 		DBObject user= null;
 		while(cursor.hasNext()) {
 			user = cursor.next();
-			System.out.println(user);
+			//System.out.println(user);
 			results.add((ObjectId)user.get("_id") );
 		}
 		return results;
@@ -244,14 +205,34 @@ static DB db;
 		BasicDBObject query = new BasicDBObject();
 		query.put("_id", user_Id);
 		
-		BasicDBObject user = (BasicDBObject)coll.findOne(query,fields);
-		System.out.println(user);
-		
+		BasicDBObject user = (BasicDBObject)coll.findOne(query/*,fields*/);
+		if (user==null) {System.out.println("Something went wrong ! le user est null");}
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
-		
-		System.out.println(user);
-		coll.findAndModify(query, user);
+		coll.update(query, user,true,false);
+		System.out.println("on ecrase les donnes deja existantes ? attention !");
 		
 	}
+	
+	public static void DataUPage2db(DataUPage p) {
+		System.out.println("Attention : on ecrase les pages deja existantes ?");
+		DBCollection coll = db.getCollection("upages");
+		BasicDBObject o = new BasicDBObject();
+		o.put("_id", p.getMongoId());
+		o.put("pageRank", p.pageRank);
+		System.out.println(p.getUrl());
+		o.put("url", p.getUrl());
+		o.put("user", p.getUserId());
+		DBObject obj = new BasicDBObject();
+		obj.put("_id", p.getMongoId());
+		
+		coll.update(
+				obj,
+				(DBObject)o, 
+				true, /* i want to create the object if it doesnt exist*/
+				false /* do i want to update multiple items : no */
+				);
+	}
+	
+	
 }
 	

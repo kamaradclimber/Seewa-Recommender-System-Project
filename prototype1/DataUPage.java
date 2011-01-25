@@ -4,19 +4,23 @@ import org.bson.types.ObjectId;
 public final class DataUPage implements Data {
 
 	private ObjectId id;//userId?
+	private ObjectId userId;
+	
+
 	double pageRank;
 	private String url; //on stock pour connaitre les pages qui sont partag�es par 2 users
 	//Time Stamp?
 	
-	public DataUPage(ObjectId id, double pageRank) {
+	private DataUPage(ObjectId id, ObjectId userId,double pageRank) {
 		this.id = id;
 		this.pageRank=pageRank;
+		this.userId = userId;
 	}
 	
 	
-	public DataUPage( ObjectId id, double pageRank, String url)
+	public DataUPage( ObjectId id, ObjectId userId, double pageRank, String url)
 	{
-		this(id,pageRank);
+		this(id,userId, pageRank);
 		this.url=url;
 	}
 	
@@ -28,7 +32,7 @@ public final class DataUPage implements Data {
 	@Override
 	public String toString() {
 		return "DataUPage [id=" + id + ", pageRank=" + pageRank + ", url="
-				+ url + "]";
+				+ url + " user="+ userId+"]";
 	}
 
 
@@ -41,5 +45,14 @@ public final class DataUPage implements Data {
 	public double getPR() {
 		
 		return pageRank;
+	}
+	
+	public ObjectId getUserId() {
+		return userId;
+	}
+
+
+	public void setUserId(ObjectId userId) {
+		this.userId = userId;
 	}
 }

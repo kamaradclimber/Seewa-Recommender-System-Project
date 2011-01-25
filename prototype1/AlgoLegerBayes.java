@@ -1,5 +1,6 @@
 import java.awt.List;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -32,21 +33,31 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		DataUserNode user;
 		if (req.getUrl()=="test" ) 
 		{
+			//on crï¿½e les persos
+			Date t = new Date();
+			DataUserNode jeanMich = new DataUserNode( new ObjectId(t,1), null  , null);
+			DataUserNode leGeek = new DataUserNode( new ObjectId(t,2), null , null);
+			DataUserNode jeanJaures = new DataUserNode( new ObjectId(t,3), null  , null);
+			
+			ObjectId jeanMichId= jeanMich.getId();
+			ObjectId leGeekId= leGeek.getId();
+			ObjectId jeanJauresId= jeanJaures.getId();
+			
 			//gï¿½nï¿½ des Upages
 			//DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
-			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(), 0.8, "www.lefigaro.fr");
-			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(), 0.5, "www.lï¿½quipe.fr");
-			DataUPage jeanMichLinux= new DataUPage(new ObjectId(), 0.1, "www.linux.org");
+			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(t,1),jeanMichId, 0.8, "www.lefigaro.fr");
+			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(t,2),jeanMichId, 0.5, "www.lï¿½quipe.fr");
+			DataUPage jeanMichLinux= new DataUPage(new ObjectId(),jeanMichId, 0.1, "www.linux.org");
 			
-			DataUPage leGeekLinux= new DataUPage(new ObjectId(), 0.8, "www.linux.org");
-			DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(), 0.95, "www.techcrunch.com");
-			DataUPage leGeekOpLib= new DataUPage(new ObjectId(), 0.6, "www.opinionlibre.fr");
-			DataUPage leGeekLeMonde= new DataUPage(new ObjectId(), 0.01, "www.lemonde.fr");
+			DataUPage leGeekLinux= new DataUPage(new ObjectId(),leGeekId, 0.8, "www.linux.org");
+			DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(),leGeekId, 0.95, "www.techcrunch.com");
+			DataUPage leGeekOpLib= new DataUPage(new ObjectId(),leGeekId, 0.6, "www.opinionlibre.fr");
+			DataUPage leGeekLeMonde= new DataUPage(new ObjectId(),leGeekId, 0.01, "www.lemonde.fr");
 			
-			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(), 0.5, "www.lemonde.fr");
-			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(), 0.3, "www.lefigaro.fr");
-			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(), 0.6, "www.lï¿½quipe.fr");
-			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(), 0.9, "www.lhumanitï¿½.fr");
+			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(),jeanJauresId, 0.5, "www.lemonde.fr");
+			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(),jeanJauresId, 0.3, "www.lefigaro.fr");
+			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(),jeanJauresId, 0.6, "www.lï¿½quipe.fr");
+			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(),jeanJauresId, 0.9, "www.lhumanitï¿½.fr");
 			
 			ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
 			jeanMichUPage.add(jeanMichLinux);
@@ -66,12 +77,14 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			jeanJauresUPage.add(jeanJauresLEquipe);
 			jeanJauresUPage.add(jeanJauresLHuma);
 			
-			//on crï¿½e les persos
-			DataUserNode jeanMich = new DataUserNode("jeanMich", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanMichUPage);
-			DataUserNode leGeek = new DataUserNode("leGeek", new ObjectId(), new ArrayList<DataUserRelation>()  , leGeekUPage);
-			DataUserNode jeanJaures = new DataUserNode("JeanJaures", new ObjectId(), new ArrayList<DataUserRelation>()  , jeanJauresUPage);
+			jeanMich.setUPages(jeanMichUPage);
+			leGeek.setUPages(leGeekUPage);
+			jeanJaures.setUPages(jeanJauresUPage);
+			
+			
 			//on implï¿½mente les liens d'amitiï¿½
 			DataUserRelation jmfriends = new DataUserRelation(leGeek);
+			
 			DataUserRelation lgfriends = new DataUserRelation(jeanMich);
 			
 			ArrayList<DataUserRelation> jmUserRelations = new ArrayList<DataUserRelation>();
@@ -85,7 +98,8 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			//on calcule les probas 
 			jeanMich.updateProbabilities();
 			leGeek.updateProbabilities();
-			
+
+			Interprete.DataUserNode2db(jeanMich);
 			
 			
 			user = jeanMich;
@@ -131,14 +145,14 @@ public final class AlgoLegerBayes extends AlgoLeger {
 //		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
 //		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
 //		//on initialise Ã  3 meilleures reco, nombre qu'on maintient ensuite
-//		//TODO : en faite non, on écrase toujours la même clé.
+//		//TODO : en faite non, on ï¿½crase toujours la mï¿½me clï¿½.
 //		
 //		//on va ensuite calculer toutes les probabilitÃ©s 
 //		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 //			for(Composite c :cc) {
 //				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
 //				System.out.println( c.page.getUrl()+" : " + proba);
-//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la même proba, on les écrase!!!
+//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la mï¿½me proba, on les ï¿½crase!!!
 //				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
 //			}
 //		}
