@@ -111,8 +111,8 @@ static DB db;
 		}
 		recommenders.put(recommender_id.toString(), recommender);
 		user.put("recommenders",recommenders);
-		BasicDBObject query2 = new BasicDBObject("_id", receiver_id);
-		coll.findAndModify(query2, user);
+		
+		coll.update(query, user,true,false);
 		
 	}
 	
@@ -138,15 +138,35 @@ static DB db;
 		}
 		
 		newUser.put("recommenders",recommenders);
+		//newUser.markAsPartialObject();
 		
 		BasicDBObject query = new BasicDBObject("_id", user.getId());
+
 		coll.update(query, newUser, true, false);
 		System.out.println("done");
 		
 	
 	}
 
+	
+	static protected void DataUserNode2dbNew(DataUserNode user) {
+		DBCollection coll = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id", user.getMongoId());
+		DBObject userMongo = coll.findOne(query);
+		BasicDBObject updatedRecommenders = new BasicDBObject();
 
+		for (DataUserRelation friend : user.getFriends()) {
+			BasicDBObject recommender = new BasicDBObject();
+			recommender.put("_id", friend.getFriend().getMongoId());
+			recommender.put("crossProbability", friend.getCrossProbability());
+			recommender.put("posFeedback", friend.getPosFeedback());
+			recommender.put("negFeedback", friend.getNegFeedback());
+			updatedRecommenders.put(friend.getFriend().getId().toString(), recommender);
+		}
+		userMongo.put("recommenders", updatedRecommenders);
+		coll.update(query, userMongo,true,false);
+	}
+	
 
 	public static ArrayList<ObjectId> getUserList() {
 		DBCollection coll = db.getCollection("users");

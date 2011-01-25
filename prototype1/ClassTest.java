@@ -75,7 +75,7 @@ public class ClassTest {
 			Interprete.DataUserNode2db(u);	
 			DataUserNode v= Interprete.db2DataUserNodeSimple(o);
 		}
+
 	}
 }
-
 
