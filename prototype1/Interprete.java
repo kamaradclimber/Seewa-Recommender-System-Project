@@ -42,7 +42,7 @@ static DB db;
 		DBObject user = coll.findOne(query);
 		
 		
-		BasicDBList recommendersMongo = (BasicDBList) user.get("recommenders");
+		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
 		//TODO : la suite peut ptet etre amï¿½liorï¿½ en regroupant tout dans une requï¿½te
@@ -118,38 +118,13 @@ static DB db;
 	
 	
 	
-	static protected void DataUserNode2db(DataUserNode user) {
-		
-		DBCollection coll = db.getCollection("users");
-		BasicDBObject newUser = new BasicDBObject();
-		newUser.put("_id",user.getId());
-		
-		BasicDBObject recommenders = new BasicDBObject();
-		
-		for (DataUserRelation relation : user.getFriends()) {
-			BasicDBObject recommender = new BasicDBObject();  //TODO : is it really useless ?
-			BasicDBObject recommenderData = new BasicDBObject();
-			recommenderData.put("_id", relation.getFriend().getId());
-			recommenderData.put("crossProbability", relation.getCrossProbability());
-			recommenderData.put("posFeedback", relation.getNegFeedback());
-			recommenderData.put("negFeedback", relation.getPosFeedback());
-			
-			recommenders.put(relation.getFriend().getId().toString(),recommenderData);
-		}
-		
-		newUser.put("recommenders",recommenders);
-		//newUser.markAsPartialObject();
-		
-		BasicDBObject query = new BasicDBObject("_id", user.getId());
-
-		coll.update(query, newUser, true, false);
-		System.out.println("done");
-		
-	
+	static protected void DataUserNode2db_old(DataUserNode user) {
+		System.out.println("deprecated method : use DataUserNode2db instead");	
 	}
 
 	
-	static protected void DataUserNode2dbNew(DataUserNode user) {
+	static protected void DataUserNode2db(DataUserNode user) {
+		//cette fonction ecrase tous les fields qui sont present dans lobjet user
 		DBCollection coll = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id", user.getMongoId());
 		DBObject userMongo = coll.findOne(query);
@@ -159,6 +134,7 @@ static DB db;
 			System.out.println("his Objectid is "+user.getMongoId());
 			System.out.println("you should not ignore that warning, unless you are creating some random data");
 			userMongo = new BasicDBObject();
+			userMongo.put("_id", user.getMongoId());
 		}
 		
 		
@@ -172,7 +148,9 @@ static DB db;
 			recommender.put("negFeedback", friend.getNegFeedback());
 			updatedRecommenders.put(friend.getFriend().getId().toString(), recommender);
 		}
-		userMongo.put("recommenders", updatedRecommenders);
+		if (! (updatedRecommenders.size()==0)) { 
+			userMongo.put("recommenders", updatedRecommenders);
+		}
 		coll.update(query, userMongo,true,false);
 	}
 	
