@@ -86,9 +86,10 @@ static DB db;
 		DBObject user = coll.findOne(query);
 		
 		BasicDBObject recommenders = (BasicDBObject) user.get("recommenders");
+		
 		BasicDBObject recommender = (BasicDBObject) recommenders.get(recommender_id.toString());
 		if (recommender ==null ) {
-			//System.out.println("on a un feebdback qui parle dutlisateur qui ne sont pas en relation...cest moche (ou alors ce sont des données de test)");
+			System.out.println("on a un feebdback qui parle dutlisateur qui ne sont pas en relation...cest moche (ou alors ce sont des données de test)");
 			return;
 		}
 		

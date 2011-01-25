@@ -20,9 +20,13 @@ public class AlgoLourdBayes extends AlgoLourd {
 			ObjectId recoGiver = feedback.recoGiver();
 			ObjectId recoReceiver = feedback.recoReceiver();
 			feedbackers.add(recoReceiver);
+			
 			Interprete.modifyFeedback(recoGiver, recoReceiver, feedback.clicked()); //true means that the feedback was positive
 			}
 		System.out.println("[done]");
+		
+		
+		
 		//on va ensuite supprimer des listes damis les recommandeurs trop mauvais que l'on va remplacer par un user au hasard
 		System.out.print("maj des listes d'ami...");
 		ArrayList<ObjectId> userList = Interprete.getUserList();

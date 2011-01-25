@@ -16,6 +16,14 @@ public class DataFeedBack implements Data {
 	}
 	
 	
+	@Override
+	public String toString() {
+		return "DataFeedBack [clicked=" + clicked + ", id=" + id
+				+ ", recoGiver=" + recoGiver + ", recoReceiver=" + recoReceiver
+				+ "]";
+	}
+
+
 	public boolean clicked() {
 		return this.clicked;
 	}
