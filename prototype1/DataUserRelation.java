@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 
-public class DataUserRelation{
+public class DataUserRelation implements Comparable<DataUserRelation>{
 		DataUserNode friend;
 		double crossProbability; // P(A inter B) = proba that both like a page
 		int posFeedback;
@@ -111,5 +111,15 @@ public class DataUserRelation{
 
 		public void setNegFeedback(int negFeedback) {
 			this.negFeedback = negFeedback;
+		}
+
+
+		@Override
+		public int compareTo(DataUserRelation o) {
+			//cette fonction de comparaison est utilisée pour trouver un nouveau recommendeur
+			if (this==o) return 0;
+			if (this.crossProbability > o.crossProbability) return -1;
+			if (this.crossProbability < o.crossProbability) return 1;
+			return 0; //TODO il faudrait (mais cest a florent de le faire) gerer les autres cas
 		}
 	}

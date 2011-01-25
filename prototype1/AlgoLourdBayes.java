@@ -1,6 +1,8 @@
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import org.bson.types.ObjectId;
 
@@ -34,23 +36,21 @@ public class AlgoLourdBayes extends AlgoLourd {
 			DataUserNode user = Interprete.db2DataUserNodeHard(guy);
 			
 			boolean hasChanged= false;
-			ArrayList<DataUserRelation> newFriends = new ArrayList<DataUserRelation>(user.getFriends().size());
-			for (DataUserRelation relation: user.getFriends()) {
+			DataUserRelation relation;
+			for (int i=0; i< user.getFriends().size();i++) {
+				relation =  user.getFriends().get(i);
 				if (relation.posFeedback - relation.negFeedback < -3) {
 					hasChanged = true;
 
 					//We add a new friend relation created from a random user.
 					//We don't need to calculate the proba as it will be done later.
-					int var = (int) Math.floor(Math.random()* userList.size());
-					newFriends.add(new DataUserRelation(Interprete.db2DataUserNodeSimple(userList.get(var))));
-				} else {
-					newFriends.add(relation);
+					user.getFriends().set(i,this.getANewFriend(user));
 				}
 			}
-			user.setFriends(newFriends);
 			if (hasChanged) {Interprete.DataUserNode2db(user);}
 		}
 		System.out.println("[done]");
+		
 		
 		//on va ensuite recalculer les crossProbabiltes
 		System.out.print("maj des crossProba...");
@@ -65,5 +65,42 @@ public class AlgoLourdBayes extends AlgoLourd {
 		
 		
 	}
+	
+	
+	private DataUserRelation getANewFriend(DataUserNode u) { 
+		// attention a la performance de cette fonction !
+		TreeSet<DataUserRelation> recommendeursPotentiels = new TreeSet<DataUserRelation>();
+		for(DataUserRelation relation :u.getFriends()) {
+			ObjectId id = relation.getFriend().getMongoId();
+			DataUserNode friend = Interprete.db2DataUserNodeHard(id);
+			for (DataUserRelation rela : friend.getFriends() ) {
+				DataUserRelation relationNouvelle = new DataUserRelation(rela.getFriend());
+				relationNouvelle.updateProbability(u);
+				recommendeursPotentiels.add(relationNouvelle); //on cree une nouvelle relation avec les recos potentiels
+			}
+		}
+		//on a desormais la liste de tous les reco potentiels (amis damis)
+		
+		double sum=0;	
+		for ( DataUserRelation comp : recommendeursPotentiels)
+		{
+			sum += comp.crossProbability;
+		}
+		double var= Math.random() * sum;
+		Iterator<DataUserRelation> probs = recommendeursPotentiels.iterator();
+		DataUserRelation bestRelationEver = probs.next();
+		double bestKey = bestRelationEver.crossProbability; 
+		while (probs.hasNext() && var-bestKey >0 )
+		{
+			var-=bestKey;
+			bestRelationEver = probs.next();
+			bestKey = bestRelationEver.crossProbability;
+		}
+		System.out.println("added a new recommendeur for"+ u.getMongoId()
+				+ " his id is "+bestRelationEver.friend.getMongoId()
+				+ " with crossProba="+bestRelationEver.crossProbability);
+		return bestRelationEver;
+	}
+	
 	
 }
