@@ -14,10 +14,6 @@ public class ClassTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-<<<<<<< HEAD
-		DataUserNode test = new DataUserNode(new ObjectId("4d3dcdbc6470dce220eb5a3e"));
-		Interprete.DataUserNode2dbNew(test);
-=======
 
 //		Recommendation result;
 //		try {
@@ -43,10 +39,10 @@ public class ClassTest {
 //		
 //
 		
-		DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId("4d3d8e855fe26bfccdb3f54d"),new ObjectId("8dda084dd1ab871052000000"), 0.8, "www.l�quipe.fr");
-		Interprete.DataUPage2db(jeanJauresLEquipe);
-		System.out.println(Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871053000000")));
-		
+//		DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId("4d3d8e855fe26bfccdb3f54d"),new ObjectId("8dda084dd1ab871052000000"), 0.8, "www.l�quipe.fr");
+//		Interprete.DataUPage2db(jeanJauresLEquipe);
+//		System.out.println(Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871053000000")));
+//		
 //		DataUserNode user2 = new DataUserNode(new ObjectId("8dda084dd1ab871053000000"));
 //
 //		DataUserRelation user2user1 = new DataUserRelation(user2,0.5,1,1);
@@ -61,19 +57,25 @@ public class ClassTest {
 //		DataUserNode test = Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871050000000"));
 //		System.out.println(test);
 		
-		AlgoLeger b =AlgoLegerBayes.getAlgo();
-		try {
-			b.answers(new Request(null, "test", null, TypeOfRequest.RECOPAGE));
-		} catch (ExceptionRecoNotValid e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//		AlgoLeger b =AlgoLegerBayes.getAlgo();
+//		try {
+//			b.answers(new Request(null, "test", null, TypeOfRequest.RECOPAGE));
+//		} catch (ExceptionRecoNotValid e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		//System.out.println(Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871052000000")));
+//		Interprete.setCrossProbability(new ObjectId("4d3da490c2ad6bfc01000000"),new ObjectId("4d3da490c2ad6bfc02000000"),0.3);
+//		System.out.println();
+		
+		for (ObjectId o : Interprete.getUserList()) {
+			DataUserNode u= Interprete.db2DataUserNodeSimple(o);
+			System.out.println(u);
+			System.out.println(u.getFriends());
+			Interprete.DataUserNode2db(u);	
+			DataUserNode v= Interprete.db2DataUserNodeSimple(o);
 		}
-		//System.out.println(Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871052000000")));
-		Interprete.setCrossProbability(new ObjectId("4d3da490c2ad6bfc01000000"),new ObjectId("4d3da490c2ad6bfc02000000"),0.3);
-		System.out.println();
-	
->>>>>>> 133fec90c3749b2968e03a3618959a234bc92342
+
 	}
 }
 
-}
