@@ -47,7 +47,9 @@ public class Recommendation {
 	
 	public String toString()
 	{
-		return description;
+		return "Reco = [user="+ userID + 
+				",url=" + url +
+				",description="+description+ "]";
 	}
 
 	public Recommendation() {

@@ -12,6 +12,7 @@ import org.bson.types.ObjectId;
 public final class AlgoLegerBayes extends AlgoLeger {
 //test
 	private static AlgoLegerBayes singleton;
+	private static int nbReco=10; //number of result among which we chose a recommendation 
 	
 	private AlgoLegerBayes() {
 		super();
@@ -26,6 +27,16 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		}
 		
 		return singleton;
+	}
+
+	
+	
+	public static int getNbReco() {
+		return nbReco;
+	}
+
+	public static void setNbReco(int nbReco) {
+		AlgoLegerBayes.nbReco = nbReco;
 	}
 
 	@Override
@@ -128,9 +139,11 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		}
 		
 		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les trois meilleurs proba  
-		int nbReco=Math.min(10, pages.size());
+		int nbResult=Math.min(nbReco, pages.size());
 		
-		for (int j=0; j<nbReco; j++) bestReco.add(new Composite(null,null,-j));
+		for (int j=0; j<nbResult; j++) 
+			bestReco.add(new Composite(null,null,-j));
+		
 		
 		//on va ensuite calculer toutes les probabilités 
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
@@ -138,10 +151,9 @@ public final class AlgoLegerBayes extends AlgoLeger {
 				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
 				System.out.println("calcul proba pour la page"+ c.page.getUrl()+" : " + c.crossProbability);
 				bestReco.add(c);
-				bestReco.remove(bestReco.last());
+				bestReco.remove(bestReco.first());
 			}
 		}
-		
 		double sum=0;	
 		for ( Composite comp : bestReco)
 		{
@@ -184,12 +196,23 @@ public final class AlgoLegerBayes extends AlgoLeger {
 
 		
 		public int compareTo(Composite arg0) {
+			if (this == arg0) return 0;
 			if (this.crossProbability < arg0.crossProbability) return -1;
 			if (this.crossProbability > arg0.crossProbability) return 1;
 			//same proba;
 			if (this.page==null && arg0.page==null) return 0;
-			assert (this.page !=null && arg0.page!=null);
+			if (this.page==null) return -1;
+			if (arg0.page==null) return 1;
 			return this.page.getUrl().compareTo(arg0.page.getUrl());
+		}
+
+		@Override
+		public String toString() {
+			if (user==null)
+				return "Composite [Proba=" + crossProbability
+				+ ", page=" + page + ", user=" + user+ "]";
+			return "Composite [Proba=" + crossProbability
+					+ ", page=" + page + ", user=" + user.getId() + "]";
 		}
 
 	}
