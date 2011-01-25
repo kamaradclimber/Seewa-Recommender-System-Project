@@ -1,6 +1,7 @@
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import java.util.List;
 
@@ -225,6 +226,85 @@ static DB db;
 				);
 	}
 	
+	
+	public static void generateRandomBDD(int nbUser, int nbUPages)
+	{
+		ArrayList<DataUserNode> users = new ArrayList<DataUserNode>();
+		Date t = new Date();
+		for (int i=0; i<nbUser; i++) {
+			String nom = "user"+i;
+			users.add( new DataUserNode(new ObjectId(t, i),null));
+		}
+		int var;
+		for (int i=0; i<nbUser; i++){
+			for (int j=0; j< 2 /*nbFriends*/ ; j++)
+			{
+				var= (int) Math.floor(Math.random()*(nbUser-1));//nbUser-1 possible!
+				if (var>=i) var++;//pr eviter d'etre ami avec soi-meme
+				users.get(i).addFriend(new DataUserRelation(users.get(var), 0, 0, 0));
+			}
+			DataUserNode2db(users.get(i));
+		}
+
+		//Create themes :
+
+//		this.computer = dbFiller.createTheme(new ObjectId(), "Computer");
+//
+//		this.football = dbFiller.createTheme(new ObjectId(), "Football");
+//
+//		this.databases = dbFiller.createTheme(new ObjectId(), "Databases");
+//
+//		this.nadal = dbFiller.createTheme(new ObjectId(), "Rafael Nadal");
+//
+//		this.chasse = dbFiller.createTheme(new ObjectId(), "Chasse");
+//
+//		this.peche = dbFiller.createTheme(new ObjectId(), "Pêche");
+//
+//		this.nature = dbFiller.createTheme(new ObjectId(), "Nature");
+//
+//		this.tradition = dbFiller.createTheme(new ObjectId(), "Tradition");
+//
+//		this.eglise = dbFiller.createTheme(new ObjectId(), "Eglise");
+//
+//		this.mozart = dbFiller.createTheme(new ObjectId(), "Mozart");
+
+		//Create categories :
+
+//		this.sport = dbFiller.createCategory(new ObjectId(), "Sport");
+//
+//		this.actualites = dbFiller.createCategory(new ObjectId(), "Actualités");
+
+		//Create pages :
+
+//		var themes = [this.computer,this.football,this.databases,this.nadal,this.chasse ,this.peche,this.nature,this.tradition, this.eglise, this.mozart];
+//		this.pages = [];
+//
+//		for (var i = 0; i<1000; i++) {
+//			var randomnumber1 = Math.floor(i/100); //Les 100 premières pages créées ont le premier thème, les 100 suivantes le deuxième, etc
+//			//console.log(randomnumber1);
+//			var randomnumber2 = Math.floor(Math.random()*10);
+//			var urlpage = "www.page"+i+".com";
+//			this.pages[i] = dbFiller.createPage(urlpage,null,null,Math.random()*5+1,null,null, [themes[randomnumber1],themes[randomnumber2]]);
+//		}
+		
+		ArrayList<String> urls = new ArrayList<String>();
+		for (int i=0; i<nbUPages/3; i++)
+		{
+			urls.add( "www.page"+i+".com");
+		}
+
+		//Create upages :
+		
+		int var1;
+		int var2;
+		t = new Date();
+		for (int i = 0; i<nbUPages; i++) {
+			var1 = (int) Math.floor(Math.random()*100);
+			var2 = (int) (nbUPages/3*Math.floor(var1/10) + Math.floor(Math.random()*nbUPages/3));
+			DataUPage2db( new DataUPage(new ObjectId(t, i),users.get(var1).getId(), Math.random(),urls.get(var2)));
+		}	
+
+	}
 	
 }
 	

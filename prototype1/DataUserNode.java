@@ -79,6 +79,17 @@ public class DataUserNode implements Data {
 		this.friends = userrelations;
 	}
 	
+	public void addFriend(DataUserRelation relation)
+	{
+		if (this.friends==null) this.friends= new ArrayList<DataUserRelation>();
+		this.friends.add(relation);
+	}
+	
+	public void addUPage(DataUPage page)
+	{
+		if (this.uPages==null) this.uPages= new ArrayList<DataUPage>();
+		this.uPages.add(page);
+	}
 	
 	public boolean updateProbabilities()
 	{
