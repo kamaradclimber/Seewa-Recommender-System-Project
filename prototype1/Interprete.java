@@ -3,8 +3,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import java.util.List;
-
 import org.bson.BasicBSONObject;
 import org.bson.types.ObjectId;
 
@@ -13,13 +11,6 @@ import com.mongodb.*;
 
 
 public class Interprete {
-
-	//static ArrayList<DataCluster> clusters=null;
-	//static Hashtable<String, DataVector> usersByNames= new Hashtable<String, DataVector>();
-	//static Hashtable<DataVector, String> usersByUCR = new Hashtable<DataVector, String>();
-
-
-	//DB connection
 
 static DB db;
 
@@ -46,14 +37,13 @@ static DB db;
 		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
-		//TODO : la suite peut ptet etre amï¿½liorï¿½ en regroupant tout dans une requï¿½te
+		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
 		
 		for (String recommender : recommendersMongo.keySet()) {
-			//BasicDBObject recommender2 = (BasicDBObject) recommender;
-			ObjectId _id = (ObjectId) ((BasicBSONObject) recommendersMongo.get(recommender)).get("_id");
-			double crossProbability = (Double) ((BasicBSONObject) recommendersMongo.get(recommender)).get("crossProbability");
-			int posFeedback = (Integer) ((BasicBSONObject) recommendersMongo.get(recommender)).get("posFeedback");
-			int negFeedback = (Integer) ((BasicBSONObject) recommendersMongo.get(recommender)).get("negFeedback");
+			ObjectId _id = (ObjectId) ((BasicDBObject) recommendersMongo.get(recommender)).get("_id");
+			double crossProbability = (Double) ((BasicDBObject) recommendersMongo.get(recommender)).get("crossProbability");
+			int posFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("posFeedback");
+			int negFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("negFeedback");
 			
 			DataUserNode usernode = db2DataUserNodeSimple(_id);
 			DataUserRelation userrelation = new DataUserRelation(usernode,crossProbability,posFeedback,negFeedback);
@@ -171,8 +161,7 @@ static DB db;
 
 
 
-	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id,
-			double crossProbability) {
+	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id, double crossProbability) {
 
 		DBCollection coll = db.getCollection("users");
 		
@@ -183,7 +172,7 @@ static DB db;
 		BasicDBObject query = new BasicDBObject();
 		query.put("_id", user_Id);
 		
-		BasicDBObject user = (BasicDBObject)coll.findOne(query/*,fields*/);
+		BasicDBObject user = (BasicDBObject)coll.findOne(query,fields);
 		if (user==null) {System.out.println("Something went wrong ! le user est null");} //TODO lever une exception
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
 		coll.update(query, user,true,false);
@@ -209,7 +198,28 @@ static DB db;
 				false /* do i want to update multiple items : no */
 				);
 	}
-	
+
+
+
+	public static ArrayList<DataFeedBack> getFeedback() {
+		ArrayList<DataFeedBack> feedbackList = new ArrayList<DataFeedBack>();
+		DBCollection coll = db.getCollection("feedback");
+		
+		DBCursor cursor = coll.find(new BasicDBObject());
+		DBObject feedback= null;
+		while(cursor.hasNext()) {
+			feedback = cursor.next();
+			ObjectId objectid = (ObjectId)feedback.get("_id");
+			ObjectId recoGiver = (ObjectId)feedback.get("recoGiver");
+			ObjectId recoReceiver = (ObjectId)feedback.get("recoReceiver");
+			Boolean clicked = (Boolean)feedback.get("clicked");
+			feedbackList.add(new DataFeedBack(objectid, clicked, recoGiver, recoReceiver));
+		}
+		coll.dropIndexes();
+		return feedbackList;
+	}
+
+
 	
 	public static void generateRandomBDD(int nbUser, int nbUPages)
 	{
@@ -231,48 +241,7 @@ static DB db;
 			System.out.println(users.get(i));
 			DataUserNode2db(users.get(i));
 		}
-
-		//Create themes :
-
-//		this.computer = dbFiller.createTheme(new ObjectId(), "Computer");
-//
-//		this.football = dbFiller.createTheme(new ObjectId(), "Football");
-//
-//		this.databases = dbFiller.createTheme(new ObjectId(), "Databases");
-//
-//		this.nadal = dbFiller.createTheme(new ObjectId(), "Rafael Nadal");
-//
-//		this.chasse = dbFiller.createTheme(new ObjectId(), "Chasse");
-//
-//		this.peche = dbFiller.createTheme(new ObjectId(), "Pêche");
-//
-//		this.nature = dbFiller.createTheme(new ObjectId(), "Nature");
-//
-//		this.tradition = dbFiller.createTheme(new ObjectId(), "Tradition");
-//
-//		this.eglise = dbFiller.createTheme(new ObjectId(), "Eglise");
-//
-//		this.mozart = dbFiller.createTheme(new ObjectId(), "Mozart");
-
-		//Create categories :
-
-//		this.sport = dbFiller.createCategory(new ObjectId(), "Sport");
-//
-//		this.actualites = dbFiller.createCategory(new ObjectId(), "Actualités");
-
-		//Create pages :
-
-//		var themes = [this.computer,this.football,this.databases,this.nadal,this.chasse ,this.peche,this.nature,this.tradition, this.eglise, this.mozart];
-//		this.pages = [];
-//
-//		for (var i = 0; i<1000; i++) {
-//			var randomnumber1 = Math.floor(i/100); //Les 100 premières pages créées ont le premier thème, les 100 suivantes le deuxième, etc
-//			//console.log(randomnumber1);
-//			var randomnumber2 = Math.floor(Math.random()*10);
-//			var urlpage = "www.page"+i+".com";
-//			this.pages[i] = dbFiller.createPage(urlpage,null,null,Math.random()*5+1,null,null, [themes[randomnumber1],themes[randomnumber2]]);
-//		}
-		
+	
 		ArrayList<String> urls = new ArrayList<String>();
 		for (int i=0; i<nbUPages/3; i++)
 		{

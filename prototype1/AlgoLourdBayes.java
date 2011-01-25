@@ -16,7 +16,7 @@ public class AlgoLourdBayes extends AlgoLourd {
 	
 	public void maj() throws Exception {
 		//on met a jour les compteurs de feedback positif et negatifs
-		ArrayList<DataFeedBack> toBeUpdated = Interprete.getToDos();
+		ArrayList<DataFeedBack> toBeUpdated = Interprete.getFeedback();
 		HashSet<ObjectId> feedbackers = new HashSet<ObjectId>();
 		
 		for (DataFeedBack feedback : toBeUpdated) {
