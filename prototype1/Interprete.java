@@ -141,13 +141,9 @@ static DB db;
 		//newUser.markAsPartialObject();
 		
 		BasicDBObject query = new BasicDBObject("_id", user.getId());
-<<<<<<< HEAD
-		coll.update(query, newUser);
-=======
+
 		coll.update(query, newUser, true, false);
 		System.out.println("done");
->>>>>>> 133fec90c3749b2968e03a3618959a234bc92342
-		
 	
 	}
 
