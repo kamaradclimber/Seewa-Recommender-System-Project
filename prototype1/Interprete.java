@@ -2,8 +2,6 @@
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import java.util.List;
-
 import org.bson.BasicBSONObject;
 import org.bson.types.ObjectId;
 
@@ -12,13 +10,6 @@ import com.mongodb.*;
 
 
 public class Interprete {
-
-	//static ArrayList<DataCluster> clusters=null;
-	//static Hashtable<String, DataVector> usersByNames= new Hashtable<String, DataVector>();
-	//static Hashtable<DataVector, String> usersByUCR = new Hashtable<DataVector, String>();
-
-
-	//DB connection
 
 static DB db;
 
@@ -45,14 +36,13 @@ static DB db;
 		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
-		//TODO : la suite peut ptet etre amï¿½liorï¿½ en regroupant tout dans une requï¿½te
+		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
 		
 		for (String recommender : recommendersMongo.keySet()) {
-			//BasicDBObject recommender2 = (BasicDBObject) recommender;
-			ObjectId _id = (ObjectId) ((BasicBSONObject) recommendersMongo.get(recommender)).get("_id");
-			double crossProbability = (Double) ((BasicBSONObject) recommendersMongo.get(recommender)).get("crossProbability");
-			int posFeedback = (Integer) ((BasicBSONObject) recommendersMongo.get(recommender)).get("posFeedback");
-			int negFeedback = (Integer) ((BasicBSONObject) recommendersMongo.get(recommender)).get("negFeedback");
+			ObjectId _id = (ObjectId) ((BasicDBObject) recommendersMongo.get(recommender)).get("_id");
+			double crossProbability = (Double) ((BasicDBObject) recommendersMongo.get(recommender)).get("crossProbability");
+			int posFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("posFeedback");
+			int negFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("negFeedback");
 			
 			DataUserNode usernode = db2DataUserNodeSimple(_id);
 			DataUserRelation userrelation = new DataUserRelation(usernode,crossProbability,posFeedback,negFeedback);
@@ -211,7 +201,28 @@ static DB db;
 				false /* do i want to update multiple items : no */
 				);
 	}
-	
+
+
+
+	public static ArrayList<DataFeedBack> getFeedback() {
+		ArrayList<DataFeedBack> feedbackList = new ArrayList<DataFeedBack>();
+		DBCollection coll = db.getCollection("feedback");
+		
+		DBCursor cursor = coll.find(new BasicDBObject());
+		DBObject feedback= null;
+		while(cursor.hasNext()) {
+			feedback = cursor.next();
+			ObjectId objectid = (ObjectId)feedback.get("_id");
+			ObjectId recoGiver = (ObjectId)feedback.get("recoGiver");
+			ObjectId recoReceiver = (ObjectId)feedback.get("recoReceiver");
+			Boolean clicked = (Boolean)feedback.get("clicked");
+			feedbackList.add(new DataFeedBack(objectid, clicked, recoGiver, recoReceiver));
+		}
+		coll.dropIndexes();
+		return feedbackList;
+	}
+
+
 	
 }
 	
