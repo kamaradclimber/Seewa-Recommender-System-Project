@@ -136,26 +136,11 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
 				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-				System.out.println( c.page.getUrl()+" : " + c.crossProbability);
+				System.out.println("calcul proba pour la page"+ c.page.getUrl()+" : " + c.crossProbability);
 				bestReco.add(c);
 				bestReco.remove(bestReco.last());
 			}
 		}
-//		
-//		TreeMap<Double,String> bestsReco = new TreeMap<Double,String>(); //on stocke les trois meilleurs proba  
-//		for(int i=0;i<10;i++){bestsReco.put((double)0, "");}
-//		//on initialise à 3 meilleures reco, nombre qu'on maintient ensuite
-//		//TODO : en faite non, on �crase toujours la m�me cl�.
-//		
-//		//on va ensuite calculer toutes les probabilités 
-//		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
-//			for(Composite c :cc) {
-//				double proba =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-//				System.out.println( c.page.getUrl()+" : " + proba);
-//				bestsReco.put(proba, c.page.getUrl());//TODO : IMPORTANT si deux pages ont la m�me proba, on les �crase!!!
-//				bestsReco.remove(bestsReco.firstKey()); //on maintient seulement 3 meilleures
-//			}
-//		}
 		
 		double sum=0;	
 		for ( Composite comp : bestReco)
@@ -202,16 +187,11 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			if (this.crossProbability < arg0.crossProbability) return -1;
 			if (this.crossProbability > arg0.crossProbability) return 1;
 			//same proba;
-			System.out.println(this.page);
-			System.out.println(arg0.page);
 			if (this.page==null && arg0.page==null) return 0;
 			assert (this.page !=null && arg0.page!=null);
 			return this.page.getUrl().compareTo(arg0.page.getUrl());
 		}
 
-//		private AlgoLegerBayes getOuterType() {
-//			return AlgoLegerBayes.this;
-//		}
 	}
 	
 	
