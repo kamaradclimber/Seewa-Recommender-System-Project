@@ -161,8 +161,7 @@ static DB db;
 
 
 
-	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id,
-			double crossProbability) {
+	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id, double crossProbability) {
 
 		DBCollection coll = db.getCollection("users");
 		
@@ -173,7 +172,7 @@ static DB db;
 		BasicDBObject query = new BasicDBObject();
 		query.put("_id", user_Id);
 		
-		BasicDBObject user = (BasicDBObject)coll.findOne(query/*,fields*/);
+		BasicDBObject user = (BasicDBObject)coll.findOne(query,fields);
 		if (user==null) {System.out.println("Something went wrong ! le user est null");} //TODO lever une exception
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
 		coll.update(query, user,true,false);
@@ -240,48 +239,7 @@ static DB db;
 			}
 			DataUserNode2db(users.get(i));
 		}
-
-		//Create themes :
-
-//		this.computer = dbFiller.createTheme(new ObjectId(), "Computer");
-//
-//		this.football = dbFiller.createTheme(new ObjectId(), "Football");
-//
-//		this.databases = dbFiller.createTheme(new ObjectId(), "Databases");
-//
-//		this.nadal = dbFiller.createTheme(new ObjectId(), "Rafael Nadal");
-//
-//		this.chasse = dbFiller.createTheme(new ObjectId(), "Chasse");
-//
-//		this.peche = dbFiller.createTheme(new ObjectId(), "Pêche");
-//
-//		this.nature = dbFiller.createTheme(new ObjectId(), "Nature");
-//
-//		this.tradition = dbFiller.createTheme(new ObjectId(), "Tradition");
-//
-//		this.eglise = dbFiller.createTheme(new ObjectId(), "Eglise");
-//
-//		this.mozart = dbFiller.createTheme(new ObjectId(), "Mozart");
-
-		//Create categories :
-
-//		this.sport = dbFiller.createCategory(new ObjectId(), "Sport");
-//
-//		this.actualites = dbFiller.createCategory(new ObjectId(), "Actualités");
-
-		//Create pages :
-
-//		var themes = [this.computer,this.football,this.databases,this.nadal,this.chasse ,this.peche,this.nature,this.tradition, this.eglise, this.mozart];
-//		this.pages = [];
-//
-//		for (var i = 0; i<1000; i++) {
-//			var randomnumber1 = Math.floor(i/100); //Les 100 premières pages créées ont le premier thème, les 100 suivantes le deuxième, etc
-//			//console.log(randomnumber1);
-//			var randomnumber2 = Math.floor(Math.random()*10);
-//			var urlpage = "www.page"+i+".com";
-//			this.pages[i] = dbFiller.createPage(urlpage,null,null,Math.random()*5+1,null,null, [themes[randomnumber1],themes[randomnumber2]]);
-//		}
-		
+	
 		ArrayList<String> urls = new ArrayList<String>();
 		for (int i=0; i<nbUPages/3; i++)
 		{
