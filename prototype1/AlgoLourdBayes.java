@@ -1,22 +1,19 @@
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.bson.types.ObjectId;
-
-import com.mongodb.*;
 
 
 
 public class AlgoLourdBayes extends AlgoLourd {
 
 	
-	public void maj() throws Exception {
+	public void maj() {
 		//on met a jour les compteurs de feedback positif et negatifs
+		System.out.print("maj des compteurs de feedback...");
 		ArrayList<DataFeedBack> toBeUpdated = Interprete.getFeedback();
+		System.out.print("("+ toBeUpdated.size() +")");
 		HashSet<ObjectId> feedbackers = new HashSet<ObjectId>();
 		
 		for (DataFeedBack feedback : toBeUpdated) {
@@ -25,27 +22,34 @@ public class AlgoLourdBayes extends AlgoLourd {
 			feedbackers.add(recoReceiver);
 			Interprete.modifyFeedback(recoGiver, recoReceiver, feedback.clicked()); //true means that the feedback was positive
 			}
-		
+		System.out.println("[done]");
 		//on va ensuite supprimer des listes damis les recommandeurs trop mauvais que l'on va remplacer par un user au hasard
+		System.out.print("maj des listes d'ami...");
 		ArrayList<ObjectId> userList = Interprete.getUserList();
 		for (ObjectId guy : feedbackers) {
 			DataUserNode user = Interprete.db2DataUserNodeHard(guy);
 			
 			boolean hasChanged= false;
+			ArrayList<DataUserRelation> newFriends = new ArrayList<DataUserRelation>(user.getFriends().size());
 			for (DataUserRelation relation: user.getFriends()) {
 				if (relation.posFeedback - relation.negFeedback < -3) {
 					hasChanged = true;
-					user.getFriends().remove(relation);
-					int var = (int) Math.floor(Math.random()* userList.size());
-					user.getFriends().add( new DataUserRelation(Interprete.db2DataUserNodeSimple(userList.get(var))));
+
 					//We add a new friend relation created from a random user.
 					//We don't need to calculate the proba as it will be done later.
+					int var = (int) Math.floor(Math.random()* userList.size());
+					newFriends.add(new DataUserRelation(Interprete.db2DataUserNodeSimple(userList.get(var))));
+				} else {
+					newFriends.add(relation);
 				}
 			}
+			user.setFriends(newFriends);
 			if (hasChanged) {Interprete.DataUserNode2db(user);}
 		}
+		System.out.println("[done]");
 		
 		//on va ensuite recalculer les crossProbabiltes
+		System.out.print("maj des crossProba...");
 		for (ObjectId userId: userList) {
 			DataUserNode user = Interprete.db2DataUserNodeHard(userId);
 			user.updateProbabilities();
@@ -53,6 +57,7 @@ public class AlgoLourdBayes extends AlgoLourd {
 				Interprete.setCrossProbability(userId, relation.friend.getId(), relation.crossProbability);
 			}
 		}
+		System.out.println("[done]");
 		
 		
 	}

@@ -87,17 +87,20 @@ static DB db;
 		
 		BasicDBObject recommenders = (BasicDBObject) user.get("recommenders");
 		BasicDBObject recommender = (BasicDBObject) recommenders.get(recommender_id.toString());
-		System.out.println(recommender);
+		if (recommender ==null ) {
+			//System.out.println("on a un feebdback qui parle dutlisateur qui ne sont pas en relation...cest moche (ou alors ce sont des données de test)");
+			return;
+		}
 		
 		if (feedback == true) {
 			int posFeedback = (Integer) recommender.get("posFeedback");
-			System.out.println(posFeedback);
+			
 			recommender.put("posFeedback",posFeedback+1);
 		}
 		
 		else {
 			int negFeedback = (Integer) recommender.get("negFeedback");
-			System.out.println(negFeedback);
+			
 			recommender.put("negFeedback",negFeedback+1);
 		}
 		recommenders.put(recommender_id.toString(), recommender);
@@ -176,7 +179,7 @@ static DB db;
 		if (user==null) {System.out.println("Something went wrong ! le user est null");} //TODO lever une exception
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
 		coll.update(query, user,true,false);
-		System.out.println("on ecrase les donnes deja existantes ? attention !"); //TODO verifier quon ecrase pas les donnees
+		//TODO verifier quon ecrase pas les donnees
 		
 	}
 	
@@ -215,11 +218,22 @@ static DB db;
 			Boolean clicked = (Boolean)feedback.get("clicked");
 			feedbackList.add(new DataFeedBack(objectid, clicked, recoGiver, recoReceiver));
 		}
-		coll.dropIndexes();
+		coll.drop();
 		return feedbackList;
 	}
 
 
+	public static void setFeedBack(DataFeedBack f) {
+		DBCollection coll = db.getCollection("feedback");
+		BasicDBObject o = new BasicDBObject();
+		o.put("_id", f.getMongoId());
+		o.put("recoGiver", f.recoGiver());
+		o.put("recoReceiver", f.recoReceiver());
+		o.put("clicked", f.clicked());
+		
+		coll.insert(o);
+		
+	}
 	
 	public static void generateRandomBDD(int nbUser, int nbUPages, int nbPages)
 	{
