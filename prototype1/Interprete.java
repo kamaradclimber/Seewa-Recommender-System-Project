@@ -60,10 +60,7 @@ static DB db;
 		}
 		
 		DataUserNode usernode = db2DataUserNodeSimple(mongoID);
-		usernode.setFriends(recommenders);
-		
-		//System.out.println(recommenders.get(0).toString());
-		
+		usernode.setFriends(recommenders);	
 		return usernode;
 	}
 	
@@ -183,7 +180,6 @@ static DB db;
 		DBObject user= null;
 		while(cursor.hasNext()) {
 			user = cursor.next();
-			//System.out.println(user);
 			results.add((ObjectId)user.get("_id") );
 		}
 		return results;
@@ -206,10 +202,10 @@ static DB db;
 		query.put("_id", user_Id);
 		
 		BasicDBObject user = (BasicDBObject)coll.findOne(query/*,fields*/);
-		if (user==null) {System.out.println("Something went wrong ! le user est null");}
+		if (user==null) {System.out.println("Something went wrong ! le user est null");} //TODO lever une exception
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
 		coll.update(query, user,true,false);
-		System.out.println("on ecrase les donnes deja existantes ? attention !");
+		System.out.println("on ecrase les donnes deja existantes ? attention !"); //TODO verifier quon ecrase pas les donnees
 		
 	}
 	
@@ -219,7 +215,6 @@ static DB db;
 		BasicDBObject o = new BasicDBObject();
 		o.put("_id", p.getMongoId());
 		o.put("pageRank", p.pageRank);
-		System.out.println(p.getUrl());
 		o.put("url", p.getUrl());
 		o.put("user", p.getUserId());
 		DBObject obj = new BasicDBObject();

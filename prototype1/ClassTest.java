@@ -70,7 +70,7 @@ public class ClassTest {
 		}
 		//System.out.println(Interprete.db2DataUserNodeSimple(new ObjectId("8dda084dd1ab871052000000")));
 		Interprete.setCrossProbability(new ObjectId("4d3da490c2ad6bfc01000000"),new ObjectId("4d3da490c2ad6bfc02000000"),0.3);
-	
+		System.out.println();
 	
 >>>>>>> 133fec90c3749b2968e03a3618959a234bc92342
 	}
