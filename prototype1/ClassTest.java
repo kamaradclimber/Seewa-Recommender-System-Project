@@ -15,13 +15,14 @@ public class ClassTest {
 	 */
 	public static void main(String[] args) {
 
-//		Recommendation result;
-//		try {
+		Recommendation result;
+		try {
 //			TreeMap<String,Integer> probas= new TreeMap<String, Integer>();
 //			int nbTest=10000;
 //			for (int i=0; i<nbTest; i++)
 //			{
-//			result= AlgoLegerBayes.getAlgo().answers(new Request(null, "test", null, null));
+			result= AlgoLegerBayes.getAlgo().answers(new Request(new ObjectId("4d3ed60f3a4534090a000000"), null , null, null));
+			System.out.println(result);
 //			if (probas.containsKey(result.description))
 //			{
 //				Integer prob= probas.get(result.description);
@@ -33,9 +34,9 @@ public class ClassTest {
 //			for (String url: probas.keySet())
 //				System.out.println(probas.get(url)*100.0/nbTest +"%  "+ url);
 //			
-//		} catch (ExceptionRecoNotValid e) {
-//			e.printStackTrace();
-//		}
+		} catch (ExceptionRecoNotValid e) {
+			e.printStackTrace();
+		}
 //		
 //
 		
@@ -68,13 +69,15 @@ public class ClassTest {
 //		Interprete.setCrossProbability(new ObjectId("4d3da490c2ad6bfc01000000"),new ObjectId("4d3da490c2ad6bfc02000000"),0.3);
 //		System.out.println();
 		
-		for (ObjectId o : Interprete.getUserList()) {
-			DataUserNode u= Interprete.db2DataUserNodeSimple(o);
-			System.out.println(u);
-			System.out.println(u.getFriends());
-			Interprete.DataUserNode2db(u);	
-			DataUserNode v= Interprete.db2DataUserNodeSimple(o);
-		}
+//		for (ObjectId o : Interprete.getUserList()) {
+//			DataUserNode u= Interprete.db2DataUserNodeSimple(o);
+//			System.out.println(u);
+//			System.out.println(u.getFriends());
+//			Interprete.DataUserNode2db(u);	
+//			DataUserNode v= Interprete.db2DataUserNodeSimple(o);
+//		}
+		
+		//Interprete.generateRandomBDD(100, 1000, 50);
 
 	}
 }
