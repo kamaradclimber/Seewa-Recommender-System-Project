@@ -221,7 +221,7 @@ static DB db;
 
 
 	
-	public static void generateRandomBDD(int nbUser, int nbUPages)
+	public static void generateRandomBDD(int nbUser, int nbUPages, int nbPages)
 	{
 		ArrayList<DataUserNode> users = new ArrayList<DataUserNode>();
 		Date t = new Date();
@@ -243,7 +243,7 @@ static DB db;
 		}
 	
 		ArrayList<String> urls = new ArrayList<String>();
-		for (int i=0; i<nbUPages/3; i++)
+		for (int i=0; i<nbPages; i++)
 		{
 			urls.add( "www.page"+i+".com");
 		}
@@ -255,7 +255,7 @@ static DB db;
 		t = new Date();
 		for (int i = 0; i<nbUPages; i++) {
 			var1 = (int) Math.floor(Math.random()*nbUser);
-			var2 = (int) (Math.floor(Math.random()*Math.floor(nbUPages/3)));
+			var2 = (int) (Math.floor(Math.random()*Math.floor(nbPages)));
 			System.out.println(var1+"/" +users.size()+" -- "+ var2 +"/" +urls.size());
 			System.out.println(users.get(var1)+" // "+ urls.get(var2));
 			DataUPage2db( new DataUPage(new ObjectId(t, i),users.get(var1).getId(), Math.random(),urls.get(var2)));
