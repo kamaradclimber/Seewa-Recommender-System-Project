@@ -217,8 +217,9 @@ static DB db;
 		Date t = new Date();
 		for (int i=0; i<nbUser; i++) {
 			String nom = "user"+i;
-			users.add( new DataUserNode(new ObjectId(t, i),null));
+			users.add( new DataUserNode(new ObjectId(t, i),new ArrayList<DataUPage>()));
 		}
+		
 		int var;
 		for (int i=0; i<nbUser; i++){
 			for (int j=0; j< 2 /*nbFriends*/ ; j++)
@@ -227,6 +228,7 @@ static DB db;
 				if (var>=i) var++;//pr eviter d'etre ami avec soi-meme
 				users.get(i).addFriend(new DataUserRelation(users.get(var), 0, 0, 0));
 			}
+			System.out.println(users.get(i));
 			DataUserNode2db(users.get(i));
 		}
 
@@ -283,8 +285,10 @@ static DB db;
 		int var2;
 		t = new Date();
 		for (int i = 0; i<nbUPages; i++) {
-			var1 = (int) Math.floor(Math.random()*100);
-			var2 = (int) (nbUPages/3*Math.floor(var1/10) + Math.floor(Math.random()*nbUPages/3));
+			var1 = (int) Math.floor(Math.random()*nbUser);
+			var2 = (int) (Math.floor(Math.random()*Math.floor(nbUPages/3)));
+			System.out.println(var1+"/" +users.size()+" -- "+ var2 +"/" +urls.size());
+			System.out.println(users.get(var1)+" // "+ urls.get(var2));
 			DataUPage2db( new DataUPage(new ObjectId(t, i),users.get(var1).getId(), Math.random(),urls.get(var2)));
 		}	
 
