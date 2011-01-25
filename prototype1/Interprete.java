@@ -153,6 +153,14 @@ static DB db;
 		DBCollection coll = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id", user.getMongoId());
 		DBObject userMongo = coll.findOne(query);
+		
+		if (userMongo==null) {
+			System.out.println("You are creating a new user in the database... are you really sure ?");
+			System.out.println("his Objectid is "+user.getMongoId());
+			userMongo = new BasicDBObject();
+		}
+		
+		
 		BasicDBObject updatedRecommenders = new BasicDBObject();
 
 		for (DataUserRelation friend : user.getFriends()) {
