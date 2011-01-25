@@ -157,6 +157,7 @@ static DB db;
 		if (userMongo==null) {
 			System.out.println("You are creating a new user in the database... are you really sure ?");
 			System.out.println("his Objectid is "+user.getMongoId());
+			System.out.println("you should not ignore that warning, unless you are creating some random data");
 			userMongo = new BasicDBObject();
 		}
 		
