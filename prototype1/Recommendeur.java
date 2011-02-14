@@ -33,10 +33,7 @@ public class Recommendeur {
 	}
  
 	public Recommendation recommendMeSomeThing(Request req) throws ExceptionRecoNotValid {
-		DispatcherAlgoLeger dispatch = new DispatcherAlgoLeger();
-		Aggregateur aggreg           = new Aggregateur();
-		Verificateur verificateur    = new Verificateur();
-		
+
 		List<Recommendation> recos;
 		recos = dispatch.dispatch(req);
 		Recommendation reco  =  aggreg.merges(recos);

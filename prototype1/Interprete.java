@@ -18,7 +18,7 @@ static DB db;
 		try {
 			System.out.print("Ouverture de la base....");
 			Mongo mongo = new Mongo( "138.195.76.136"  , 80 );
-			db = mongo.getDB( "seewa1" );
+			db = mongo.getDB( "seewaAnon" );
 			System.out.println("[done]");
 		}
 		catch (UnknownHostException ex) {
