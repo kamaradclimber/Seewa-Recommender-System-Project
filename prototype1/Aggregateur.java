@@ -8,16 +8,16 @@ public class Aggregateur {
 
 	public Recommendation merges(List<Recommendation> recos) throws ExceptionRecoNotValid {
 		if (!recos.isEmpty()) {
-			Hashtable<String, Integer> recoNumber = new Hashtable<String, int>();
+			Hashtable<String, Integer> recoNumber = new Hashtable<String, Integer>();
 			Hashtable<String, Recommendation> recoTable = new Hashtable<String, Recommendation>();
 			for (Recommendation reco : recos)
 			{
-				recoNumber.get(reco.url) ++;
+				recoNumber.put(reco.url, recoNumber.get(reco.url)+1);
 				recoTable.put(reco.url, reco);
 			}
 			int max = -1;
 			String best = null;
-			for ( String url : reconumber.keys())
+			for ( String url : recoNumber.keySet())
 			{
 				if (recoNumber.get(url)>max)
 				{
