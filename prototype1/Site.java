@@ -23,7 +23,8 @@ public class Site {
 	
 	public void getFeedback(Request req) {
 		try{
-			Interprete.setFeedback(req);
+			
+			Interprete.setFeedBack(req);
 			
 		} catch (Exception e) {
 			System.out.println("Erreur : "+e);

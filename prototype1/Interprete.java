@@ -1,8 +1,7 @@
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
-import java.util.List;
+import java.util.Date;
 
 import org.bson.BasicBSONObject;
 import org.bson.types.ObjectId;
@@ -12,13 +11,6 @@ import com.mongodb.*;
 
 
 public class Interprete {
-
-	//static ArrayList<DataCluster> clusters=null;
-	//static Hashtable<String, DataVector> usersByNames= new Hashtable<String, DataVector>();
-	//static Hashtable<DataVector, String> usersByUCR = new Hashtable<DataVector, String>();
-
-
-	//DB connection
 
 static DB db;
 
@@ -45,14 +37,13 @@ static DB db;
 		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
-		//TODO : la suite peut ptet etre amï¿½liorï¿½ en regroupant tout dans une requï¿½te
+		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
 		
 		for (String recommender : recommendersMongo.keySet()) {
-			//BasicDBObject recommender2 = (BasicDBObject) recommender;
-			ObjectId _id = (ObjectId) ((BasicBSONObject) recommendersMongo.get(recommender)).get("_id");
-			double crossProbability = (Double) ((BasicBSONObject) recommendersMongo.get(recommender)).get("crossProbability");
-			int posFeedback = (Integer) ((BasicBSONObject) recommendersMongo.get(recommender)).get("posFeedback");
-			int negFeedback = (Integer) ((BasicBSONObject) recommendersMongo.get(recommender)).get("negFeedback");
+			ObjectId _id = (ObjectId) ((BasicDBObject) recommendersMongo.get(recommender)).get("_id");
+			double crossProbability = (Double) ((BasicDBObject) recommendersMongo.get(recommender)).get("crossProbability");
+			int posFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("posFeedback");
+			int negFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("negFeedback");
 			
 			DataUserNode usernode = db2DataUserNodeSimple(_id);
 			DataUserRelation userrelation = new DataUserRelation(usernode,crossProbability,posFeedback,negFeedback);
@@ -95,18 +86,22 @@ static DB db;
 		DBObject user = coll.findOne(query);
 		
 		BasicDBObject recommenders = (BasicDBObject) user.get("recommenders");
+		
 		BasicDBObject recommender = (BasicDBObject) recommenders.get(recommender_id.toString());
-		System.out.println(recommender);
+		if (recommender ==null ) {
+			System.out.println("on a un feebdback qui parle dutlisateur qui ne sont pas en relation...cest moche (ou alors ce sont des données de test)");
+			return;
+		}
 		
 		if (feedback == true) {
 			int posFeedback = (Integer) recommender.get("posFeedback");
-			System.out.println(posFeedback);
+			
 			recommender.put("posFeedback",posFeedback+1);
 		}
 		
 		else {
 			int negFeedback = (Integer) recommender.get("negFeedback");
-			System.out.println(negFeedback);
+			
 			recommender.put("negFeedback",negFeedback+1);
 		}
 		recommenders.put(recommender_id.toString(), recommender);
@@ -193,8 +188,7 @@ static DB db;
 
 
 
-	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id,
-			double crossProbability) {
+	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id, double crossProbability) {
 
 		DBCollection coll = db.getCollection("users");
 		
@@ -205,11 +199,11 @@ static DB db;
 		BasicDBObject query = new BasicDBObject();
 		query.put("_id", user_Id);
 		
-		BasicDBObject user = (BasicDBObject)coll.findOne(query/*,fields*/);
+		BasicDBObject user = (BasicDBObject)coll.findOne(query,fields);
 		if (user==null) {System.out.println("Something went wrong ! le user est null");} //TODO lever une exception
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
 		coll.update(query, user,true,false);
-		System.out.println("on ecrase les donnes deja existantes ? attention !"); //TODO verifier quon ecrase pas les donnees
+		//TODO verifier quon ecrase pas les donnees
 		
 	}
 	
@@ -231,7 +225,81 @@ static DB db;
 				false /* do i want to update multiple items : no */
 				);
 	}
+
+
+
+	public static ArrayList<DataFeedBack> getFeedback() {
+		ArrayList<DataFeedBack> feedbackList = new ArrayList<DataFeedBack>();
+		DBCollection coll = db.getCollection("feedback");
+		
+		DBCursor cursor = coll.find(new BasicDBObject());
+		DBObject feedback= null;
+		while(cursor.hasNext()) {
+			feedback = cursor.next();
+			ObjectId objectid = (ObjectId)feedback.get("_id");
+			ObjectId recoGiver = (ObjectId)feedback.get("recoGiver");
+			ObjectId recoReceiver = (ObjectId)feedback.get("recoReceiver");
+			Boolean clicked = (Boolean)feedback.get("clicked");
+			feedbackList.add(new DataFeedBack(objectid, clicked, recoGiver, recoReceiver));
+		}
+		coll.drop();
+		return feedbackList;
+	}
+
+
+	public static void setFeedBack(DataFeedBack f) {
+		DBCollection coll = db.getCollection("feedback");
+		BasicDBObject o = new BasicDBObject();
+		o.put("_id", f.getMongoId());
+		o.put("recoGiver", f.recoGiver());
+		o.put("recoReceiver", f.recoReceiver());
+		o.put("clicked", f.clicked());
+		
+		coll.insert(o);
+		
+	}
 	
+	public static void generateRandomBDD(int nbUser, int nbUPages, int nbPages)
+	{
+		ArrayList<DataUserNode> users = new ArrayList<DataUserNode>();
+		Date t = new Date();
+		for (int i=0; i<nbUser; i++) {
+			String nom = "user"+i;
+			users.add( new DataUserNode(new ObjectId(t, i),new ArrayList<DataUPage>()));
+		}
+		
+		int var;
+		for (int i=0; i<nbUser; i++){
+			for (int j=0; j< 2 /*nbFriends*/ ; j++)
+			{
+				var= (int) Math.floor(Math.random()*(nbUser-1));//nbUser-1 possible!
+				if (var>=i) var++;//pr eviter d'etre ami avec soi-meme
+				users.get(i).addFriend(new DataUserRelation(users.get(var), 0, 0, 0));
+			}
+			System.out.println(users.get(i));
+			DataUserNode2db(users.get(i));
+		}
+	
+		ArrayList<String> urls = new ArrayList<String>();
+		for (int i=0; i<nbPages; i++)
+		{
+			urls.add( "www.page"+i+".com");
+		}
+
+		//Create upages :
+		
+		int var1;
+		int var2;
+		t = new Date();
+		for (int i = 0; i<nbUPages; i++) {
+			var1 = (int) Math.floor(Math.random()*nbUser);
+			var2 = (int) (Math.floor(Math.random()*Math.floor(nbPages)));
+			System.out.println(var1+"/" +users.size()+" -- "+ var2 +"/" +urls.size());
+			System.out.println(users.get(var1)+" // "+ urls.get(var2));
+			DataUPage2db( new DataUPage(new ObjectId(t, i),users.get(var1).getId(), Math.random(),urls.get(var2)));
+		}	
+
+	}
 	
 }
 	

@@ -12,15 +12,23 @@ public class DispatcherAlgoLeger {
 	public DispatcherAlgoLeger() {
 		this.algos_to_do = new Hashtable<AlgoLeger, Request>();
 	}
+	
 
-	public List<Recommendation> dispatches(Request req) throws ExceptionRecoNotValid {
+	public List<Recommendation> dispatch(Request req) throws ExceptionRecoNotValid {
 
 
 		
 		if (req.getTypeOfRequest()==TypeOfRequest.RECOPAGE) {
 			Request reqBis = req;
-			if(algos_to_do==null) System.out.print("On essaye avec un algoLegerBayes");
-			algos_to_do.put(AlgoLegerBayes.getAlgo(), reqBis);
+			if(algos_to_do==null)
+				{
+				System.out.print("On essaye avec un algoLegerBayes");
+				algos_to_do.put(AlgoLegerBayes.getAlgo(), reqBis);
+				}
+			for (AlgoLeger algo : algos_to_do.keySet())
+			{
+				algos_to_do.put(algo, algo.transform(req));
+			}
 		}
 		
 				
@@ -32,5 +40,10 @@ public class DispatcherAlgoLeger {
 		}
 		return recos;
 		}
+
+	public void addAlgo(AlgoLeger algo) {
+		// TODO Auto-generated method stub
+		algos_to_do.put(algo, null);
+	}
 }
 
