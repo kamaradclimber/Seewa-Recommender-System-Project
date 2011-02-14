@@ -128,11 +128,11 @@ static DB db;
 				//System.out.println(upage);
 			}
 			catch (Exception ex) {
-				pagerank = 0.0; //Si le pagerank est ˆ 0 ou n'existe pas, on le met ˆ 0
+				pagerank = 0.0; //Si le pagerank est ï¿½ 0 ou n'existe pas, on le met ï¿½ 0
 			}
 			ObjectId id = (ObjectId) upage.get("_id");
 			String url =(String) upage.get("url");
-			System.out.println(url);
+
 			DataUPage dataupage = new DataUPage(id, userId, pagerank,url);
 			userupages.add(dataupage);
 		}

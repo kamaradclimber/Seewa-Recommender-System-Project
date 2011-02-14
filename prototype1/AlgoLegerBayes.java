@@ -146,10 +146,10 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		
 		
 		//on va ensuite calculer toutes les probabilités 
-		for (ArrayList<AlgoLegerBayes.Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
+		for (ArrayList<Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
 				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-				System.out.println("calcul proba pour la page"+ c.page.getUrl()+" : " + c.crossProbability);
+				//System.out.println("calcul proba pour la page"+ c.page.getUrl()+" : " + c.crossProbability);
 				bestReco.add(c);
 				bestReco.remove(bestReco.first());
 			}
@@ -157,7 +157,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		double sum=0;	
 		for ( Composite comp : bestReco)
 		{
-			System.out.println(comp.crossProbability+" : " + comp.page);
+
 			sum += comp.crossProbability;
 		}
 		double var= Math.random() * sum;
@@ -169,54 +169,8 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			bestKey = probs.next().crossProbability;
 		}		
 		
-		return new Recommendation(bestReco.last().toString());
+		return new Recommendation(bestReco.last());
 	}
-	
-	
-	public class Composite implements Comparable<Composite> {
-		DataUserNode user;
-		DataUPage page;
-		double crossProbability;
 		
-		public Composite(DataUserNode user, DataUPage page , double proba) {
-			this.user=user;
-			this.page =page;
-			this.crossProbability = proba; //la proba P(A inter B)
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			try {
-				Composite c = (Composite) obj;
-				return ( this.page.getMongoId()==c.page.getMongoId() && this.user.getMongoId()==c.user.getMongoId());
-			
-			}catch(Exception e){ return false;}
-			
-		}
-
-		
-		public int compareTo(Composite arg0) {
-			if (this == arg0) return 0;
-			if (this.crossProbability < arg0.crossProbability) return -1;
-			if (this.crossProbability > arg0.crossProbability) return 1;
-			//same proba;
-			if (this.page==null && arg0.page==null) return 0;
-			if (this.page==null) return -1;
-			if (arg0.page==null) return 1;
-			return this.page.getUrl().compareTo(arg0.page.getUrl());
-		}
-
-		@Override
-		public String toString() {
-			if (user==null)
-				return "Composite [Proba=" + crossProbability
-				+ ", page=" + page + ", user=" + user+ "]";
-			return "Composite [Proba=" + crossProbability
-					+ ", page=" + page + ", user=" + user.getId() + "]";
-		}
-
-	}
-	
-	
 	
 }
