@@ -33,7 +33,7 @@ public class AlgoLourdBayes extends AlgoLourd {
 		System.out.print("maj des listes d'ami...");
 		ArrayList<ObjectId> userList = Interprete.getUserList();
 		for (ObjectId guy : feedbackers) {
-			DataUserNode user = Interprete.db2DataUserNodeHard(guy);
+			DataUserNode user = Interprete.db2DataUserNodeHard(guy); //TODO : améliorer en ne passant que les users ajoutés ou removed
 			
 			boolean hasChanged= false;
 			DataUserRelation relation;

@@ -32,7 +32,7 @@ public class Aggregateur {
 	}
 
 	public void addAlgo(AlgoLeger algoInstance) {
-		// TODO Auto-generated method stub
+		//ne fait rien donc on pourrait peut etre la supprimer // TODO?
 		
 	}
 }

@@ -2,6 +2,7 @@
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import org.bson.BasicBSONObject;
 import org.bson.types.ObjectId;
@@ -24,6 +25,7 @@ static DB db;
 		catch (UnknownHostException ex) {
 			ExceptionRecoNotValid erreur = new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_CONNECTION_DB);
 			System.out.println("Erreur :"+erreur.getCode());
+			erreur.printStackTrace();
 			System.exit(1);
 		}
 	}
@@ -35,6 +37,14 @@ static DB db;
 		
 		
 		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
+		
+		//gestion du cas où l útlisateur n'a pas de de recommenders : on fait semblant quelle est vide et on le signale pour dire qu'il ne peut pas avoir de recommdation
+		if (recommendersMongo ==null) {
+			recommendersMongo = new BasicDBObject();
+			System.out.println("Attention tu travailles sur un utilisateur qui n'a pas de recommendeurs, il va falloir le mettre à jour !");
+			recommendersMongo = rustinePourCreerUnPoolInitialDeRecommender(mongoID);
+		}
+		
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
 		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
@@ -56,7 +66,50 @@ static DB db;
 	}
 	
 	
+
+	static protected BasicDBObject rustinePourCreerUnPoolInitialDeRecommender(ObjectId userId) {
+		//la technique est simple : on va lui ajouter ses amis + un inconnu (au cas où il n'a pas d'ami)
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",userId);
+		
+		BasicDBObject recommendeurs = new BasicDBObject();
+		BasicDBObject user = (BasicDBObject) users.findOne(query);
+		BasicDBList friends = (BasicDBList) user.get("allFriends");
+		
+		if (friends ==null ) {
+			//pas de bol il n'a meme pas dami
+			friends = new BasicDBList();
+			BasicDBObject thisOne= (BasicDBObject) users.findOne(new BasicDBObject());
+			try { if (thisOne==null)
+					throw new Exception("le monde est contre moi je ne peux vraiment rien faire");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			thisOne.put("id", thisOne.get("_id"));
+			System.out.println(thisOne);
+			friends.add(thisOne);
+		}
+		
+		for(Object f : friends) {
+			BasicDBObject friend = (BasicDBObject) f;
+			System.out.println("a firen"+friend);
+			BasicDBObject flyweight = new BasicDBObject();
+			flyweight.put("_id", friend.get("id"));
+			flyweight.put("crossProbability", 0.5);
+			flyweight.put("posFeedback", 0);
+			flyweight.put("negFeedback", 3);
+			recommendeurs.put(friend.get("id").toString(), flyweight);
+		}
+		
+		user.put("recommenders", recommendeurs);
+		System.out.println(user);
+		users.update(query, user); //bon cest pas super efficace
+		return recommendeurs;
+
+	}
 	
+	
+
 	static protected DataUserNode db2DataUserNodeSimple(ObjectId userId) {
 		
 		
@@ -69,9 +122,17 @@ static DB db;
 		
 		while (pageviewedbyuser.hasNext()) {
 			DBObject upage = pageviewedbyuser.next();
-			double pagerank = (Double) upage.get("pageRank");
+			double pagerank;
+			try {
+				pagerank = (Double) upage.get("pageRank");
+				//System.out.println(upage);
+			}
+			catch (Exception ex) {
+				pagerank = 0.0; //Si le pagerank est � 0 ou n'existe pas, on le met � 0
+			}
 			ObjectId id = (ObjectId) upage.get("_id");
 			String url =(String) upage.get("url");
+			System.out.println(url);
 			DataUPage dataupage = new DataUPage(id, userId, pagerank,url);
 			userupages.add(dataupage);
 		}
@@ -112,7 +173,30 @@ static DB db;
 	}
 	
 	
-
+	static protected void updateRecommendersInDb(ObjectId receiver_id, ArrayList<DataUserRelation> recoToAdd, ArrayList<DataUserRelation> recoToRemove) {
+		DBCollection coll = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id", receiver_id);
+		DBObject userMongo = coll.findOne(query);
+		
+		if (userMongo == null) {
+			System.out.println("You are creating a new user in the database... are you really sure ?");
+			System.out.println("his Objectid is "+receiver_id);
+			System.out.println("you should not ignore that warning, unless you are creating some random data");
+		}
+		
+		BasicDBObject recommendersMongo = (BasicDBObject) userMongo.get("recommenders");
+		for (DataUserRelation toRemove : recoToRemove) {
+			recommendersMongo.remove(toRemove.getFriend().getId().toString());
+		}
+		for (DataUserRelation toAdd : recoToAdd) {
+			BasicDBObject newRecommender = new BasicDBObject();
+			newRecommender.put("_id",toAdd.getFriend().getId());
+			recommendersMongo.put(toAdd.getFriend().getId().toString(),newRecommender);
+		}
+		userMongo.put("recommenders", recommendersMongo);
+		coll.update(query, userMongo,true,false);
+		
+	}
 
 	
 	static protected void DataUserNode2db(DataUserNode user) {
@@ -146,7 +230,7 @@ static DB db;
 		coll.update(query, userMongo,true,false);
 	}
 	
-
+	//OK
 	public static ArrayList<ObjectId> getUserList() {
 		DBCollection coll = db.getCollection("users");
 		BasicDBObject keys = new BasicDBObject("_id",1);

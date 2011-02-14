@@ -8,6 +8,7 @@ public class Site {
 		return recommendation;
 		} catch (ExceptionRecoNotValid e) {
 			System.out.println("Erreur :"+e.getCode());
+			e.printStackTrace();
 			return null;
 		}
 	}

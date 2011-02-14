@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 import java.util.Date;
 
+=======
+>>>>>>> a8fde2aa2a174690a3aab6c6fcda5f0f086b8e80
 import org.bson.types.ObjectId;
 
 
@@ -9,6 +12,7 @@ public class ClassTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
 		// TODO Auto-generated method stub
 		
 		Date t = new Date();
@@ -24,6 +28,14 @@ public class ClassTest {
 		lambda.addUPage(page);
 		
 		lambda.toString();
+
+		Site s = new Site();
+		try {
+			s.requestReco(new Request("recommandation/ab033f4d90ad4d1408000000/www.google.com"));
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
 
 	}
 
