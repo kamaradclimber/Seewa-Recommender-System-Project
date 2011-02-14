@@ -18,7 +18,7 @@ static DB db;
 		try {
 			System.out.print("Ouverture de la base....");
 			Mongo mongo = new Mongo( "138.195.76.136"  , 80 );
-			db = mongo.getDB( "seewa1" );
+			db = mongo.getDB( "seewaAnon" );
 			System.out.println("[done]");
 		}
 		catch (UnknownHostException ex) {
@@ -56,7 +56,7 @@ static DB db;
 	}
 	
 	
-	
+	//OK
 	static protected DataUserNode db2DataUserNodeSimple(ObjectId userId) {
 		
 		
@@ -69,9 +69,17 @@ static DB db;
 		
 		while (pageviewedbyuser.hasNext()) {
 			DBObject upage = pageviewedbyuser.next();
-			double pagerank = (Double) upage.get("pageRank");
+			double pagerank;
+			try {
+				pagerank = (Double) upage.get("pageRank");
+				//System.out.println(upage);
+			}
+			catch (Exception ex) {
+				pagerank = 0.0; //Si le pagerank est ˆ 0 ou n'existe pas, on le met ˆ 0
+			}
 			ObjectId id = (ObjectId) upage.get("_id");
 			String url =(String) upage.get("url");
+			System.out.println(url);
 			DataUPage dataupage = new DataUPage(id, userId, pagerank,url);
 			userupages.add(dataupage);
 		}
@@ -169,7 +177,7 @@ static DB db;
 		coll.update(query, userMongo,true,false);
 	}
 	
-
+	//OK
 	public static ArrayList<ObjectId> getUserList() {
 		DBCollection coll = db.getCollection("users");
 		BasicDBObject keys = new BasicDBObject("_id",1);
