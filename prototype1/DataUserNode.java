@@ -80,6 +80,7 @@ public class DataUserNode implements Data {
 	{
 		if (this.uPages==null) this.uPages= new ArrayList<DataUPage>();
 		this.uPages.add(page);
+		uPageMean = (uPageMean*(uPages.size()-1) + page.getPR() ) / uPages.size();
 	}
 	
 	public boolean updateProbabilities()
