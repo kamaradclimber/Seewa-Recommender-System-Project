@@ -29,7 +29,7 @@ public class AlgoLourdBayes extends AlgoLourd {
 		//on va ensuite supprimer des listes damis les recommandeurs trop mauvais que l'on va remplacer par un user au hasard
 		ArrayList<ObjectId> userList = Interprete.getUserList();
 		for (ObjectId guy : feedbackers) {
-			DataUserNode user = Interprete.db2DataUserNodeHard(guy);
+			DataUserNode user = Interprete.db2DataUserNodeHard(guy); //TODO : améliorer en ne passant que les users ajoutés ou removed
 			
 			boolean hasChanged= false;
 			for (DataUserRelation relation: user.getFriends()) {

@@ -117,7 +117,30 @@ static DB db;
 	}
 	
 	
-
+	static protected void updateRecommendersInDb(ObjectId receiver_id, ArrayList<DataUserRelation> recoToAdd, ArrayList<DataUserRelation> recoToRemove) {
+		DBCollection coll = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id", receiver_id);
+		DBObject userMongo = coll.findOne(query);
+		
+		if (userMongo == null) {
+			System.out.println("You are creating a new user in the database... are you really sure ?");
+			System.out.println("his Objectid is "+receiver_id);
+			System.out.println("you should not ignore that warning, unless you are creating some random data");
+		}
+		
+		BasicDBObject recommendersMongo = (BasicDBObject) userMongo.get("recommenders");
+		for (DataUserRelation toRemove : recoToRemove) {
+			recommendersMongo.remove(toRemove.getFriend().getId().toString());
+		}
+		for (DataUserRelation toAdd : recoToAdd) {
+			BasicDBObject newRecommender = new BasicDBObject();
+			newRecommender.put("_id",toAdd.getFriend().getId());
+			recommendersMongo.put(toAdd.getFriend().getId().toString(),newRecommender);
+		}
+		userMongo.put("recommenders", recommendersMongo);
+		coll.update(query, userMongo,true,false);
+		
+	}
 
 	
 	static protected void DataUserNode2db(DataUserNode user) {
