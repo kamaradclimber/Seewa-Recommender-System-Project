@@ -12,6 +12,7 @@ public class Aggregateur {
 			Hashtable<String, Recommendation> recoTable = new Hashtable<String, Recommendation>();
 			for (Recommendation reco : recos)
 			{
+				if (!recoNumber.containsKey(reco.url)) recoNumber.put(reco.url, 0);
 				recoNumber.put(reco.url, recoNumber.get(reco.url)+1);
 				recoTable.put(reco.url, reco);
 			}

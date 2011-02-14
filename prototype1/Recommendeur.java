@@ -36,8 +36,6 @@ public class Recommendeur {
 
 		List<Recommendation> recos;
 		recos = dispatch.dispatch(req);
-		System.out.println("bob");
-		System.out.flush();
 		Recommendation reco  =  aggreg.merges(recos);
 		verificateur.verifies(reco);
 		return reco;
