@@ -2,6 +2,7 @@
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import org.bson.BasicBSONObject;
 import org.bson.types.ObjectId;
@@ -18,12 +19,13 @@ static DB db;
 		try {
 			System.out.print("Ouverture de la base....");
 			Mongo mongo = new Mongo( "138.195.76.136"  , 80 );
-			db = mongo.getDB( "seewa1" );
+			db = mongo.getDB( "seewaAnon" );
 			System.out.println("[done]");
 		}
 		catch (UnknownHostException ex) {
 			ExceptionRecoNotValid erreur = new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_CONNECTION_DB);
 			System.out.println("Erreur :"+erreur.getCode());
+			erreur.printStackTrace();
 			System.exit(1);
 		}
 	}
@@ -35,6 +37,14 @@ static DB db;
 		
 		
 		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
+		
+		//gestion du cas où l útlisateur n'a pas de de recommenders : on fait semblant quelle est vide et on le signale pour dire qu'il ne peut pas avoir de recommdation
+		if (recommendersMongo ==null) {
+			recommendersMongo = new BasicDBObject();
+			System.out.println("Attention tu travailles sur un utilisateur qui n'a pas de recommendeurs, il va falloir le mettre à jour !");
+			recommendersMongo = rustinePourCreerUnPoolInitialDeRecommender(mongoID);
+		}
+		
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		
 		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
@@ -55,6 +65,47 @@ static DB db;
 		return usernode;
 	}
 	
+	
+	static protected BasicDBObject rustinePourCreerUnPoolInitialDeRecommender(ObjectId userId) {
+		//la technique est simple : on va lui ajouter ses amis + un inconnu (au cas où il n'a pas d'ami)
+		DBCollection users = db.getCollection("users");
+		BasicDBObject query = new BasicDBObject("_id",userId);
+		
+		BasicDBObject recommendeurs = new BasicDBObject();
+		BasicDBObject user = (BasicDBObject) users.findOne(query);
+		BasicDBList friends = (BasicDBList) user.get("allFriends");
+		
+		if (friends ==null ) {
+			//pas de bol il n'a meme pas dami
+			friends = new BasicDBList();
+			BasicDBObject thisOne= (BasicDBObject) users.findOne(new BasicDBObject());
+			try { if (thisOne==null)
+					throw new Exception("le monde est contre moi je ne peux vraiment rien faire");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			thisOne.put("id", thisOne.get("_id"));
+			System.out.println(thisOne);
+			friends.add(thisOne);
+		}
+		
+		for(Object f : friends) {
+			BasicDBObject friend = (BasicDBObject) f;
+			System.out.println("a firen"+friend);
+			BasicDBObject flyweight = new BasicDBObject();
+			flyweight.put("_id", friend.get("id"));
+			flyweight.put("crossProbability", 0.5);
+			flyweight.put("posFeedback", 0);
+			flyweight.put("negFeedback", 3);
+			recommendeurs.put(friend.get("id").toString(), flyweight);
+		}
+		
+		user.put("recommenders", recommendeurs);
+		System.out.println(user);
+		users.update(query, user); //bon cest pas super efficace
+		return recommendeurs;
+
+	}
 	
 	
 	static protected DataUserNode db2DataUserNodeSimple(ObjectId userId) {
