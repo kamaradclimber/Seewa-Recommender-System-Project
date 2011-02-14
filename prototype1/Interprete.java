@@ -128,7 +128,7 @@ static DB db;
 				//System.out.println(upage);
 			}
 			catch (Exception ex) {
-				pagerank = 0.0; //Si le pagerank est ˆ 0 ou n'existe pas, on le met ˆ 0
+				pagerank = 0.0; //Si le pagerank est ï¿½ 0 ou n'existe pas, on le met ï¿½ 0
 			}
 			ObjectId id = (ObjectId) upage.get("_id");
 			String url =(String) upage.get("url");
@@ -198,7 +198,7 @@ static DB db;
 		
 	}
 
-	
+	//test en cours, l'execution est longue :pb code ou serveur qui rame?
 	static protected void DataUserNode2db(DataUserNode user) {
 		//cette fonction ecrase tous les fields qui sont present dans lobjet user
 		DBCollection coll = db.getCollection("users");
