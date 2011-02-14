@@ -17,12 +17,11 @@ public class DispatcherAlgoLeger {
 	public List<Recommendation> dispatch(Request req) throws ExceptionRecoNotValid {
 
 
-		
 		if (req.getTypeOfRequest()==TypeOfRequest.RECOPAGE) {
 			Request reqBis = req;
-			if(algos_to_do==null)
+			if(algos_to_do==null || algos_to_do.size()==0)
 				{
-				System.out.print("On essaye avec un algoLegerBayes");
+				System.out.println("On essaye avec un algoLegerBayes");
 				algos_to_do.put(AlgoLegerBayes.getAlgo(), reqBis);
 				}
 			for (AlgoLeger algo : algos_to_do.keySet())

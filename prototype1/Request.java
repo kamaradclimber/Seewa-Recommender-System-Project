@@ -25,15 +25,15 @@ public class Request {
 	public Request(String s) throws Exception {
 		//construct a request based on the 3 differents type of requests
 		String[] split = s.split("/");
-		if (split[0] == "recommandation") {
-			// syntax is recommandation/userObjectId/url with eventually one argument /categoryObjectId
+		if (split[0].equals("recommandation")) {
+			// syntax is recommandation/userObjectId/url 
+			if (split.length <3) throw new Exception("Invalid size url");
 			this.type   = TypeOfRequest.RECOPAGE;
 			this.recoReceiver = new ObjectId(split[1]);
-			this.url    = split[2];
-			if (split.length == 4) {
-				this.category = new ObjectId(split[3]);
-			}
-		} else if (split[0] == "feedback") {
+
+			
+			this.url    = split[2]; //TODO il faudrait appender toute la fin du tableau car l'url a été aussi coupée sur les / donc google.com/iamthere aura perdu son iamthere
+		} else if (split[0].equals("feedback")) {
 			//syntax is feedback/feedbackId/recoGiver/recoReceiver/clicked
 			this.type = TypeOfRequest.FEEDBACK;
 			this.feedbackId   = new ObjectId(split[1]);
@@ -41,10 +41,10 @@ public class Request {
 			this.recoGiver    = new ObjectId(split[2]);
 			this.clicked      = new Boolean(split[4]);
 			
-		} else if (split[0] == "update") {
+		} else if (split[0].equals("update")) {
 			// TODO
 		} else {
-			throw new Exception("type non reconnu");
+			throw new Exception("type non reconnu : "+split[0]);
 		}
 		
 	}
