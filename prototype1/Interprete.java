@@ -198,7 +198,7 @@ static DB db;
 		
 	}
 
-	//test en cours, l'execution est longue :pb code ou serveur qui rame?
+	//fonction testée, marche correctement.
 	static protected void DataUserNode2db(DataUserNode user) {
 		//cette fonction ecrase tous les fields qui sont present dans lobjet user
 		DBCollection coll = db.getCollection("users");
