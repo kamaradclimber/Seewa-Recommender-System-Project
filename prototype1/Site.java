@@ -11,6 +11,8 @@ public class Site {
 			System.out.println("Erreur :"+e.getCode());
 			e.printStackTrace();
 			return null;
+		} catch (NoRecoHasBeenFound e) {
+			return new Recommendation("no recommendation can be made for this user");
 		}
 	}
 	

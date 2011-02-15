@@ -23,7 +23,7 @@ public class Recommendeur {
 		}
 	}
  
-	public Recommendation recommendMeSomeThing(Request req) throws ExceptionRecoNotValid {
+	public Recommendation recommendMeSomeThing(Request req) throws ExceptionRecoNotValid, NoRecoHasBeenFound {
 		//dispatch des requetes aux algos, puis traitement, merge et vérification
 		List<Recommendation> recos;
 		recos = dispatch.dispatch(req);

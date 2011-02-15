@@ -38,7 +38,7 @@ public final class AlgoLegerBayes extends AlgoLeger {
 	}
 
 	@Override
-	public Recommendation answers(Request req) throws ExceptionRecoNotValid {
+	public Recommendation answers(Request req) throws ExceptionRecoNotValid, NoRecoHasBeenFound {
 		DataUserNode user = Interprete.db2DataUserNodeHard(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
 		
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
@@ -51,20 +51,21 @@ public final class AlgoLegerBayes extends AlgoLeger {
 				pages.get(page.getUrl()).add(new Composite(edge.recommandeur, page, edge.crossProbability));
 			}
 		}
-		
  		//on va supprimer toutes les pages qu'il a deja vu
 		for (DataUPage page : user.getUPages()) {
 			pages.remove(page.getUrl());
 		}
 		
+		if (pages.size()==0) {
+			throw new NoRecoHasBeenFound("this user has seen every page his recommanders can offer");
+		}
+		
 		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les nbReco meilleurs proba  
 		int nbResult=Math.min(nbReco, pages.size());
 		
-		System.out.println("avant erreur (vraiment avant) "+bestReco.size());
 		//on initialize ensuite la structure avec des recommendations de valeurs négatives 
 		for (int j=0; j<nbResult; j++) bestReco.add(new Composite(null,null,-j));
 		
-		System.out.println("avant erreur "+bestReco.size());
 		Composite worstReco = bestReco.first();
 		//on va ensuite calculer toutes les probabilités 
 		for (ArrayList<Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
