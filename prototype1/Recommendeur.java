@@ -3,20 +3,10 @@ import java.util.List;
 
 public class Recommendeur {
 	
-	static private DispatcherAlgoLeger dispatch;
-	static private Aggregateur aggreg;
-	static private Verificateur verificateur;
+	static private DispatcherAlgoLeger dispatch = new DispatcherAlgoLeger();
+	static private Aggregateur aggreg         	= new Aggregateur();
+	static private Verificateur verificateur	= new Verificateur();
 	
-	static{
-		dispatch = new DispatcherAlgoLeger();
-		aggreg = new Aggregateur();
-		verificateur = new Verificateur();
-	}
-	
-	public Recommendeur()
-	{
-		super();
-	}
 	
 	public void addAlgo(String algo)
 	{
@@ -28,12 +18,13 @@ public class Recommendeur {
 			aggreg.addAlgo(algoInstance);
 			
 		}catch (Exception e){
+			System.out.println("Erreur lors de l'ajout d'un nouvel algorithme");
 			e.printStackTrace();
 		}
 	}
  
 	public Recommendation recommendMeSomeThing(Request req) throws ExceptionRecoNotValid {
-
+		//dispatch des requetes aux algos, puis traitement, merge et vérification
 		List<Recommendation> recos;
 		recos = dispatch.dispatch(req);
 		Recommendation reco  =  aggreg.merges(recos);

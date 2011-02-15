@@ -1,9 +1,7 @@
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.bson.types.ObjectId;
@@ -41,95 +39,16 @@ public final class AlgoLegerBayes extends AlgoLeger {
 
 	@Override
 	public Recommendation answers(Request req) throws ExceptionRecoNotValid {
-		DataUserNode user;
-		if (req.getUrl()=="test" ) 
-		{
-			//on cr�e les persos
-			Date t = new Date();
-			DataUserNode jeanMich = new DataUserNode( new ObjectId(t,1), null  , null);
-			DataUserNode leGeek = new DataUserNode( new ObjectId(t,2), null , null);
-			DataUserNode jeanJaures = new DataUserNode( new ObjectId(t,3), null  , null);
-			
-			ObjectId jeanMichId= jeanMich.getId();
-			ObjectId leGeekId= leGeek.getId();
-			ObjectId jeanJauresId= jeanJaures.getId();
-			
-			//g�n� des Upages
-			//DataUPage jeanMichLeMonde= new DataUPage(new ObjectId(), 0.7, "www.lemonde.fr");
-			DataUPage jeanMichLeFigaro= new DataUPage(new ObjectId(t,1),jeanMichId, 0.8, "www.lefigaro.fr");
-			DataUPage jeanMichLEquipe= new DataUPage(new ObjectId(t,2),jeanMichId, 0.5, "www.l�quipe.fr");
-			DataUPage jeanMichLinux= new DataUPage(new ObjectId(),jeanMichId, 0.1, "www.linux.org");
-			
-			DataUPage leGeekLinux= new DataUPage(new ObjectId(),leGeekId, 0.8, "www.linux.org");
-			DataUPage leGeekTechCrunch= new DataUPage(new ObjectId(),leGeekId, 0.95, "www.techcrunch.com");
-			DataUPage leGeekOpLib= new DataUPage(new ObjectId(),leGeekId, 0.6, "www.opinionlibre.fr");
-			DataUPage leGeekLeMonde= new DataUPage(new ObjectId(),leGeekId, 0.01, "www.lemonde.fr");
-			
-			DataUPage jeanJauresLeMonde= new DataUPage(new ObjectId(),jeanJauresId, 0.5, "www.lemonde.fr");
-			DataUPage jeanJauresLeFigaro= new DataUPage(new ObjectId(),jeanJauresId, 0.3, "www.lefigaro.fr");
-			DataUPage jeanJauresLEquipe= new DataUPage(new ObjectId(),jeanJauresId, 0.6, "www.l�quipe.fr");
-			DataUPage jeanJauresLHuma= new DataUPage(new ObjectId(),jeanJauresId, 0.9, "www.lhumanit�.fr");
-			
-			ArrayList<DataUPage> jeanMichUPage= new ArrayList<DataUPage>();
-			jeanMichUPage.add(jeanMichLinux);
-			jeanMichUPage.add(jeanMichLeFigaro);
-			//jeanMichUPage.add(jeanMichLeMonde);
-			jeanMichUPage.add(jeanMichLEquipe);
-			
-			ArrayList<DataUPage> leGeekUPage= new ArrayList<DataUPage>();
-			leGeekUPage.add(leGeekLinux);
-			leGeekUPage.add(leGeekOpLib);
-			leGeekUPage.add(leGeekTechCrunch);
-			leGeekUPage.add(leGeekLeMonde);
-			
-			ArrayList<DataUPage> jeanJauresUPage= new ArrayList<DataUPage>();
-			jeanJauresUPage.add(jeanJauresLeFigaro);
-			jeanJauresUPage.add(jeanJauresLeMonde);
-			jeanJauresUPage.add(jeanJauresLEquipe);
-			jeanJauresUPage.add(jeanJauresLHuma);
-			
-			jeanMich.setUPages(jeanMichUPage);
-			leGeek.setUPages(leGeekUPage);
-			jeanJaures.setUPages(jeanJauresUPage);
-			
-			
-			//on impl�mente les liens d'amiti�
-			DataUserRelation jmfriends = new DataUserRelation(leGeek);
-			
-			DataUserRelation lgfriends = new DataUserRelation(jeanMich);
-			
-			ArrayList<DataUserRelation> jmUserRelations = new ArrayList<DataUserRelation>();
-			jmUserRelations.add(jmfriends);
-			jmUserRelations.add(new DataUserRelation(jeanJaures));
-			jeanMich.setFriends(jmUserRelations);
-			ArrayList<DataUserRelation> lgUserRelations = new ArrayList<DataUserRelation>();
-			lgUserRelations.add(lgfriends);
-			leGeek.setFriends(lgUserRelations);
-			
-			//on calcule les probas 
-			jeanMich.updateProbabilities();
-			leGeek.updateProbabilities();
-
-			Interprete.DataUserNode2db(jeanMich);
-			
-			
-			user = jeanMich;
-		}
-		else {
-			user = Interprete.db2DataUserNodeHard(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
-		}
+		DataUserNode user = Interprete.db2DataUserNodeHard(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
 		
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
 		for (DataUserRelation edge : user.getFriends()) {
-			for (DataUPage page: edge.friend.getUPages()) { //on parcourt toutes les pages des recommendeurs
-				if (pages.containsKey(page.getUrl())) { 
-					// pour les stocker en hashant grace a l'url de la page
-					pages.get(page.getUrl()).add(new Composite(edge.friend, page, edge.crossProbability));
-				} else {
-					ArrayList<Composite> tmp= new ArrayList<Composite>();
-					tmp.add(new Composite(edge.friend, page, edge.crossProbability));
-					pages.put(page.getUrl(), tmp);
-				}
+			//on parcourt toutes les pages des recommendeurs
+			for (DataUPage page: edge.friend.getUPages()) { 
+				if (!pages.containsKey(page.getUrl()))
+					pages.put(page.getUrl(), new ArrayList<Composite>() );
+				// pour les stocker en utilisant  l'url de la page comme clé
+				pages.get(page.getUrl()).add(new Composite(edge.friend, page, edge.crossProbability));
 			}
 		}
 		
@@ -138,20 +57,23 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			pages.remove(page.getUrl());
 		}
 		
-		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les trois meilleurs proba  
+		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les nbReco meilleurs proba  
 		int nbResult=Math.min(nbReco, pages.size());
 		
-		for (int j=0; j<nbResult; j++) 
-			bestReco.add(new Composite(null,null,-j));
+		//on initialize ensuite la structure avec des recommendations de valeurs négatives 
+		for (int j=0; j<nbResult; j++) bestReco.add(new Composite(null,null,-j));
 		
 		
+		Composite worstReco = bestReco.first();
 		//on va ensuite calculer toutes les probabilités 
 		for (ArrayList<Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
 				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-				//System.out.println("calcul proba pour la page"+ c.page.getUrl()+" : " + c.crossProbability);
-				bestReco.add(c);
-				bestReco.remove(bestReco.first());
+				worstReco = bestReco.first();
+				if (c.compareTo(worstReco)>0) {
+					bestReco.add(c); //on ajoute la recommendation
+					bestReco.remove(worstReco); //et on supprime la pire recommendation
+				}
 			}
 		}
 		double sum=0;	
