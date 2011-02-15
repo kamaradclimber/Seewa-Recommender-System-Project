@@ -97,12 +97,12 @@ static DB db;
 			flyweight.put("_id", friend.get("id"));
 			flyweight.put("crossProbability", 0.5);
 			flyweight.put("posFeedback", 0);
-			flyweight.put("negFeedback", 3);
+			flyweight.put("negFeedback", 3); //TODO rechanger cette valeur a 0 !
 			recommendeurs.put(friend.get("id").toString(), flyweight);
 		}
 		
 		user.put("recommenders", recommendeurs);
-		System.out.println(user);
+		System.out.println("avant saving "+user);
 		users.update(query, user); //bon cest pas super efficace
 		return recommendeurs;
 
