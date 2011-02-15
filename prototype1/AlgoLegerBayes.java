@@ -60,10 +60,11 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		TreeSet<Composite> bestReco = new TreeSet<Composite>(); //on stocke les nbReco meilleurs proba  
 		int nbResult=Math.min(nbReco, pages.size());
 		
+		System.out.println("avant erreur (vraiment avant) "+bestReco.size());
 		//on initialize ensuite la structure avec des recommendations de valeurs négatives 
 		for (int j=0; j<nbResult; j++) bestReco.add(new Composite(null,null,-j));
 		
-		
+		System.out.println("avant erreur "+bestReco.size());
 		Composite worstReco = bestReco.first();
 		//on va ensuite calculer toutes les probabilités 
 		for (ArrayList<Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage

@@ -5,6 +5,7 @@ public class Site {
 		try {
 		Recommendeur reco = new Recommendeur();
 		Recommendation recommendation =  reco.recommendMeSomeThing(req);
+		//TODO est-ce que les recommandation scomportent une indication de lutilisateur qui a fait la reco ??? sinon on peut pas faire de feedback
 		return recommendation;
 		} catch (ExceptionRecoNotValid e) {
 			System.out.println("Erreur :"+e.getCode());
