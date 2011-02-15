@@ -34,15 +34,15 @@ public class Request {
 			
 			this.url    = split[2]; //TODO il faudrait appender toute la fin du tableau car l'url a été aussi coupée sur les / donc google.com/iamthere aura perdu son iamthere
 		} else if (split[0].equals("feedback")) {
-			//syntax is feedback/feedbackId/recoGiver/recoReceiver/clicked
+			//syntax is feedback/recoGiver/recoReceiver/clicked
 			this.type = TypeOfRequest.FEEDBACK;
-			this.feedbackId   = new ObjectId(split[1]);
-			this.recoReceiver = new ObjectId(split[3]);
-			this.recoGiver    = new ObjectId(split[2]);
-			this.clicked      = new Boolean(split[4]);
+			if (split.length !=4) throw new Exception("pas assez d'arguments pour ce type de requete ");
+			this.recoGiver    = new ObjectId(split[1]);
+			this.recoReceiver = new ObjectId(split[2]);
+			this.clicked      = new Boolean(split[3]);
 			
 		} else if (split[0].equals("update")) {
-			// TODO
+			this.type = TypeOfRequest.MAJ;
 		} else {
 			throw new Exception("type non reconnu : "+split[0]);
 		}

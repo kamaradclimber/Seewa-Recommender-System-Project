@@ -150,7 +150,7 @@ static DB db;
 		
 		BasicDBObject recommender = (BasicDBObject) recommenders.get(recommender_id.toString());
 		if (recommender ==null ) {
-			System.out.println("on a un feebdback qui parle dutlisateur qui ne sont pas en relation...cest moche (ou alors ce sont des données de test)");
+			System.out.println("on a un feedback qui parle dutlisateur qui ne sont pas en relation...cest moche (ou alors ce sont des données de test)");
 			return;
 		}
 		
@@ -311,7 +311,8 @@ static DB db;
 	public static void setFeedBack(DataFeedBack f) {
 		DBCollection coll = db.getCollection("feedback");
 		BasicDBObject o = new BasicDBObject();
-		o.put("_id", f.getMongoId());
+		if (f.getMongoId()!=null)
+			o.put("_id", f.getMongoId());
 		o.put("recoGiver", f.recoGiver());
 		o.put("recoReceiver", f.recoReceiver());
 		o.put("clicked", f.clicked());

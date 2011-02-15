@@ -58,7 +58,11 @@ public class AlgoLourdBayes extends AlgoLourd {
 			DataUserNode user = Interprete.db2DataUserNodeHard(userId);
 			user.updateProbabilities();
 			for (DataUserRelation relation : user.getRecommandeurs()) {
-				Interprete.setCrossProbability(userId, relation.recommandeur.getId(), relation.crossProbability);
+				if (relation.getCrossProbability()==0) {
+					//Le recommandeur ajouté n'est pas très bon : sa crossProba est de 0
+					relation.setCrossProbability(0.01);
+				}
+				Interprete.setCrossProbability(userId, relation.recommandeur.getId(), relation.getCrossProbability());
 			}
 		}
 		System.out.println("[done]");

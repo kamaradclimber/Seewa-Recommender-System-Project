@@ -14,6 +14,7 @@ public class Site {
 	}
 	
 	public void maj(Request req) {
+		// request an update for our system
 		try{
 			AlgoLourdBayes b = new AlgoLourdBayes();
 			b.maj();
@@ -22,7 +23,7 @@ public class Site {
 		}
 	}
 	
-	public void getFeedback(Request req) {
+	public void Feedback(Request req) {
 		try{
 			
 			Interprete.setFeedBack(req.toDataFeedBack());
