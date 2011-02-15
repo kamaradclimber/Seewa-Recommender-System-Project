@@ -6,21 +6,21 @@ import java.util.TreeSet;
 
 import org.bson.types.ObjectId;
 
-
-
 public class AlgoLourdBayes extends AlgoLourd {
 
-	
+	//mise à jour régulière des structures employées employées pour les reco
 	public void maj() {
 		//on met a jour les compteurs de feedback positif et negatifs
 		System.out.print("maj des compteurs de feedback...");
 		ArrayList<DataFeedBack> toBeUpdated = Interprete.getFeedback();
-		System.out.print("("+ toBeUpdated.size() +")");
-		HashSet<ObjectId> feedbackers = new HashSet<ObjectId>();
+		System.out.print("("+ toBeUpdated.size() +" entries)");
+		ArrayList<ObjectId> feedbackers = new ArrayList<ObjectId>();
 		
+		ObjectId recoGiver;
+		ObjectId recoReceiver;
 		for (DataFeedBack feedback : toBeUpdated) {
-			ObjectId recoGiver = feedback.recoGiver();
-			ObjectId recoReceiver = feedback.recoReceiver();
+			recoGiver = feedback.recoGiver();
+			recoReceiver = feedback.recoReceiver();
 			feedbackers.add(recoReceiver);
 			
 			Interprete.modifyFeedback(recoGiver, recoReceiver, feedback.clicked()); //true means that the feedback was positive
@@ -33,18 +33,18 @@ public class AlgoLourdBayes extends AlgoLourd {
 		System.out.print("maj des listes d'ami...");
 		ArrayList<ObjectId> userList = Interprete.getUserList();
 		for (ObjectId guy : feedbackers) {
-			DataUserNode user = Interprete.db2DataUserNodeHard(guy); //TODO : am�liorer en ne passant que les users ajout�s ou removed
+			DataUserNode user = Interprete.db2DataUserNodeHard(guy); //TODO : améliorer en ne passant que les users ajoutés ou removed
 			
 			boolean hasChanged= false;
 			DataUserRelation relation;
-			for (int i=0; i< user.getFriends().size();i++) {
-				relation =  user.getFriends().get(i);
+			for (int i=0; i< user.getRecommandeurs().size();i++) {
+				relation =  user.getRecommandeurs().get(i);
 				if (relation.posFeedback - relation.negFeedback < -3) {
 					hasChanged = true;
 
 					//We add a new friend relation created from a random user.
 					//We don't need to calculate the proba as it will be done later.
-					user.getFriends().set(i,this.getANewFriend(user));
+					user.getRecommandeurs().set(i,this.getANewRecommandeur(user));
 				}
 			}
 			if (hasChanged) {Interprete.DataUserNode2db(user);}
@@ -57,8 +57,8 @@ public class AlgoLourdBayes extends AlgoLourd {
 		for (ObjectId userId: userList) {
 			DataUserNode user = Interprete.db2DataUserNodeHard(userId);
 			user.updateProbabilities();
-			for (DataUserRelation relation : user.getFriends()) {
-				Interprete.setCrossProbability(userId, relation.friend.getId(), relation.crossProbability);
+			for (DataUserRelation relation : user.getRecommandeurs()) {
+				Interprete.setCrossProbability(userId, relation.recommandeur.getId(), relation.crossProbability);
 			}
 		}
 		System.out.println("[done]");
@@ -66,20 +66,21 @@ public class AlgoLourdBayes extends AlgoLourd {
 		
 	}
 	
-	
-	private DataUserRelation getANewFriend(DataUserNode u) { 
+	//this function helps create a new friend for the user u
+	private DataUserRelation getANewRecommandeur(DataUserNode u) { 
 		// attention a la performance de cette fonction !
 		TreeSet<DataUserRelation> recommendeursPotentiels = new TreeSet<DataUserRelation>();
-		for(DataUserRelation relation :u.getFriends()) {
-			ObjectId id = relation.getFriend().getMongoId();
-			DataUserNode friend = Interprete.db2DataUserNodeHard(id);
-			for (DataUserRelation rela : friend.getFriends() ) {
-				DataUserRelation relationNouvelle = new DataUserRelation(rela.getFriend());
+		for(DataUserRelation relation :u.getRecommandeurs()) {
+			ObjectId id = relation.getRecommandeur().getMongoId();
+			DataUserNode recommandeur = Interprete.db2DataUserNodeHard(id);
+			//on prend tous les recommandeurs de ce recommandeur
+			for (DataUserRelation rela : recommandeur.getRecommandeurs() ) {
+				DataUserRelation relationNouvelle = new DataUserRelation(rela.getRecommandeur());
 				relationNouvelle.updateProbability(u);
 				recommendeursPotentiels.add(relationNouvelle); //on cree une nouvelle relation avec les recos potentiels
 			}
 		}
-		//on a desormais la liste de tous les reco potentiels (amis damis)
+		//on a desormais la liste de tous les reco potentiels (recommandeur de recommandeur)
 		
 		double sum=0;	
 		for ( DataUserRelation comp : recommendeursPotentiels)
@@ -97,7 +98,7 @@ public class AlgoLourdBayes extends AlgoLourd {
 			bestKey = bestRelationEver.crossProbability;
 		}
 		System.out.println("added a new recommendeur for"+ u.getMongoId()
-				+ " his id is "+bestRelationEver.friend.getMongoId()
+				+ " his id is "+bestRelationEver.recommandeur.getMongoId()
 				+ " with crossProba="+bestRelationEver.crossProbability);
 		return bestRelationEver;
 	}

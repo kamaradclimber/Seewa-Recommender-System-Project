@@ -186,12 +186,12 @@ static DB db;
 		
 		BasicDBObject recommendersMongo = (BasicDBObject) userMongo.get("recommenders");
 		for (DataUserRelation toRemove : recoToRemove) {
-			recommendersMongo.remove(toRemove.getFriend().getId().toString());
+			recommendersMongo.remove(toRemove.getRecommandeur().getId().toString());
 		}
 		for (DataUserRelation toAdd : recoToAdd) {
 			BasicDBObject newRecommender = new BasicDBObject();
-			newRecommender.put("_id",toAdd.getFriend().getId());
-			recommendersMongo.put(toAdd.getFriend().getId().toString(),newRecommender);
+			newRecommender.put("_id",toAdd.getRecommandeur().getId());
+			recommendersMongo.put(toAdd.getRecommandeur().getId().toString(),newRecommender);
 		}
 		userMongo.put("recommenders", recommendersMongo);
 		coll.update(query, userMongo,true,false);
@@ -216,13 +216,13 @@ static DB db;
 		
 		BasicDBObject updatedRecommenders = new BasicDBObject();
 
-		for (DataUserRelation friend : user.getFriends()) {
+		for (DataUserRelation friend : user.getRecommandeurs()) {
 			BasicDBObject recommender = new BasicDBObject();
-			recommender.put("_id", friend.getFriend().getMongoId());
+			recommender.put("_id", friend.getRecommandeur().getMongoId());
 			recommender.put("crossProbability", friend.getCrossProbability());
 			recommender.put("posFeedback", friend.getPosFeedback());
 			recommender.put("negFeedback", friend.getNegFeedback());
-			updatedRecommenders.put(friend.getFriend().getId().toString(), recommender);
+			updatedRecommenders.put(friend.getRecommandeur().getId().toString(), recommender);
 		}
 		if (! (updatedRecommenders.size()==0)) { 
 			userMongo.put("recommenders", updatedRecommenders);

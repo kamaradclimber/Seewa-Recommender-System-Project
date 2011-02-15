@@ -42,13 +42,13 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		DataUserNode user = Interprete.db2DataUserNodeHard(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
 		
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
-		for (DataUserRelation edge : user.getFriends()) {
+		for (DataUserRelation edge : user.getRecommandeurs()) {
 			//on parcourt toutes les pages des recommendeurs
-			for (DataUPage page: edge.friend.getUPages()) { 
+			for (DataUPage page: edge.recommandeur.getUPages()) { 
 				if (!pages.containsKey(page.getUrl()))
 					pages.put(page.getUrl(), new ArrayList<Composite>() );
 				// pour les stocker en utilisant  l'url de la page comme clé
-				pages.get(page.getUrl()).add(new Composite(edge.friend, page, edge.crossProbability));
+				pages.get(page.getUrl()).add(new Composite(edge.recommandeur, page, edge.crossProbability));
 			}
 		}
 		
@@ -76,10 +76,9 @@ public final class AlgoLegerBayes extends AlgoLeger {
 				}
 			}
 		}
+		//on définit une distrib de proba sur les nbReco meilleures reco potentielles
 		double sum=0;	
-		for ( Composite comp : bestReco)
-		{
-
+		for ( Composite comp : bestReco) {
 			sum += comp.crossProbability;
 		}
 		double var= Math.random() * sum;
@@ -91,6 +90,8 @@ public final class AlgoLegerBayes extends AlgoLeger {
 			bestKey = probs.next().crossProbability;
 		}		
 		
+		
+		//on renvoit enfin la reco
 		return new Recommendation(bestReco.last());
 	}
 		

@@ -53,7 +53,7 @@ public class DataUserNode implements Data {
 			uPageMean= uPageMean/uPages.size();
 	}
 
-	public ArrayList<DataUserRelation> getFriends() {
+	public ArrayList<DataUserRelation> getRecommandeurs() {
 		if (this.friends == null) {
 			return new ArrayList<DataUserRelation>();
 		}
