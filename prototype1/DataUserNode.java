@@ -3,6 +3,8 @@ import java.util.Hashtable;
 
 import org.bson.types.ObjectId;
 
+import com.mongodb.BasicDBObject;
+
 
 public class DataUserNode implements Data {
 	private ObjectId id; //l'id qui est dans mongo
@@ -60,6 +62,11 @@ public class DataUserNode implements Data {
 		else return this.friends;
 	}
 	
+	private ArrayList<DataUserRelation> initRecommenders() {
+		BasicDBObject recommenders = new BasicDBObject();
+		
+		return recommenders;
+	}
 	
 	
 	public ObjectId getMongoId() {

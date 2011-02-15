@@ -107,5 +107,13 @@ public class AlgoLourdBayes extends AlgoLourd {
 		return bestRelationEver;
 	}
 	
+	private DataUserRelation getANewRandomRecommandeur(DataUserNode u)
+	{
+		ArrayList<ObjectId> userList = Interprete.getUserList();
+		ObjectId userId= userList.get((int) Math.floor(Math.random()*userList.size()));//On en prend un au hasard
+		DataUserRelation relation = new DataUserRelation(Interprete.db2DataUserNodeSimple(userId));
+		relation.updateProbability(u);S
+		return relation;
+	}
 	
 }
