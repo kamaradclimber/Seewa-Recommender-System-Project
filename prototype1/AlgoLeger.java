@@ -1,7 +1,7 @@
 
 public abstract class AlgoLeger {
 	
-	public abstract Recommendation answers(Request req) throws ExceptionRecoNotValid;
+	public abstract Recommendation answers(Request req) throws ExceptionRecoNotValid, NoRecoHasBeenFound;
 		//exemple pour un algo de recommendation
 		//return new Recommendation();
 
