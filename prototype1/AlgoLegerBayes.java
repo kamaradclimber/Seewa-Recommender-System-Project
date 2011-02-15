@@ -64,12 +64,16 @@ public final class AlgoLegerBayes extends AlgoLeger {
 		for (int j=0; j<nbResult; j++) bestReco.add(new Composite(null,null,-j));
 		
 		
+		Composite worstReco = bestReco.first();
 		//on va ensuite calculer toutes les probabilités 
 		for (ArrayList<Composite> cc : pages.values()) { //il y a peut etre une optimisation a faire sur la facon dont on stocke et parcourt cette table de hashage
 			for(Composite c :cc) {
 				c.crossProbability =  c.crossProbability / c.user.uPageMean * c.page.pageRank;
-				bestReco.add(c); //on ajoute la recommendation
-				bestReco.remove(bestReco.first()); //et on supprime la pire recommendation
+				worstReco = bestReco.first();
+				if (c.compareTo(worstReco)>0) {
+					bestReco.add(c); //on ajoute la recommendation
+					bestReco.remove(worstReco); //et on supprime la pire recommendation
+				}
 			}
 		}
 		double sum=0;	
