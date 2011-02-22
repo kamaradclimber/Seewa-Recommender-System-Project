@@ -14,6 +14,10 @@ import com.mongodb.*;
 public class Interprete {
 
 static DB db;
+static DBCollection users;
+static DBCollection upages;
+static DBCollection feedbacks;
+
 
 	static {
 		try {
@@ -21,6 +25,9 @@ static DB db;
 			Mongo mongo = new Mongo( "138.195.76.136"  , 80 );
 			db = mongo.getDB( "seewaAnon" );
 			System.out.println("[done]");
+			users = db.getCollection("users");
+			upages = db.getCollection("upages");
+			feedbacks = db.getCollection("feedback");
 		}
 		catch (UnknownHostException ex) {
 			ExceptionRecoNotValid erreur = new ExceptionRecoNotValid(ExceptionRecoNotValid.ERR_CONNECTION_DB);
@@ -31,9 +38,8 @@ static DB db;
 	}
 	
 	static protected DataUserNode db2DataUserNodeHard(ObjectId mongoID) {
-		DBCollection coll = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",mongoID);
-		DBObject user = coll.findOne(query);
+		DBObject user = users.findOne(query);
 		
 		
 		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
@@ -42,15 +48,9 @@ static DB db;
 		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		//gestion du cas où l útlisateur n'a pas de de recommenders : on fait semblant quelle est vide et on le signale pour dire qu'il ne peut pas avoir de recommdation
 		if (recommendersMongo ==null) {
-			BasicDBList friendList = (BasicDBList) coll.findOne(query, new BasicDBObject("allFriends",1));
-			for (Object friendObject : friendList)
-			{
-				BasicDBObject friend = (BasicDBObject) friendObject;
-				DataUserNode friendNode = db2DataUserNodeSimple((ObjectId) friend.get("_id"));
-				recommenders.add(new DataUserRelation(friendNode, 0, 0, 0));
-			}
-			System.out.println("Attention tu travailles sur un utilisateur qui n'a pas de recommendeurs, il va falloir le mettre à jour !");
-			recommendersMongo = rustinePourCreerUnPoolInitialDeRecommender(mongoID);
+			//He must be a new user. We create him a new pool of recommenders
+			usernode.initRecommenders();
+			//TODO: Faut-il changer la BDD maintenant ou plus tard?
 		}
 		else {
 			
@@ -74,7 +74,6 @@ static DB db;
 	
 	static protected BasicDBObject rustinePourCreerUnPoolInitialDeRecommender(ObjectId userId) {
 		//la technique est simple : on va lui ajouter ses amis + un inconnu (au cas où il n'a pas d'ami)
-		DBCollection users = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id",userId);
 		
 		BasicDBObject recommendeurs = new BasicDBObject();
@@ -117,8 +116,6 @@ static DB db;
 
 	static protected DataUserNode db2DataUserNodeSimple(ObjectId userId) {
 		
-		
-		DBCollection upages = db.getCollection("upages");
 		BasicDBObject query = new BasicDBObject("user",userId);
 		DBCursor pageviewedbyuser = upages.find(query);
 
@@ -133,7 +130,7 @@ static DB db;
 				//System.out.println(upage);
 			}
 			catch (Exception ex) {
-				pagerank = 0.0; //Si le pagerank est � 0 ou n'existe pas, on le met � 0
+				pagerank = 0; //Si le pagerank est � 0 ou n'existe pas, on le met � 0
 			}
 			ObjectId id = (ObjectId) upage.get("_id");
 			String url =(String) upage.get("url");
@@ -147,9 +144,8 @@ static DB db;
 	}
 	
 	static protected void modifyFeedback(ObjectId recommender_id , ObjectId receiver_id , boolean feedback) {
-		DBCollection coll = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id", receiver_id);
-		DBObject user = coll.findOne(query);
+		DBObject user = users.findOne(query);
 		
 		BasicDBObject recommenders = (BasicDBObject) user.get("recommenders");
 		
@@ -173,15 +169,14 @@ static DB db;
 		recommenders.put(recommender_id.toString(), recommender);
 		user.put("recommenders",recommenders);
 		
-		coll.update(query, user,true,false);
+		users.update(query, user,true,false);
 		
 	}
 	
 	
 	static protected void updateRecommendersInDb(ObjectId receiver_id, ArrayList<DataUserRelation> recoToAdd, ArrayList<DataUserRelation> recoToRemove) {
-		DBCollection coll = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id", receiver_id);
-		DBObject userMongo = coll.findOne(query);
+		DBObject userMongo = users.findOne(query);
 		
 		if (userMongo == null) {
 			System.out.println("You are creating a new user in the database... are you really sure ?");
@@ -191,24 +186,23 @@ static DB db;
 		
 		BasicDBObject recommendersMongo = (BasicDBObject) userMongo.get("recommenders");
 		for (DataUserRelation toRemove : recoToRemove) {
-			recommendersMongo.remove(toRemove.getRecommandeur().getId().toString());
+			recommendersMongo.remove(toRemove.getRecommender().getId().toString());
 		}
 		for (DataUserRelation toAdd : recoToAdd) {
 			BasicDBObject newRecommender = new BasicDBObject();
-			newRecommender.put("_id",toAdd.getRecommandeur().getId());
-			recommendersMongo.put(toAdd.getRecommandeur().getId().toString(),newRecommender);
+			newRecommender.put("_id",toAdd.getRecommender().getId());
+			recommendersMongo.put(toAdd.getRecommender().getId().toString(),newRecommender);
 		}
 		userMongo.put("recommenders", recommendersMongo);
-		coll.update(query, userMongo,true,false);
+		users.update(query, userMongo,true,false);
 		
 	}
 
 	//fonction testée, marche correctement.
 	static protected void DataUserNode2db(DataUserNode user) {
 		//cette fonction ecrase tous les fields qui sont present dans lobjet user
-		DBCollection coll = db.getCollection("users");
 		BasicDBObject query = new BasicDBObject("_id", user.getMongoId());
-		DBObject userMongo = coll.findOne(query);
+		DBObject userMongo = users.findOne(query);
 		
 		if (userMongo==null) {
 			System.out.println("You are creating a new user in the database... are you really sure ?");
@@ -223,24 +217,23 @@ static DB db;
 
 		for (DataUserRelation friend : user.getRecommandeurs()) {
 			BasicDBObject recommender = new BasicDBObject();
-			recommender.put("_id", friend.getRecommandeur().getMongoId());
+			recommender.put("_id", friend.getRecommender().getMongoId());
 			recommender.put("crossProbability", friend.getCrossProbability());
 			recommender.put("posFeedback", friend.getPosFeedback());
 			recommender.put("negFeedback", friend.getNegFeedback());
-			updatedRecommenders.put(friend.getRecommandeur().getId().toString(), recommender);
+			updatedRecommenders.put(friend.getRecommender().getId().toString(), recommender);
 		}
 		if (! (updatedRecommenders.size()==0)) { 
 			userMongo.put("recommenders", updatedRecommenders);
 		}
-		coll.update(query, userMongo,true,false);
+		users.update(query, userMongo,true,false);
 	}
 	
 	//OK
 	public static ArrayList<ObjectId> getUserList() {
-		DBCollection coll = db.getCollection("users");
 		BasicDBObject keys = new BasicDBObject("_id",1);
 		
-		DBCursor cursor = coll.find(new BasicDBObject(), keys);
+		DBCursor cursor = users.find(new BasicDBObject(), keys);
 		ArrayList<ObjectId> results = new ArrayList<ObjectId>();
 		DBObject user= null;
 		while(cursor.hasNext()) {
@@ -256,26 +249,22 @@ static DB db;
 
 	public static void setCrossProbability(ObjectId user_Id, ObjectId recommander_id, double crossProbability) {
 
-		DBCollection coll = db.getCollection("users");
-		
-
 		BasicDBObject fields = new BasicDBObject();
 		fields.put("recommenders", 1);
 		
 		BasicDBObject query = new BasicDBObject();
 		query.put("_id", user_Id);
 		
-		BasicDBObject user = (BasicDBObject)coll.findOne(query,fields);
+		BasicDBObject user = (BasicDBObject)users.findOne(query,fields);
 		if (user==null) {System.out.println("Something went wrong ! le user est null");} //TODO lever une exception
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
-		coll.update(query, user,true,false);
+		users.update(query, user,true,false);
 		//TODO verifier quon ecrase pas les donnees
 		
 	}
 	
 	public static void DataUPage2db(DataUPage p) {
 		System.out.println("Attention : on ecrase les pages deja existantes ?");
-		DBCollection coll = db.getCollection("upages");
 		BasicDBObject o = new BasicDBObject();
 		o.put("_id", p.getMongoId());
 		o.put("pageRank", p.pageRank);
@@ -284,7 +273,7 @@ static DB db;
 		DBObject obj = new BasicDBObject();
 		obj.put("_id", p.getMongoId());
 		
-		coll.update(
+		upages.update(
 				obj,
 				(DBObject)o, 
 				true, /* i want to create the object if it doesnt exist*/
@@ -296,9 +285,8 @@ static DB db;
 
 	public static ArrayList<DataFeedBack> getFeedback() {
 		ArrayList<DataFeedBack> feedbackList = new ArrayList<DataFeedBack>();
-		DBCollection coll = db.getCollection("feedback");
 		
-		DBCursor cursor = coll.find(new BasicDBObject());
+		DBCursor cursor = feedbacks.find(new BasicDBObject());
 		DBObject feedback= null;
 		while(cursor.hasNext()) {
 			feedback = cursor.next();
@@ -308,13 +296,12 @@ static DB db;
 			Boolean clicked = (Boolean)feedback.get("clicked");
 			feedbackList.add(new DataFeedBack(objectid, clicked, recoGiver, recoReceiver));
 		}
-		coll.drop();
+		feedbacks.drop();
 		return feedbackList;
 	}
 
 
 	public static void setFeedBack(DataFeedBack f) {
-		DBCollection coll = db.getCollection("feedback");
 		BasicDBObject o = new BasicDBObject();
 		if (f.getMongoId()!=null)
 			o.put("_id", f.getMongoId());
@@ -322,7 +309,7 @@ static DB db;
 		o.put("recoReceiver", f.recoReceiver());
 		o.put("clicked", f.clicked());
 		
-		coll.insert(o);
+		feedbacks.insert(o);
 		
 	}
 	
@@ -366,6 +353,21 @@ static DB db;
 			DataUPage2db( new DataUPage(new ObjectId(t, i),users.get(var1).getId(), Math.random(),urls.get(var2)));
 		}	
 
+	}
+
+
+	public static ArrayList<DataUserRelation> getSocialFriends(
+			DataUserNode user) {
+		DBObject query = new BasicDBObject("_id", user.getMongoId());
+		BasicDBList friendList = (BasicDBList) users.findOne(query, new BasicDBObject("allFriends",1));
+		ArrayList<DataUserRelation> socialFriends = new ArrayList<DataUserRelation>();
+		for (Object friendObject : friendList)
+		{
+			BasicDBObject friend = (BasicDBObject) friendObject;
+			DataUserNode friendNode = db2DataUserNodeSimple((ObjectId) friend.get("_id"));
+			socialFriends.add(new DataUserRelation(friendNode, 0, 0, 0));
+		}
+		return socialFriends;
 	}
 	
 }

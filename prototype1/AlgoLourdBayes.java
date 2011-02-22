@@ -72,26 +72,33 @@ public class AlgoLourdBayes extends AlgoLourd {
 	//this function helps create a new friend for the user u
 	private DataUserRelation getANewRecommandeur(DataUserNode u) { 
 		// attention a la performance de cette fonction !
-		TreeSet<DataUserRelation> recommendeursPotentiels = new TreeSet<DataUserRelation>();
+		TreeSet<DataUserRelation> potentialRecommenders = new TreeSet<DataUserRelation>();
 		for(DataUserRelation relation :u.getRecommandeurs()) {
-			ObjectId id = relation.getRecommandeur().getMongoId();
-			DataUserNode recommandeur = Interprete.db2DataUserNodeHard(id);
+			ObjectId id = relation.getRecommender().getMongoId();
+			DataUserNode recommender = Interprete.db2DataUserNodeHard(id);
 			//on prend tous les recommandeurs de ce recommandeur
-			for (DataUserRelation rela : recommandeur.getRecommandeurs() ) {
-				DataUserRelation relationNouvelle = new DataUserRelation(rela.getRecommandeur());
-				relationNouvelle.updateProbability(u);
-				recommendeursPotentiels.add(relationNouvelle); //on cree une nouvelle relation avec les recos potentiels
+			for (DataUserRelation rela : recommender.getRecommandeurs() ) {
+				DataUserRelation newRelation = new DataUserRelation(rela.getRecommender());
+				newRelation.updateProbability(u);
+				potentialRecommenders.add(newRelation); //on cree une nouvelle relation avec les recos potentiels
 			}
 		}
 		//on a desormais la liste de tous les reco potentiels (recommandeur de recommandeur)
 		
+		if ( potentialRecommenders.size()==0)
+		//He hasn't friends enough :( We add a random user. 
+			return u.getANewRandomRecommender();
+				
+		//TODO: verifie-t-on qu'il n'y a pas de doublons quelquepart?
+		//Random=>on sait pas ce qui sort
+		
 		double sum=0;	
-		for ( DataUserRelation comp : recommendeursPotentiels)
+		for ( DataUserRelation comp : potentialRecommenders)
 		{
 			sum += comp.crossProbability;
 		}
 		double var= Math.random() * sum;
-		Iterator<DataUserRelation> probs = recommendeursPotentiels.iterator();
+		Iterator<DataUserRelation> probs = potentialRecommenders.iterator();
 		DataUserRelation bestRelationEver = probs.next();
 		double bestKey = bestRelationEver.crossProbability; 
 		while (probs.hasNext() && var-bestKey >0 )
@@ -106,13 +113,6 @@ public class AlgoLourdBayes extends AlgoLourd {
 		return bestRelationEver;
 	}
 	
-	private DataUserRelation getANewRandomRecommandeur(DataUserNode u)
-	{
-		ArrayList<ObjectId> userList = Interprete.getUserList();
-		ObjectId userId= userList.get((int) Math.floor(Math.random()*userList.size()));//On en prend un au hasard
-		DataUserRelation relation = new DataUserRelation(Interprete.db2DataUserNodeSimple(userId));
-		relation.updateProbability(u);S
-		return relation;
-	}
+	
 	
 }

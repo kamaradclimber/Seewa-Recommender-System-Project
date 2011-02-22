@@ -81,7 +81,7 @@ public class DataUserRelation implements Comparable<DataUserRelation>{
 			return this.crossProbability == oldValue;
 			}
 
-		public DataUserNode getRecommandeur() {
+		public DataUserNode getRecommender() {
 			return recommandeur;
 		}
 
@@ -120,6 +120,9 @@ public class DataUserRelation implements Comparable<DataUserRelation>{
 			if (this==o) return 0;
 			if (this.crossProbability > o.crossProbability) return -1;
 			if (this.crossProbability < o.crossProbability) return 1;
-			return 0; //TODO il faudrait (mais cest a florent de le faire) gerer les autres cas
-		}
+			if (this.posFeedback > o.posFeedback) return -1;
+			if (this.negFeedback < o.negFeedback) return 1;
+			//Sinon on compare les Id.
+			return this.recommandeur.getId().compareTo(o.recommandeur.getId());
+			}
 	}

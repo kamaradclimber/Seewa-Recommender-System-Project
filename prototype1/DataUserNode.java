@@ -11,6 +11,9 @@ public class DataUserNode implements Data {
 	private ArrayList<DataUserRelation> friends; //TODO : changer en recommenders
 	private ArrayList<DataUPage> uPages;
 	double uPageMean; //moyenne des page rank des UPages.
+	
+	//the number of recommenders to add by default
+	static private int nbRecommenders = 5;
 
 	
 	public DataUserNode(ObjectId id) {
@@ -62,10 +65,27 @@ public class DataUserNode implements Data {
 		else return this.friends;
 	}
 	
-	private ArrayList<DataUserRelation> initRecommenders() {
-		BasicDBObject recommenders = new BasicDBObject();
+	void initRecommenders() 
+	//Create the recommenders list if the user is new
+	{
 		
-		return recommenders;
+		ArrayList<DataUserRelation> friendsTemp = Interprete.getSocialFriends(this);
+		for (int i = 0; i< nbRecommenders-friendsTemp.size(); ++i)
+		//we add some random friend if he has not enough	
+		{
+				friendsTemp.add(getANewRandomRecommender());
+		}
+		friends = friendsTemp;	
+	}
+	
+	public DataUserRelation getANewRandomRecommender()
+	//select a random friend and create a user relation
+	{
+		ArrayList<ObjectId> userList = Interprete.getUserList();
+		ObjectId userId= userList.get((int) Math.floor(Math.random()*userList.size()));//On en prend un au hasard
+		DataUserRelation relation = new DataUserRelation(Interprete.db2DataUserNodeSimple(userId));
+		relation.updateProbability(this);
+		return relation;
 	}
 	
 	
