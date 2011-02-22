@@ -38,35 +38,40 @@ static DB db;
 		
 		BasicDBObject recommendersMongo = (BasicDBObject) user.get("recommenders");
 		
+		DataUserNode usernode = db2DataUserNodeSimple(mongoID);
+		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
 		//gestion du cas où l útlisateur n'a pas de de recommenders : on fait semblant quelle est vide et on le signale pour dire qu'il ne peut pas avoir de recommdation
 		if (recommendersMongo ==null) {
-			recommendersMongo = new BasicDBObject();
+			BasicDBList friendList = (BasicDBList) coll.findOne(query, new BasicDBObject("allFriends",1));
+			for (Object friendObject : friendList)
+			{
+				BasicDBObject friend = (BasicDBObject) friendObject;
+				DataUserNode friendNode = db2DataUserNodeSimple((ObjectId) friend.get("_id"));
+				recommenders.add(new DataUserRelation(friendNode, 0, 0, 0));
+			}
 			System.out.println("Attention tu travailles sur un utilisateur qui n'a pas de recommendeurs, il va falloir le mettre à jour !");
 			recommendersMongo = rustinePourCreerUnPoolInitialDeRecommender(mongoID);
 		}
-		
-		ArrayList<DataUserRelation> recommenders = new ArrayList<DataUserRelation>();
-		
-		//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête
-		
-		for (String recommender : recommendersMongo.keySet()) {
-			ObjectId _id = (ObjectId) ((BasicDBObject) recommendersMongo.get(recommender)).get("_id");
-			double crossProbability = (Double) ((BasicDBObject) recommendersMongo.get(recommender)).get("crossProbability");
-			int posFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("posFeedback");
-			int negFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("negFeedback");
+		else {
 			
-			DataUserNode usernode = db2DataUserNodeSimple(_id);
-			DataUserRelation userrelation = new DataUserRelation(usernode,crossProbability,posFeedback,negFeedback);
-			recommenders.add(userrelation);
+			//TODO : la suite peut ptet etre amélioré en regroupant tout dans une requête		
+			for (String recommender : recommendersMongo.keySet()) {
+				ObjectId _id = (ObjectId) ((BasicDBObject) recommendersMongo.get(recommender)).get("_id");
+				double crossProbability = (Double) ((BasicDBObject) recommendersMongo.get(recommender)).get("crossProbability");
+				int posFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("posFeedback");
+				int negFeedback = (Integer) ((BasicDBObject) recommendersMongo.get(recommender)).get("negFeedback");
+				
+				DataUserNode friendnode = db2DataUserNodeSimple(_id);
+				DataUserRelation userrelation = new DataUserRelation(friendnode,crossProbability,posFeedback,negFeedback);
+				recommenders.add(userrelation);
+			}
 		}
 		
-		DataUserNode usernode = db2DataUserNodeSimple(mongoID);
 		usernode.setFriends(recommenders);	
 		return usernode;
 	}
 	
 	
-
 	static protected BasicDBObject rustinePourCreerUnPoolInitialDeRecommender(ObjectId userId) {
 		//la technique est simple : on va lui ajouter ses amis + un inconnu (au cas où il n'a pas d'ami)
 		DBCollection users = db.getCollection("users");
@@ -97,13 +102,13 @@ static DB db;
 			flyweight.put("_id", friend.get("id"));
 			flyweight.put("crossProbability", 0.5);
 			flyweight.put("posFeedback", 0);
-			flyweight.put("negFeedback", 3);
+			flyweight.put("negFeedback", 3); //TODO rechanger cette valeur a 0 !
 			recommendeurs.put(friend.get("id").toString(), flyweight);
 		}
 		
 		user.put("recommenders", recommendeurs);
 		System.out.println(user);
-		users.update(query, user); //bon cest pas super efficace
+		//users.update(query, user); //bon cest pas super efficace
 		return recommendeurs;
 
 	}
@@ -128,7 +133,7 @@ static DB db;
 				//System.out.println(upage);
 			}
 			catch (Exception ex) {
-				pagerank = 0.0; //Si le pagerank est � 0 ou n'existe pas, on le met � 0
+				pagerank = 0.0; //Si le pagerank est � 0 ou n'existe pas, on le met � 0
 			}
 			ObjectId id = (ObjectId) upage.get("_id");
 			String url =(String) upage.get("url");
@@ -149,7 +154,7 @@ static DB db;
 		
 		BasicDBObject recommender = (BasicDBObject) recommenders.get(recommender_id.toString());
 		if (recommender ==null ) {
-			System.out.println("on a un feebdback qui parle dutlisateur qui ne sont pas en relation...cest moche (ou alors ce sont des données de test)");
+			System.out.println("on a un feedback qui parle dutlisateur qui ne sont pas en relation...cest moche (ou alors ce sont des données de test)");
 			return;
 		}
 		
@@ -185,19 +190,19 @@ static DB db;
 		
 		BasicDBObject recommendersMongo = (BasicDBObject) userMongo.get("recommenders");
 		for (DataUserRelation toRemove : recoToRemove) {
-			recommendersMongo.remove(toRemove.getFriend().getId().toString());
+			recommendersMongo.remove(toRemove.getRecommandeur().getId().toString());
 		}
 		for (DataUserRelation toAdd : recoToAdd) {
 			BasicDBObject newRecommender = new BasicDBObject();
-			newRecommender.put("_id",toAdd.getFriend().getId());
-			recommendersMongo.put(toAdd.getFriend().getId().toString(),newRecommender);
+			newRecommender.put("_id",toAdd.getRecommandeur().getId());
+			recommendersMongo.put(toAdd.getRecommandeur().getId().toString(),newRecommender);
 		}
 		userMongo.put("recommenders", recommendersMongo);
 		coll.update(query, userMongo,true,false);
 		
 	}
 
-	
+	//fonction testée, marche correctement.
 	static protected void DataUserNode2db(DataUserNode user) {
 		//cette fonction ecrase tous les fields qui sont present dans lobjet user
 		DBCollection coll = db.getCollection("users");
@@ -215,13 +220,13 @@ static DB db;
 		
 		BasicDBObject updatedRecommenders = new BasicDBObject();
 
-		for (DataUserRelation friend : user.getFriends()) {
+		for (DataUserRelation friend : user.getRecommandeurs()) {
 			BasicDBObject recommender = new BasicDBObject();
-			recommender.put("_id", friend.getFriend().getMongoId());
+			recommender.put("_id", friend.getRecommandeur().getMongoId());
 			recommender.put("crossProbability", friend.getCrossProbability());
 			recommender.put("posFeedback", friend.getPosFeedback());
 			recommender.put("negFeedback", friend.getNegFeedback());
-			updatedRecommenders.put(friend.getFriend().getId().toString(), recommender);
+			updatedRecommenders.put(friend.getRecommandeur().getId().toString(), recommender);
 		}
 		if (! (updatedRecommenders.size()==0)) { 
 			userMongo.put("recommenders", updatedRecommenders);
@@ -310,7 +315,8 @@ static DB db;
 	public static void setFeedBack(DataFeedBack f) {
 		DBCollection coll = db.getCollection("feedback");
 		BasicDBObject o = new BasicDBObject();
-		o.put("_id", f.getMongoId());
+		if (f.getMongoId()!=null)
+			o.put("_id", f.getMongoId());
 		o.put("recoGiver", f.recoGiver());
 		o.put("recoReceiver", f.recoReceiver());
 		o.put("clicked", f.clicked());

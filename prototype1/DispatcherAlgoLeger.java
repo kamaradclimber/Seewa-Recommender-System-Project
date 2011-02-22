@@ -14,7 +14,7 @@ public class DispatcherAlgoLeger {
 	}
 	
 
-	public List<Recommendation> dispatch(Request req) throws ExceptionRecoNotValid {
+	public List<Recommendation> dispatch(Request req) throws ExceptionRecoNotValid, NoRecoHasBeenFound {
 
 
 		if (req.getTypeOfRequest()==TypeOfRequest.RECOPAGE) {

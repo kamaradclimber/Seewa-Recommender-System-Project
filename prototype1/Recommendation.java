@@ -1,6 +1,7 @@
 import org.bson.types.ObjectId;
 
 
+
 public class Recommendation {
 
 	String description="";
@@ -43,6 +44,10 @@ public class Recommendation {
 	public Recommendation(String name) {
 		description = name;
 		
+	}
+	
+	public Recommendation(Composite c) {
+		this.url  = c.page.getUrl();
 	}
 	
 	public String toString()

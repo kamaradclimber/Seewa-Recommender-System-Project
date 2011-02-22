@@ -3,6 +3,8 @@ import java.util.Hashtable;
 
 import org.bson.types.ObjectId;
 
+import com.mongodb.BasicDBObject;
+
 
 public class DataUserNode implements Data {
 	private ObjectId id; //l'id qui est dans mongo
@@ -53,13 +55,18 @@ public class DataUserNode implements Data {
 			uPageMean= uPageMean/uPages.size();
 	}
 
-	public ArrayList<DataUserRelation> getFriends() {
+	public ArrayList<DataUserRelation> getRecommandeurs() {
 		if (this.friends == null) {
 			return new ArrayList<DataUserRelation>();
 		}
 		else return this.friends;
 	}
 	
+	private ArrayList<DataUserRelation> initRecommenders() {
+		BasicDBObject recommenders = new BasicDBObject();
+		
+		return recommenders;
+	}
 	
 	
 	public ObjectId getMongoId() {
@@ -80,6 +87,7 @@ public class DataUserNode implements Data {
 	{
 		if (this.uPages==null) this.uPages= new ArrayList<DataUPage>();
 		this.uPages.add(page);
+		uPageMean = (uPageMean*(uPages.size()-1) + page.getPR() ) / uPages.size();
 	}
 	
 	public boolean updateProbabilities()

@@ -4,14 +4,13 @@ import java.util.List;
 
 public class Aggregateur {
 
-
-
 	public Recommendation merges(List<Recommendation> recos) throws ExceptionRecoNotValid {
 		if (!recos.isEmpty()) {
 			Hashtable<String, Integer> recoNumber = new Hashtable<String, Integer>();
 			Hashtable<String, Recommendation> recoTable = new Hashtable<String, Recommendation>();
 			for (Recommendation reco : recos)
 			{
+				if (!recoNumber.containsKey(reco.url)) recoNumber.put(reco.url, 0);
 				recoNumber.put(reco.url, recoNumber.get(reco.url)+1);
 				recoTable.put(reco.url, reco);
 			}

@@ -3,51 +3,51 @@ import java.util.Hashtable;
 
 
 public class DataUserRelation implements Comparable<DataUserRelation>{
-		DataUserNode friend;
+		DataUserNode recommandeur;
 		double crossProbability; // P(A inter B) = proba that both like a page
 		int posFeedback;
 		int negFeedback;
 
-		public DataUserRelation( DataUserNode friend, double crossProbability)
+		public DataUserRelation( DataUserNode recommandeur, double crossProbability)
 		{
-			this.friend=friend;
+			this.recommandeur=recommandeur;
 			this.crossProbability=crossProbability;
 			posFeedback=0;
 			negFeedback=0;
 		}
 		
-		public DataUserRelation( DataUserNode friend, double crossProbability, int posFeedback, int negFeedback)
+		public DataUserRelation( DataUserNode recommandeur, double crossProbability, int posFeedback, int negFeedback)
 		{
-			this(friend, crossProbability);
+			this(recommandeur, crossProbability);
 			this.posFeedback=posFeedback;
 			this.negFeedback=negFeedback;
 		}
 		
-		public DataUserRelation( DataUserNode friend)
+		public DataUserRelation( DataUserNode recommandeur)
 		{
-			this.friend=friend;
+			this.recommandeur=recommandeur;
 			this.crossProbability=0;
 			this.posFeedback=0;
 			this.negFeedback=0;
 		}
 		
-		public DataUserRelation( DataUserNode friend,int posFeedback, int negFeedback)
+		public DataUserRelation( DataUserNode recommandeur,int posFeedback, int negFeedback)
 		{
-			this( friend);
+			this( recommandeur);
 			this.posFeedback=posFeedback;
 			this.negFeedback=negFeedback;
 		}
 		
 		@Override
 		public String toString() {
-			return "DataUserRelation [friend=" + friend.getMongoId() + ", crossProbability="
+			return "DataUserRelation [friend=" + recommandeur.getMongoId() + ", crossProbability="
 					+ crossProbability + ", posFeedback=" + posFeedback
 					+ ", negFeedback=" + negFeedback + "]";
 		}
 
 		public boolean updateProbability(DataUserNode owner) //cr�e la proba, renvoie true si valeur a �t� modifi�e
 		{
-			ArrayList<DataUPage> friendUPages=friend.getUPages();
+			ArrayList<DataUPage> recommandeurUPages=recommandeur.getUPages();
 			ArrayList<DataUPage> ownerUPages=owner.getUPages();
 			
 			int nInter=0; //intersection
@@ -59,7 +59,7 @@ public class DataUserRelation implements Comparable<DataUserRelation>{
 				url_PR.put(myUPage.getUrl(), myUPage);
 			}
 			
-			for (DataUPage hisUPage: friendUPages)
+			for (DataUPage hisUPage: recommandeurUPages)
 			{
 				if ( url_PR.containsKey(hisUPage.getUrl()))
 				{
@@ -81,12 +81,12 @@ public class DataUserRelation implements Comparable<DataUserRelation>{
 			return this.crossProbability == oldValue;
 			}
 
-		public DataUserNode getFriend() {
-			return friend;
+		public DataUserNode getRecommandeur() {
+			return recommandeur;
 		}
 
-		public void setFriend(DataUserNode friend) {
-			this.friend = friend;
+		public void setFriend(DataUserNode recommandeur) {
+			this.recommandeur = recommandeur;
 		}
 
 		public double getCrossProbability() {
