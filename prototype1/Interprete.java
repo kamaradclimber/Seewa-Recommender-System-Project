@@ -132,7 +132,6 @@ static DB db;
 			}
 			ObjectId id = (ObjectId) upage.get("_id");
 			String url =(String) upage.get("url");
-			System.out.println(url);
 			DataUPage dataupage = new DataUPage(id, userId, pagerank,url);
 			userupages.add(dataupage);
 		}
