@@ -29,5 +29,21 @@ public class Verificateur {
 		}
 		return recos;
 	}
+
+	public boolean isRelevant(DataUPage page) {
+		String url = page.getUrl();
+		if (url ==null) return false;
+		
+		if (url.contains("https://")) return false;
+		if (url.contains("login")) return false;
+		//if (url.contains("auth")) return false;
+		if (url.contains("http://www.facebook.com/home.php?")) return false;
+		if (url.contains("google.com/search")) return false;
+		if (url.contains("mail.live.com")) return false;
+		if (url.contains("/mail/")) return false;
+		if (url.contains("account")) return false;
+		
+		return true;
+	}
 	
 }

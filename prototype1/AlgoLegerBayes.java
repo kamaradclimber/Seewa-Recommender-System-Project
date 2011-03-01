@@ -41,16 +41,19 @@ public final class AlgoLegerBayes extends AlgoLeger {
 
 	@Override
 	public Recommendation answers(Request req) throws ExceptionRecoNotValid, NoRecoHasBeenFound {
+		Verificateur verificateur = new Verificateur();
 		DataUserNode user = Interprete.db2DataUserNodeHard(req.getUserId()); // on reccupere l'utilisateur qui fait sa requete
 		
 		HashMap<String, ArrayList<Composite>> pages = new HashMap<String, ArrayList<Composite>>(); //on associe url-> avec un object qui contient un user et sa upage
 		for (DataUserRelation edge : user.getRecommandeurs()) {
 			//on parcourt toutes les pages des recommendeurs
 			for (DataUPage page: edge.recommandeur.getUPages()) { 
+				if ( !verificateur.isRelevant(page)) continue;
 				if (!pages.containsKey(page.getUrl()))
 					pages.put(page.getUrl(), new ArrayList<Composite>() );
 				// pour les stocker en utilisant  l'url de la page comme clé
 				pages.get(page.getUrl()).add(new Composite(edge.recommandeur, page, edge.crossProbability));
+					
 			}
 		}
  		//on va supprimer toutes les pages qu'il a deja vu
