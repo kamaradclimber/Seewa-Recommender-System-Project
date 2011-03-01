@@ -1,3 +1,4 @@
+package recommender;
 
 public class NoRecoHasBeenFound extends Exception {
 

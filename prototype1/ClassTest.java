@@ -1,3 +1,5 @@
+package recommender;
+
 import java.util.ArrayList;
 
 import org.bson.types.ObjectId;

@@ -1,6 +1,7 @@
+package recommender;
 
 public abstract class Ecrivain {
-//les classes écrivant les données au fur et à mesure de leur arrivée dans le système
+//les classes ï¿½crivant les donnï¿½es au fur et ï¿½ mesure de leur arrivï¿½e dans le systï¿½me
 	
 	abstract public void ajoutPage(Data d);
 }
