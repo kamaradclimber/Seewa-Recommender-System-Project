@@ -41,6 +41,7 @@ public class Verificateur {
 		if (url.contains("mail.live.com")) return false;
 		if (url.contains("/mail/")) return false;
 		if (url.contains("account")) return false;
+		if (url.contains("porn")) return false;
 		
 		return true;
 	}
