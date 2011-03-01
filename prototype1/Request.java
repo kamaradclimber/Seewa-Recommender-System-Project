@@ -1,3 +1,4 @@
+package recommender;
 import org.bson.types.ObjectId;
 
 
@@ -27,7 +28,7 @@ public class Request {
 		String[] split = s.split("/");
 		if (split[0].equals("recommandation")) {
 			// syntax is recommandation/userObjectId/url 
-			if (split.length <3) throw new Exception("Invalid size url");
+			if (split.length <2) throw new Exception("Invalid size url");
 			this.type   = TypeOfRequest.RECOPAGE;
 			this.recoReceiver = new ObjectId(split[1]);
 

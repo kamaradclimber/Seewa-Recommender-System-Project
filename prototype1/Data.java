@@ -1,9 +1,10 @@
+package recommender;
 import org.bson.types.ObjectId;
 
 
 public interface Data {
-//le format que je mets chaque fois qu'on fait transiter des données
-// mais on peut tout a fait mettre des types différents...
+//le format que je mets chaque fois qu'on fait transiter des donnï¿½es
+// mais on peut tout a fait mettre des types diffï¿½rents...
 	
 	
 	public ObjectId getMongoId();
