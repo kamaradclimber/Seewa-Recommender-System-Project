@@ -50,7 +50,7 @@ static DBCollection feedbacks;
 		if (recommendersMongo ==null) {
 			//He must be a new user. We create him a new pool of recommenders
 			usernode.initRecommenders();
-			//TODO: Faut-il changer la BDD maintenant ou plus tard?
+			Interprete.DataUserNode2db(usernode);
 		}
 		else {
 			
@@ -65,15 +65,18 @@ static DBCollection feedbacks;
 				DataUserRelation userrelation = new DataUserRelation(friendnode,crossProbability,posFeedback,negFeedback);
 				recommenders.add(userrelation);
 			}
+			usernode.setFriends(recommenders);
 		}
 		
-		usernode.setFriends(recommenders);	
+			
 		return usernode;
 	}
 	
 	
 	static protected BasicDBObject rustinePourCreerUnPoolInitialDeRecommender(ObjectId userId) {
 		//la technique est simple : on va lui ajouter ses amis + un inconnu (au cas où il n'a pas d'ami)
+		System.out.println("Deprecated ??");
+		
 		BasicDBObject query = new BasicDBObject("_id",userId);
 		
 		BasicDBObject recommendeurs = new BasicDBObject();
@@ -90,13 +93,11 @@ static DBCollection feedbacks;
 					e.printStackTrace();
 				}
 			thisOne.put("id", thisOne.get("_id"));
-			System.out.println(thisOne);
 			friends.add(thisOne);
 		}
 		
 		for(Object f : friends) {
 			BasicDBObject friend = (BasicDBObject) f;
-			System.out.println("a firen"+friend);
 			BasicDBObject flyweight = new BasicDBObject();
 			flyweight.put("_id", friend.get("id"));
 			flyweight.put("crossProbability", 0.5);
@@ -106,7 +107,6 @@ static DBCollection feedbacks;
 		}
 		
 		user.put("recommenders", recommendeurs);
-		System.out.println(user);
 		//users.update(query, user); //bon cest pas super efficace
 		return recommendeurs;
 
@@ -127,7 +127,6 @@ static DBCollection feedbacks;
 			double pagerank;
 			try {
 				pagerank = (Double) upage.get("pageRank");
-				//System.out.println(upage);
 			}
 			catch (Exception ex) {
 				pagerank = 0; //Si le pagerank est � 0 ou n'existe pas, on le met � 0
@@ -255,7 +254,7 @@ static DBCollection feedbacks;
 		query.put("_id", user_Id);
 		
 		BasicDBObject user = (BasicDBObject)users.findOne(query,fields);
-		if (user==null) {System.out.println("Something went wrong ! le user est null");} //TODO lever une exception
+		if (user==null) {System.out.println("Something went wrong ! le user est null (le programmeur aussi)");} //TODO lever une exception
 		((BasicDBObject)((BasicDBObject)user.get("recommenders")).get(recommander_id.toString())).put("crossProbability",crossProbability);
 		users.update(query, user,true,false);
 		//TODO verifier quon ecrase pas les donnees
@@ -329,7 +328,6 @@ static DBCollection feedbacks;
 				if (var>=i) var++;//pr eviter d'etre ami avec soi-meme
 				users.get(i).addFriend(new DataUserRelation(users.get(var), 0, 0, 0));
 			}
-			System.out.println(users.get(i));
 			DataUserNode2db(users.get(i));
 		}
 	
@@ -358,12 +356,21 @@ static DBCollection feedbacks;
 	public static ArrayList<DataUserRelation> getSocialFriends(
 			DataUserNode user) {
 		DBObject query = new BasicDBObject("_id", user.getMongoId());
-		BasicDBList friendList = (BasicDBList) users.findOne(query, new BasicDBObject("allFriends",1));
+		BasicDBList friendList = (BasicDBList) ((BasicDBObject) users.findOne(query, new BasicDBObject("allFriends",1))).get("allFriends");
 		ArrayList<DataUserRelation> socialFriends = new ArrayList<DataUserRelation>();
+		if (friendList == null) { friendList = new BasicDBList();} // pour eviter le bug si allFriend nest pas defini dans ce user
 		for (Object friendObject : friendList)
 		{
+			
 			BasicDBObject friend = (BasicDBObject) friendObject;
-			DataUserNode friendNode = db2DataUserNodeSimple((ObjectId) friend.get("_id"));
+			
+			
+			ObjectId tmp = (ObjectId) friend.get("_id");
+			if (tmp ==null) {
+				tmp =(ObjectId) friend.get("id");
+				assert (tmp != null); // la ca serait vraiment du vice !
+			}
+			DataUserNode friendNode = db2DataUserNodeSimple( tmp);
 			socialFriends.add(new DataUserRelation(friendNode, 0, 0, 0));
 		}
 		return socialFriends;

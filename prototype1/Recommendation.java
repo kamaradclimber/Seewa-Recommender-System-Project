@@ -48,6 +48,7 @@ public class Recommendation {
 	
 	public Recommendation(Composite c) {
 		this.url  = c.page.getUrl();
+		this.userID = c.user.getMongoId();
 	}
 	
 	public String toString()

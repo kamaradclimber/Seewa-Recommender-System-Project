@@ -17,7 +17,7 @@ public class ClassTest {
 				System.out.println(s.requestReco(new Request("recommandation/"+users.get(i)+"/www.google.com")));
 				//s.Feedback(new Request("feedback/"+users.get(i)+"/"+users.get(i/2)+"/false"));
 			}
-			s.maj(new Request("update/"));
+			//s.maj(new Request("update/"));
 		} catch (Exception e) {
 			
 			e.printStackTrace();
