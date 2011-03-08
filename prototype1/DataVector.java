@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.TreeMap;
 
 import org.bson.types.ObjectId;
 
@@ -12,7 +13,7 @@ import com.mongodb.DBObject;
 
 
 @SuppressWarnings("serial")
-public class DataVector extends Hashtable<String, Float> implements Data  {
+public class DataVector extends Hashtable<String, Double> implements Data  {
 	String name;
 	private int arrayId = 0;
 	private ObjectId userID; //on stocke l'id de l'user qui est associé au vector, si on parle dun user sinon il est null
@@ -33,17 +34,29 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 		Hashtable<String, Integer> nbPagePerTheme = new Hashtable<String, Integer>();
 
 		BasicDBList themes=null;
-		Float pageRank = new Float(0);
+		double pageRank = 0;
 		while (pageviewedbyuser.hasNext())
 		{
-			DBObject upage = pageviewedbyuser.next();
+			BasicDBObject upage = (BasicDBObject) pageviewedbyuser.next();
 			try {
 				  themes = (BasicDBList) upage.get("themes");
-				  pageRank = (Float) upage.get("pageRank");
+				  if (themes ==null)
+					  themes=new BasicDBList();
+			} catch (Exception e){
+				themes=new BasicDBList();
+				e.printStackTrace();
+			}try {
+				  pageRank =  Double.parseDouble(upage.get("pageRank").toString());
+			} catch (Exception e){
+				System.out.println("failed1 :"+upage.get("pageRank"));
+				pageRank=0;
+			}try{
 				  name = (String ) upage.get("userName");
 			} catch (Exception e){
-				System.out.println("failed :"+upage.get("themes"));
+				System.out.println("failed2 :"+upage.get("userName"));
+				e.printStackTrace();
 			}
+			//System.out.println(upage);
 			for (Object listItem:themes)
 			{
 				String themeName = ((BasicDBObject) listItem).getString("name");
@@ -92,7 +105,7 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 
 
 	
-	public float getOrZero(String key) { //renvoie la valeur si la clé existe et zéro sinon
+	public double getOrZero(String key) { //renvoie la valeur si la clé existe et zéro sinon
 		if (!this.containsKey(key)) {
 			return 0;
 		}
@@ -111,11 +124,15 @@ public class DataVector extends Hashtable<String, Float> implements Data  {
 	public String toString() {
 		String tostring = "DataVector [arrayId=" + arrayId + ", name=" + name
 				+ ", userID=" + userID + "]\n";
-		
+		TreeMap<Double, String> temp = new TreeMap<Double, String>();
 		for (String theme : this.keySet())
 		{
-			tostring += theme + " : " + this.get(theme) +"\n";
+			temp.put(this.get(theme), theme );
 		}
+		
+		for (Double pr: temp.tailMap(0.2).keySet())
+			tostring += temp.get(pr) + " : " + pr +"\n";
+		
 		
 		return tostring;
 	}
