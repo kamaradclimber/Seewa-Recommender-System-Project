@@ -1,3 +1,4 @@
+package recommender;
 
 @SuppressWarnings("serial")
 public class ExceptionRecoNotValid extends Exception {

@@ -1,3 +1,4 @@
+package recommender;
 
 
 	public class Composite implements Comparable<Composite> {

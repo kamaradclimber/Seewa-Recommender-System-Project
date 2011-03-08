@@ -1,3 +1,4 @@
+package recommender;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ static DBCollection feedbacks;
 	static {
 		try {
 			System.out.print("Ouverture de la base....");
-			Mongo mongo = new Mongo( "138.195.76.136"  , 80 );
+			Mongo mongo = new Mongo( "127.0.0.1"  , 81 );
 			db = mongo.getDB( "seewaAnon" );
 			System.out.println("[done]");
 			users = db.getCollection("users");

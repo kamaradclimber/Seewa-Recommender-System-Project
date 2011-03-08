@@ -1,3 +1,4 @@
+package recommender;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -114,7 +115,6 @@ public class DataUserRelation implements Comparable<DataUserRelation>{
 		}
 
 
-		@Override
 		public int compareTo(DataUserRelation o) {
 			//cette fonction de comparaison est utilisée pour trouver un nouveau recommendeur
 			if (this==o) return 0;

@@ -1,3 +1,5 @@
+package recommender;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,7 +10,7 @@ import org.bson.types.ObjectId;
 
 
 public final class AlgoLegerBayes extends AlgoLeger {
-//test
+// tets
 	private static AlgoLegerBayes singleton;
 	private static int nbReco=10; //number of result among which we chose a recommendation 
 	

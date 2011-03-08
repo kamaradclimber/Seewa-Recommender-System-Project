@@ -1,3 +1,4 @@
+package recommender;
 import org.bson.types.ObjectId;
 
 
@@ -25,7 +26,7 @@ public class Recommendation {
 		this.description = description;
 	}
 
-	String getUrl() {
+	public String getUrl() {
 		return url;
 	}
 
