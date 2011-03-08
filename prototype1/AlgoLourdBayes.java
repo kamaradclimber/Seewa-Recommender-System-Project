@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import org.bson.types.ObjectId;
 
 public class AlgoLourdBayes extends AlgoLourd {
-
+	
 	//mise à jour régulière des structures employées employées pour les reco
 	public void maj() {
 		//on met a jour les compteurs de feedback positif et negatifs
