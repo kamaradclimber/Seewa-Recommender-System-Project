@@ -3,13 +3,13 @@ import org.bson.types.ObjectId;
 
 
 public final class DataUPage implements Data {
-
-	private ObjectId id;//userId?
+	// the class representing the Upages of the database
+	private ObjectId id;//userId ou updage_id ?
 	private ObjectId userId;
 	
 
 	double pageRank;
-	private String url; //on stock pour connaitre les pages qui sont partag�es par 2 users
+	private String url; //on stocke pour connaitre les pages qui sont partag�es par 2 users
 	//Time Stamp?
 	
 	private DataUPage(ObjectId id, ObjectId userId,double pageRank) {

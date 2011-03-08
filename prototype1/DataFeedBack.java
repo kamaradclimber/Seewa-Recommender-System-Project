@@ -3,7 +3,8 @@ import org.bson.types.ObjectId;
 
 
 public class DataFeedBack implements Data {
-
+	//the class that represent the feedback of the user
+	// it is used only during update actions
 	private ObjectId id;
 	private boolean clicked;
 	private ObjectId recoGiver; //la personne qui a donné la recommendation (le recommendeur)

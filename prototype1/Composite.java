@@ -2,6 +2,7 @@ package recommender;
 
 
 	public class Composite implements Comparable<Composite> {
+		//useless class to store some data in our code
 		DataUserNode user;
 		DataUPage page;
 		double crossProbability;
